@@ -27,3 +27,5 @@ send_text() {
 	echo $text
 	curl -H "Content-Type: application/json" -X POST -d "{\"content\": \"${text}\"}" ${DISCORD_HOOK}
 }
+
+send_text 'all good, now'
