@@ -3,7 +3,10 @@
 set -e
 
 valid_text() {
-	[[ "$1" =~ ^[[:space:]]*$ ]] && { echo "got empty string" 1>&2 && exit 1; }
+	if [[ "$1" =~ ^[[:space:]]*$ ]]
+		then
+			echo "got empty string" 1>&2 && exit 1;
+	fi
 }
 
 to_safe_json() {
@@ -27,5 +30,3 @@ send_text() {
 	echo $text
 	curl -H "Content-Type: application/json" -X POST -d "{\"content\": \"${text}\"}" ${DISCORD_HOOK}
 }
-
-send_text 'all good, now'
