@@ -9,10 +9,9 @@ services:
     env_file:
       - ./srcs/nginx/.env
     environment:
-     - SOMETHING=${SOMETHING}
      - NGINX_PORT
     ports:
-      - $NGINX_PORT:$NGINX_PORT
+      - ${APP_PORT}:${NGINX_PORT}
 
 volumes:
   nginx_templates:
