@@ -1,0 +1,23 @@
+services:
+  web:
+    build:
+      context: ./srcs/nginx/
+      dockerfile: nginx.dockerfile
+    container_name: nginx
+    volumes:
+     - nginx_templates:/etc/nginx/templates
+    env_file:
+      - ./srcs/nginx/.env
+    environment:
+     - SOMETHING=${SOMETHING}
+     - NGINX_PORT
+    ports:
+      - $NGINX_PORT:$NGINX_PORT
+
+volumes:
+  nginx_templates:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./srcs/nginx/templates/
