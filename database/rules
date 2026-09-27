@@ -1,0 +1,3 @@
+name must be less than 75 and greater than 8 chars.
+mail must be less than 50chars;
+about me must not have just empty string

@@ -9,9 +9,9 @@ services:
     env_file:
       - ./srcs/nginx/.env
     environment:
-     - NGINX_PORT
+      - NGINX_PORT=${NGINX:-3000}
     ports:
-      - ${APP_PORT}:${NGINX_PORT}
+      - ${APP_PORT:-3000}:${NGINX_PORT:-3000}
 
 volumes:
   nginx_templates:
