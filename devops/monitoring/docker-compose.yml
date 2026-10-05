@@ -1,0 +1,25 @@
+services:
+  nginx:
+    container_name: nginx
+    image: nginx:1.31.6-alpine-slim
+    environment:
+      - NGINX_STUB_STATUS_SCHEME
+      - NGINX_ADDR
+      - NGINX_STUB_STATUS_PORT
+      - NGINX_STUB_STATUS
+
+    ports:
+      - ${HOST_PORT}:${NGINX_PORT}
+    volumes:
+      - ./nginx/templates:/etc/nginx/templates
+
+  nginx-prometheus-exporter:
+    container_name: nginx-prometheus-exporter
+    build: ./nginx-prometheus-exporter
+    environment:
+      - NGINX_STUB_STATUS_SCHEME
+      - NGINX_ADDR
+      - NGINX_STUB_STATUS_PORT
+      - NGINX_STUB_STATUS
+    ports:
+      - 9113:9113

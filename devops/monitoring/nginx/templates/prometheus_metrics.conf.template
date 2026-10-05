@@ -1,0 +1,6 @@
+server {
+	listen $NGINX_STUB_STATUS_PORT;
+	location $NGINX_STUB_STATUS {
+   stub_status on;
+	}
+}

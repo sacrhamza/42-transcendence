@@ -1,0 +1,24 @@
+services:
+  grafana:
+    image: grafana/grafana
+    ports:
+      - 3000:3000
+  
+  db:
+    build: ./mariadb
+    container_name: mariadb
+    volumes:
+      - templates:${TEMPLATES_DIR}
+    environment:
+      - TEMPLATES_DIR
+      - DB_GRAFANA_USER
+      - GRAFANA_DB
+      - MARIADB_ROOT_PASSWORD
+
+volumes:
+  templates:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./mariadb/templates/
