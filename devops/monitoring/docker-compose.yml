@@ -11,7 +11,7 @@ services:
     ports:
       - ${HOST_PORT}:${NGINX_PORT}
     volumes:
-      - ./nginx/templates:/etc/nginx/templates
+      - ./nginx/templates:/etc/nginx/templates:ro
 
   nginx-prometheus-exporter:
     container_name: nginx-prometheus-exporter
@@ -23,3 +23,11 @@ services:
       - NGINX_STUB_STATUS
     ports:
       - 9113:9113
+
+  # prometheus:
+  #   container_name: prometheus
+  #   image: prom/prometheus:v3.13.4-busybox
+  #   volumes:
+  #     - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+  #   ports:
+  #     - 3000:3000 

@@ -1,0 +1,25 @@
+services:
+  minio:
+    container_name: minio_test
+    image: quay.io/minio/aistor/minio
+    volumes:
+      - ./minio.license:/minio.license:ro
+      - minio_volume:/mnt/data/
+      # note that address is for api, and console-address is for webui primary
+    command: minio server /mnt/data --license /minio.license --address=:$MINIO_API_PORT --console-address=:$MINIO_WEBUI_PORT
+    environment:
+      - MINIO_OPTS=""
+      - MINIO_ROOT_PASSWORD
+      - MINIO_ROOT_USER
+    ports:
+      - $MINIO_WEBUI_PORT:$MINIO_WEBUI_PORT
+      - $MINIO_API_PORT:$MINIO_API_PORT
+      
+
+volumes:
+  minio_volume:
+    driver: local
+    driver_opts:
+      device: ./minio_data
+      type: none
+      o: bind

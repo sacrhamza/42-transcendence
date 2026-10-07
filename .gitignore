@@ -1,2 +1,6 @@
 **/.env.*
 **/.env
+**/minio_data
+**/*.license
+**/*.pem
+**/*.crt
