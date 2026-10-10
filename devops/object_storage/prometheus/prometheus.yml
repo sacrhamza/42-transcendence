@@ -1,2 +1,2 @@
 scrape_config_files:
-  - d
+  - /etc/prometheus/scrapes.d/*.yml

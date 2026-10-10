@@ -1,7 +1,0 @@
-    - job_name: minio-job
-      bearer_token: eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJwcm9tZXRoZXVzIiwiZXhwIjo0OTQ1MTQ5MTg3fQ.XxleirQ-qjWruce1x0j2cVlHYTJWs3vvhzzN1HQV76d-dyjh8OiWqAD9Aj9qyE073PO5SfKfFyA4fpSPMwMf4Q
-      metrics_path: /minio/v2/metrics/cluster
-      scheme: http
-      static_configs:
-        - targets: ['localhost:9000']
-

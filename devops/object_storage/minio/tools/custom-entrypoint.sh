@@ -2,8 +2,17 @@
 
 set -e
 
+: ${MINIO_ROOT_PASSWORD:?MINIO_ROOT_PASSWORD is required}
+: ${MINIO_ROOT_USER:?MINIO_ROOT_USER is required}
+: ${MINIO_API_PORT:?MINIO_API_PORT is required}
+: ${MINIO_WEBUI_PORT:?MINIO_WEBUI_PORT is required}
+
 log() {
-	echo "MINIO_LOG: [$(date)] $@"
+	PURPLE='\033[35m'
+	RESET='\033[0m'
+	YELLOW='\033[33m'
+	GREEN='\033[32m'
+	echo -e "${PURPLE}MINIO_LOG: ${YELLOW}[$(date '+%Y-%m-%d %H:%M')] ${GREEN}$@${RESET}"
 }
 
 # NOTE: function used to extract and set access key and secret key
@@ -15,9 +24,12 @@ function set_creds() {
 	prometheus_access_key="${access_array[-1]}"
 	prometheus_secret_key="${secret_array[-1]}"
 
-	log "set prometheus_secret_key and prometheus_access_key"
-	echo $prometheus_access_key
-	echo $prometheus_secret_key
+	echo ${access_array[-1]}
+}
+
+generate_prometheus() {
+	# NOTE: that command outputs prometheus minio config yaml
+	mc admin prometheus generate 'myaistor-prometheus' cluster > /scrapes.d/minio_prometheus.yml
 }
 
 # temprory server
@@ -25,24 +37,27 @@ log "run minio temprory server"
 "$@" &
 minio_server_pid="$!"
 
+log "sleep until server is live"
+until curl -sSf  "http://minio:${MINIO_API_PORT}/minio/health/live"
+do
+	sleep 0.5
+done
 
-mc alias set local http://localhost:${MINIO_WEBUI_PORT} "${MINIO_ROOT_USER}" "${MINIO_ROOT_PASSWORD}"
+log "server is live"
+log "set local alias"
+mc alias set local "http://minio:${MINIO_API_PORT}" "${MINIO_ROOT_USER}" "${MINIO_ROOT_PASSWORD}"
 
-
-# mc alias set local
-mc admin accesskey create local --name "prometheus-scrape" --description "Used by Prometheus to scrape metrics" --policy /minio/prometheus-scrape.json | set_creds
+log "set prometheus_secret_key and prometheus_access_key"
+set_creds <<< $(mc admin accesskey create local --name "prometheus-scrape" --description "Used by Prometheus to scrape metrics" --policy /minio/prometheus-scrape.json)
 
 log "set prometheus alias 'myaistor-prometheus'"
-mc alias set myaistor-prometheus http://minio:minio_api_port "${prometheus_access_key}" "${prometheus_secret_key}"
+mc alias set 'myaistor-prometheus' "http://minio:${MINIO_API_PORT}" "${prometheus_access_key}" "${prometheus_secret_key}"
 
+log "generate prometheus config"
+generate_prometheus
 
 log "stop minio temprory server"
 mc admin service stop local
 
-
-# # setup prometheus config
-# log "setup prometheus config and put it in ${PROMETHEUS_SCRAPE_DIR}"
-#
-# # exec $@
 log "exec minio server"
-exec "$@"
+exec docker-entrypoint.sh "$@"
