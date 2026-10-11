@@ -1,7 +1,7 @@
 
 # envs
 **/.env.*
-**/.env
+**/*.env
 **/minio_data
 
 # certs and licenses
