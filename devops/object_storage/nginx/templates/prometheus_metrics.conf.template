@@ -4,12 +4,4 @@ server {
    stub_status on;
 	}
 }
-server {
-	listen 80;
-	server_name 'hey';
-}
 
-server {
-	listen 80;
-	server_name 'hey';
-}

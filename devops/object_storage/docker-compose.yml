@@ -56,10 +56,13 @@ services:
       NGINX_STUB_STATUS: "${NGINX_STUB_STATUS:?NGINX_STUB_STATUS IS REQUIRED}"
     ports:
       - 127.0.0.1:9113:9113
+    depends_on:
+      nginx:
+        condition: service_healthy
 
   nginx:
     container_name: nginx
-    image: nginx:1.31.6-alpine-slim
+    build: ./nginx/
     environment:
       NGINX_STUB_STATUS_SCHEME: "${NGINX_STUB_STATUS_SCHEME:?NGINX_STUB_STATUS_SCHEME IS REQUIRED}"
       NGINX_ADDR: "${NGINX_ADDR:?NGINX_ADDR IS REQUIRED}"
@@ -70,7 +73,7 @@ services:
     ports:
       - ${NGINX_STUB_STATUS_PORT}:${NGINX_STUB_STATUS_PORT}
     healthcheck:
-      test: healthcheck.sh
+      test: ["CMD-SHELL", "/usr/local/bin/healthcheck.sh"]
       interval: 1s
       timeout: 5s
       retries: 5
