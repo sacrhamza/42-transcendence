@@ -1,6 +1,6 @@
 scrape_configs:
     - job_name: minio-job
-      bearer_token: eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJwcm9tZXRoZXVzIiwic3ViIjoiSEZaWDNVVlpPQjI1VTlPSlJDUzIiLCJleHAiOjQ5NDUxOTMzNzZ9.FBGfNRVA9mELbNkQidNOqwfQkrExo8gk-Us_0qmt3MbWJ2gC0q6n4g7RWr4jS7Mjj8ZEzV7BdrkxnPam-eueTw
+      bearer_token: eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJwcm9tZXRoZXVzIiwic3ViIjoiQ0g4MVhZWEZYVE9DM1RGVjdVNFYiLCJleHAiOjQ5NDUyNzk0NzN9.pPCEN44zl9aSieTY7XeYGm2Lk_T4s26hhPjt5VNxNVdttsQ9eGZ4Q8ca2b6OXHrjJxJKpLgbbQOVpXhgvBEPFQ
       metrics_path: /minio/v2/metrics/cluster
       scheme: http
       static_configs:

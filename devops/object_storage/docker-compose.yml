@@ -1,0 +1,97 @@
+services:
+  # NOTE: our object server
+  minio:
+    container_name: minio
+    build:
+      context: ./minio/
+    volumes:
+      - ./minio/configs/:/minio/:ro
+      - minio_volume:/mnt/data/
+      - ./prometheus/scrapes.d/minio_prometheus.yml:/scrapes.d/minio_prometheus.yml:wo
+      # NOTE: that address is for api, and console-address is for webui primary
+    command: minio server /mnt/data --license /minio/minio.license --address=minio:$MINIO_API_PORT --console-address=minio:$MINIO_WEBUI_PORT
+    secrets:
+      - source: minio_creds
+        target: minio_creds.sh
+    env_file:
+      - path: ./minio.env
+    environment:
+      MINIO_API_PORT: ${MINIO_API_PORT:?MINIO_ROOT_PASSWORD is required}
+      MINIO_WEBUI_PORT: ${MINIO_WEBUI_PORT:?MINIO_WEBUI_PORT is required}
+    ports:
+      - 127.0.0.1:${MINIO_WEBUI_PORT}:${MINIO_WEBUI_PORT}
+      - 127.0.0.1:${MINIO_API_PORT}:${MINIO_API_PORT}
+      # TODO: add healthcheck and for that check: https://docs.min.io/aistor/reference/cli/mc-ready/ https://stackoverflow.com/questions/66412289/minio-add-a-public-bucket-with-docker-compose
+    healthcheck:
+      test: ["CMD", "mc", "ping", "--count=1", "local"]
+      interval: 1s
+      timeout: 5s
+      retries: 5
+  
+  prometheus:
+    container_name: prometheus
+    build: ./prometheus/
+    command:   --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus --web.config.file=/etc/prometheus/web.yml
+    volumes:
+      - ./prometheus/configs/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/scrapes.d/minio_prometheus.yml:/etc/prometheus/scrapes.d/minio_prometheus:ro
+      - ./prometheus/templates/:/etc/prometheus/templates/:ro
+    ports:
+      - 127.0.0.1:9090:9090 
+    depends_on:
+      minio:
+        condition: service_healthy
+    configs:
+      - source: prometeus_web
+        target: /etc/prometheus/web.yml
+
+  nginx_prometheus_exporter:
+    container_name: nginx_prometheus_exporter
+    command: --web.listen-address=:${NGINX_EXPORTER}
+    build: ./nginx-prometheus-exporter
+    environment:
+      NGINX_STUB_STATUS_SCHEME: "${NGINX_STUB_STATUS_SCHEME:?NGINX_STUB_STATUS_SCHEME IS REQUIRED}"
+      NGINX_ADDR: "${NGINX_ADDR:?NGINX_ADDR IS REQUIRED}"
+      NGINX_STUB_STATUS_PORT: "${NGINX_STUB_STATUS_PORT:?NGINX_STUB_STATUS_PORT IS REQUIRED}"
+      NGINX_STUB_STATUS: "${NGINX_STUB_STATUS:?NGINX_STUB_STATUS IS REQUIRED}"
+    ports:
+      - 127.0.0.1:9113:9113
+
+  nginx:
+    container_name: nginx
+    image: nginx:1.31.6-alpine-slim
+    environment:
+      NGINX_STUB_STATUS_SCHEME: "${NGINX_STUB_STATUS_SCHEME:?NGINX_STUB_STATUS_SCHEME IS REQUIRED}"
+      NGINX_ADDR: "${NGINX_ADDR:?NGINX_ADDR IS REQUIRED}"
+      NGINX_STUB_STATUS_PORT: "${NGINX_STUB_STATUS_PORT:?NGINX_STUB_STATUS_PORT IS REQUIRED}"
+      NGINX_STUB_STATUS: "${NGINX_STUB_STATUS:?NGINX_STUB_STATUS IS REQUIRED}"
+    volumes:
+      - ./nginx/templates:/etc/nginx/templates:ro
+    ports:
+      - ${NGINX_STUB_STATUS_PORT}:${NGINX_STUB_STATUS_PORT}
+    healthcheck:
+      test: healthcheck.sh
+      interval: 1s
+      timeout: 5s
+      retries: 5
+
+  
+
+volumes:
+  minio_volume:
+    driver: local
+    driver_opts:
+      device: ./minio/minio_data/
+      type: none
+      o: bind
+
+configs:
+  prometeus_web:
+    # here use file and use secret with compose
+    content: |
+      basic_auth_users:
+        admin: ${PASS_HASH} 
+
+secrets:
+  minio_creds:
+    file: ./minio/minio_creds.sh

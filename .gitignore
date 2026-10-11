@@ -1,6 +1,17 @@
+
+# envs
 **/.env.*
 **/.env
 **/minio_data
+
+# certs and licenses
 **/*.license
 **/*.pem
 **/*.crt
+
+# credentials
+**/*_creds.sh
+**/*.creds
+**/*.secrets
+**/*.creds.txt
+**/*_creds.txt
