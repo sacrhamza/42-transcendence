@@ -13,7 +13,21 @@ FROM prom/prometheus:v3.13.4
 COPY --from=base /usr/lib/libintl* /usr/lib/
 COPY --from=base /lib/ld-*  /lib/
 COPY --from=base /usr/bin/envsubst /usr/bin/
+RUN mkdir /etc/prometheus/scrapes.d
 
 COPY --chmod=755 ./tools/docker-entrypoint.sh /usr/local/bin/
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+
+# or
+
+# FROM base
+#
+# COPY --from=prom/prometheus:v3.13.4 /bin/prometheus /bin/
+# COPY --from=prom/prometheus:v3.13.4 /bin/promtool /bin/
+#
+# RUN mkdir /etc/prometheus/scrapes.d
+#
+# COPY --chmod=755 ./tools/docker-entrypoint.sh /usr/local/bin/
+#
+# ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]

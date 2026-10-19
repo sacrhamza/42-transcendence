@@ -2,12 +2,15 @@
 
 set -e
 
-source /run/secrets/minio_creds.sh
+MINIO_ROOT_USER=$(cat /run/secrets/minio_user)
+MINIO_ROOT_PASSWORD=$(cat /run/secrets/minio_pass)
 
 : "${MINIO_ROOT_PASSWORD:?MINIO_ROOT_PASSWORD is required}"
 : "${MINIO_ROOT_USER:?MINIO_ROOT_USER is required}"
 : "${MINIO_API_PORT:?MINIO_API_PORT is required}"
 : "${MINIO_WEBUI_PORT:?MINIO_WEBUI_PORT is required}"
+: "${MINIO_ROOT_PASSWORD_FILE:?MINIO_ROOT_PASSWORD_FILE is required}"
+: "${MINIO_ROOT_USER_FILE:?MINIO_ROOT_USER_FILE is required}"
 
 log() {
 	PURPLE='\033[35m'
@@ -46,6 +49,7 @@ do
 done
 
 log "server is live"
+
 log "set local alias"
 mc alias set local "http://minio:${MINIO_API_PORT}" "${MINIO_ROOT_USER}" "${MINIO_ROOT_PASSWORD}"
 
