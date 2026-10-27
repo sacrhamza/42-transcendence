@@ -44,3 +44,15 @@ of the prjects and features, and optionally some links below.
 -> bio/about me is optional.
 
 ```
+
+sign/in
+frontend:
+-> sign in page requirement:
+    1. input for username check if it has 2 char to 75char
+    2. input for password, check password is strong, alpha, num, special, no username in password
+    3. input for password to check if it matches
+    4. input for mail, check if typed string is actually mail, valid mail (12-50 char)
+    5. check if username is taken or not
+    6. check if mail is taken or not
+    7. nothing can be empty, or just white spaces
+    8. sign up with 42 button(implement logic later).
