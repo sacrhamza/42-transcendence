@@ -3,7 +3,10 @@
 set -e
 
 valid_text() {
-	[[ "$1" =~ ^[[:space:]]*$ ]] && { echo "got empty string" 1>&2 && exit 1; }
+	if [[ "$1" =~ ^[[:space:]]*$ ]]
+		then
+			echo "got empty string" 1>&2 && exit 1;
+	fi
 }
 
 to_safe_json() {

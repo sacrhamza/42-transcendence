@@ -1,0 +1,33 @@
+services:
+  nginx:
+    container_name: nginx
+    image: nginx:1.31.6-alpine-slim
+    environment:
+      - NGINX_STUB_STATUS_SCHEME
+      - NGINX_ADDR
+      - NGINX_STUB_STATUS_PORT
+      - NGINX_STUB_STATUS
+
+    ports:
+      - ${HOST_PORT}:${NGINX_PORT}
+    volumes:
+      - ./nginx/templates:/etc/nginx/templates:ro
+
+  nginx-prometheus-exporter:
+    container_name: nginx-prometheus-exporter
+    build: ./nginx-prometheus-exporter
+    environment:
+      - NGINX_STUB_STATUS_SCHEME
+      - NGINX_ADDR
+      - NGINX_STUB_STATUS_PORT
+      - NGINX_STUB_STATUS
+    ports:
+      - 9113:9113
+
+  # prometheus:
+  #   container_name: prometheus
+  #   image: prom/prometheus:v3.13.4-busybox
+  #   volumes:
+  #     - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+  #   ports:
+  #     - 3000:3000 
