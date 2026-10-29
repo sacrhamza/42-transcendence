@@ -13,8 +13,7 @@ log() {
 DOMAIN_NAME=${DOMAIN_NAME:=localhost}
 
 
-mkdir /etc/nginx/ssl
 openssl genrsa -out /etc/nginx/ssl/server.key 4096
-openssl req -x509 -key ssl/private/server.key -out ssl/certs/certificate.pem -subj "/C=US/ST=ls/L=hey/O=hey/CN=${DOMAIN_NAME}"
+openssl req -x509 -key /etc/nginx/ssl/server.key -out /etc/nginx/ssl/certificate.pem -subj "/C=US/ST=ls/L=hey/O=hey/CN=${DOMAIN_NAME}"
 
 log "DOMAIN_NAME = ${DOMAIN_NAME}"

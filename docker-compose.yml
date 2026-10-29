@@ -20,3 +20,23 @@ services:
       interval: 10s
       timeout: 3s
       retries: 5
+
+  postgresql:
+    container_name: postgresql
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: "${POSTGRES_DB:?POSTGRES_DB is required}"
+      POSTGRES_PASSWORD_FILE: "${POSTGRES_PASSWORD_FILE:?POSTGRES_PASSWORD is required}"
+      POSTGRES_USER_FILE: ${POSTGRES_USER_FILE:?POSTGRES_USER_FILE is required}
+    secrets:
+      - postgres_password
+      - postgres_user
+    volumes:
+      - ./database/postgresql/sql/:/docker-entrypoint-initdb.d/:ro
+
+secrets:
+  postgres_password:
+    file: ./secrets/postgresql/postgres_password
+  postgres_user:
+    file: ./secrets/postgresql/postgres_user
+
