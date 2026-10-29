@@ -1,7 +1,0 @@
-server {
-	listen $NGINX_PORT;
-	location /ping {
-		return 200 'pong';
-	}
-	# root /;
-}
