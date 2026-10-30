@@ -10,8 +10,8 @@ services:
       NGINX_STUB_STATUS: "${NGINX_STUB_STATUS:?NGINX_STUB_STATUS IS REQUIRED}"
       NGINX_PORT: ${NGINX_PORT:?NGINX_PORT IS REQUIRED}
     volumes:
-      - ./devops/nginx/templates:/etc/nginx/templates:ro
-      - ./devops/nginx/docker-entrypoint.d/setup_ssl.sh:/docker-entrypoint.d/setup.ssh.sh:ro
+      - ./devops/nginx/templates/:/etc/nginx/templates/:ro
+      - ./devops/nginx/docker-entrypoint.d/setup_ssl.sh/:/docker-entrypoint.d/setup_ssl.sh:ro
     ports:
       - ${NGINX_STUB_STATUS_PORT}:${NGINX_STUB_STATUS_PORT}
       - ${NGINX_PORT}:${NGINX_PORT}
@@ -23,20 +23,26 @@ services:
 
   postgresql:
     container_name: postgresql
-    image: postgres:18-alpine
+    build: ./database/postgresql/
     environment:
       POSTGRES_DB: "${POSTGRES_DB:?POSTGRES_DB is required}"
       POSTGRES_PASSWORD_FILE: "${POSTGRES_PASSWORD_FILE:?POSTGRES_PASSWORD is required}"
-      POSTGRES_USER_FILE: ${POSTGRES_USER_FILE:?POSTGRES_USER_FILE is required}
+      POSTGRES_USER_FILE: "${POSTGRES_USER_FILE:?POSTGRES_USER_FILE is required}"
+      DEVELOPMENT: ''
     secrets:
       - postgres_password
       - postgres_user
+      - suf_user
+      - suf_password
     volumes:
-      - ./database/postgresql/sql/:/docker-entrypoint-initdb.d/:ro
+      - ./database/postgresql/docker-entrypoint.d:/docker-entrypoint-initdb.d/:ro
 
 secrets:
   postgres_password:
     file: ./secrets/postgresql/postgres_password
   postgres_user:
     file: ./secrets/postgresql/postgres_user
-
+  suf_user:
+    file: ./secrets/postgresql/suf/suf_user
+  suf_password:
+    file: ./secrets/postgresql/suf/suf_password

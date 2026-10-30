@@ -10,7 +10,7 @@
 -- # delete user
 -- # change user info
 
-CREATE USER 'username' WITH PASSWORD '';
+-- CREATE USER 'username' WITH PASSWORD '';
 
 CREATE TABLE users (
     id
