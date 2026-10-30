@@ -1,3 +1,7 @@
+# CUSTOM
+secrets/
+tests/
+
 # Created by https://www.toptal.com/developers/gitignore/api/react,python,dotenv
 # Edit at https://www.toptal.com/developers/gitignore?templates=react,python,dotenv
 
