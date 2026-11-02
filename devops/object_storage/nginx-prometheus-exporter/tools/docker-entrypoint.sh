@@ -1,0 +1,8 @@
+#!/bin/sh
+
+: ${NGINX_STUB_STATUS_SCHEME?NGINX_STUB_STATUS_SCHEME is required}
+: ${NGINX_ADDR?NGINX_ADDR is required}
+: ${NGINX_STUB_STATUS_PORT?NGINX_STUB_STATUS_PORT is required}
+: ${NGINX_STUB_STATUS?NGINX_STUB_STATUS is required}
+
+exec nginx-prometheus-exporter --nginx.scrape-uri="${NGINX_STUB_STATUS_SCHEME}://${NGINX_ADDR}:${NGINX_STUB_STATUS_PORT}/${NGINX_STUB_STATUS}" "$@"

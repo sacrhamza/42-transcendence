@@ -1,0 +1,9 @@
+server {
+	listen ${NGINX_PORT} ssl;
+	ssl_certificate /etc/nginx/ssl/certificate.pem;
+	ssl_certificate_key /etc/nginx/ssl/server.key;
+
+	location / {
+		return 200 'ok';
+	}
+}
