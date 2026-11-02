@@ -8,6 +8,7 @@ export class AuthController {
 
   @Post('/register')
   async register(@Body() data: RegisterDto) {
+    console.log(`register conection :${data}`);
     return this.authervice.registerNewUser(data);
   }
 }
