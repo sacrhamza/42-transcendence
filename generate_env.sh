@@ -15,6 +15,7 @@ POSTGRES_DB=postgres
 POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
 POSTGRES_USER_FILE=/run/secrets/postgres_user
 PGDATA=/var/lib/postgresql
+POSTGRES_PORT=5432
 " > .env
 
 
