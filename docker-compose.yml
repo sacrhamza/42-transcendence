@@ -16,6 +16,22 @@ services:
       - suf_user
       - suf_password
 
+  fastapi-backend:
+    container_name: fastapiBackend
+    build: ./backend/fastAPI-backend/
+    depends_on:
+      postgresql:
+        condition: service_healthy
+        restart: true
+    environment:
+      - POSTGRES_DB
+      - POSTGRES_PORT
+    secrets:
+      - suf_user
+      - suf_password
+      - postgres_password
+      - postgres_user
+
   nginx:
     container_name: nginx
     build: ./devops/nginx/
