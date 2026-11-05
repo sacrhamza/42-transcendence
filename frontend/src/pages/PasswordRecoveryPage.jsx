@@ -7,12 +7,12 @@ export default function PasswordRecoveryPage({ reset, theme, onToggleTheme }) {
     const [done, setDone] = useState(false);
     const [visible, setVisible] = useState(false);
     const request = useRef(null);
-    const token = useRef(new URLSearchParams(window.location.hash.split('?')[1] || '').get('token') || '');
+    const token = useRef(new URLSearchParams(window.location.search).get('token') || '');
 
     useEffect(() => {
         // Remove the recovery secret from the address bar after reading it.
         if (reset && token.current) {
-            window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}#/reset-password`);
+            window.history.replaceState(null, '', '/reset-password');
         }
         return () => request.current?.abort();
     }, [reset]);
@@ -69,7 +69,7 @@ export default function PasswordRecoveryPage({ reset, theme, onToggleTheme }) {
                 {theme === 'dark' ? '☀ Light' : '☾ Dark'}
             </button>
             <section className="story" aria-label="Account recovery">
-                <a className="brand" href="#/login">SUF · Stack Under Flow</a>
+                <a className="brand" href="/login">SUF · Stack Under Flow</a>
                 <div className="story-body">
                     <div className="eyebrow">BACK TO YOUR COMMUNITY</div>
                     <h1>Pick up<br />where you <em>left off.</em></h1>
@@ -109,8 +109,8 @@ export default function PasswordRecoveryPage({ reset, theme, onToggleTheme }) {
                         </form>
                     )}
                     {notice && <p className="notice" role="status">{notice}</p>}
-                    {reset && !done && <p><a href="#/forgot-password">Request a new reset link</a></p>}
-                    <p><a className="text-button" href="#/login">← Back to login</a></p>
+                    {reset && !done && <p><a href="/forgot-password">Request a new reset link</a></p>}
+                    <p><a className="text-button" href="/login">← Back to login</a></p>
                     <p className="prototype">{import.meta.env.VITE_AUTH_API_URL ? 'Password recovery uses connected account services.' : 'Frontend preview · Email delivery and password changes need account services.'}</p>
                 </div>
             </section>

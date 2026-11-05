@@ -20,6 +20,8 @@ npm run build
 npm run preview
 ```
 
+Login is available at `/login` and signup at `/signup`. Internal navigation uses clean paths without `#`. For production hosting, configure the web server to serve `index.html` for frontend routes that do not match a static file; Vite handles this during local development.
+
 The project uses React 19 and Vite 6. Fonts are Inter and JetBrains Mono, with local fallbacks.
 
 ## Implemented frontend
@@ -43,7 +45,7 @@ The Run snippet button does not compile or execute code. Reports and peer reques
 
 ## Source structure
 
-- `src/App.jsx`: hash routing and theme state.
+- `src/App.jsx`: browser history routing and theme state.
 - `src/pages/`: Login, Home, Projects and Profile views.
 - `src/components/`: shared UI, posts, code blocks and discussion rooms.
 - `src/data/`: illustrative project, post and room data.

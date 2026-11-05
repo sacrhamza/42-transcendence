@@ -33,7 +33,7 @@ export default function RightPanel({ relationships = {}, onPeerAction }) {
             <section className="side-card">
                 <div className="side-title">
                     <h2>♧ Add Peers</h2>
-                    <a href="#/peers">See all →</a>
+                    <a href="/peers">See all →</a>
                 </div>
                 {suggestedPeers.map((peer) => {
 
@@ -47,7 +47,7 @@ export default function RightPanel({ relationships = {}, onPeerAction }) {
                                 small
                             />
                             <div>
-                                <a className="post-profile-link" href={`#/profile/${peer.name}`}>{peer.name}</a>
+                                <a className="post-profile-link" href={`/profile/${peer.name}`}>{peer.name}</a>
                                 <small>{peer.detail}</small>
                             </div>
                             <PeerActions username={peer.name} status={relationships[peer.name]} onAction={onPeerAction} compact />

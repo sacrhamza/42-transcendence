@@ -3,26 +3,41 @@ import { readStorage, writeStorage } from './utils/storage.js';
 import HomePage from './pages/HomePage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import PasswordRecoveryPage from './pages/PasswordRecoveryPage.jsx';
+import { navigate } from './utils/navigation.js';
 
-function getPageFromHash() {
-    const route = window.location.hash.slice(2);
+function getPageFromLocation() {
+    const route = window.location.pathname.slice(1) + window.location.search;
     const base = route.split(/[/?]/)[0];
-    return ['home', 'projects', 'profile', 'peers', 'messages', 'forgot-password', 'reset-password'].includes(base) ? route : 'login';
+    return ['login', 'signup', 'home', 'projects', 'profile', 'peers', 'messages', 'forgot-password', 'reset-password'].includes(base) ? route : 'login';
 }
 
 export default function App() {
-    const [page, setPage] = useState(getPageFromHash);
+    const [page, setPage] = useState(getPageFromLocation);
     const [theme, setTheme] = useState(() => {
         return readStorage('suf-theme', 'dark');
     });
 
     useEffect(() => {
-        function handleHashChange() {
-            setPage(getPageFromHash());
+        function handleNavigation() {
+            setPage(getPageFromLocation());
         }
 
-        window.addEventListener('hashchange', handleHashChange);
-        return () => window.removeEventListener('hashchange', handleHashChange);
+        function handleLinkClick(event) {
+            if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+            const link = event.target.closest('a[href]');
+            if (!link || link.hasAttribute('download') || (link.target && link.target !== '_self')) return;
+            const destination = new URL(link.href);
+            if (destination.origin !== window.location.origin || destination.hash) return;
+            event.preventDefault();
+            navigate(destination.pathname + destination.search);
+        }
+
+        window.addEventListener('popstate', handleNavigation);
+        document.addEventListener('click', handleLinkClick);
+        return () => {
+            window.removeEventListener('popstate', handleNavigation);
+            document.removeEventListener('click', handleLinkClick);
+        };
     }, []);
 
     useEffect(() => {
@@ -34,11 +49,6 @@ export default function App() {
         setTheme((currentTheme) =>
             currentTheme === 'dark' ? 'light' : 'dark',
         );
-    }
-
-    function navigate(nextPage) {
-        window.location.hash = nextPage === 'home' ? '/home' : '/login';
-        setPage(nextPage);
     }
 
     const recoveryPage = page.split('?')[0];
@@ -53,7 +63,7 @@ export default function App() {
         );
     }
 
-    if (page !== 'login') {
+    if (!['login', 'signup'].includes(page.split('?')[0])) {
         return (
             <HomePage
                 section={page.split(/[/?]/)[0]}
@@ -61,7 +71,7 @@ export default function App() {
                 profileUsername={page.startsWith('profile/') ? page.slice(8).split('?')[0] : null}
                 postId={page.startsWith('home?') ? new URLSearchParams(page.split('?')[1]).get('post') : null}
                 projectId={page.startsWith('projects?') ? new URLSearchParams(page.split('?')[1]).get('project') : null}
-                onLogOut={() => navigate('login')}
+                onLogOut={() => navigate('/login')}
                 theme={theme}
                 onToggleTheme={toggleTheme}
             />
@@ -70,7 +80,9 @@ export default function App() {
 
     return (
         <LoginPage
-            onEnter={() => navigate('home')}
+            key={page.split('?')[0]}
+            mode={page.split('?')[0]}
+            onEnter={() => navigate('/home')}
             theme={theme}
             onToggleTheme={toggleTheme}
         />

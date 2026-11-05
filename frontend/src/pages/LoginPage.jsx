@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
+import { navigate } from '../utils/navigation.js';
 
-export default function LoginPage({ onEnter, theme, onToggleTheme }) {
-    const [mode, setMode] = useState('login');
+export default function LoginPage({ onEnter, theme, onToggleTheme, mode = 'login' }) {
     const [visible, setVisible] = useState(false);
     const [notice, setNotice] = useState('');
     const signup = mode === 'signup';
@@ -27,7 +27,7 @@ export default function LoginPage({ onEnter, theme, onToggleTheme }) {
     }
 
     function changeMode(nextMode) {
-        setMode(nextMode);
+        navigate('/' + nextMode);
         setNotice('');
         setVisible(false);
     }
@@ -70,7 +70,7 @@ export default function LoginPage({ onEnter, theme, onToggleTheme }) {
             >
                 <a
                     className="brand"
-                    href="#/login"
+                    href="/login"
                     aria-label="Stack Under Flow"
                 >
                     <img
@@ -241,7 +241,7 @@ export default function LoginPage({ onEnter, theme, onToggleTheme }) {
                         )}
 
                         {!signup && (
-                            <a className="text-button" href="#/forgot-password">
+                            <a className="text-button" href="/forgot-password">
                                 Forgot password?
                             </a>
                         )}

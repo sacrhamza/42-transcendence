@@ -1,7 +1,6 @@
 import { readStorage } from './storage.js';
 
 const defaultProfile = {
-    name: 'Your name',
     username: 'you',
     bio: 'Learning, building, and sharing with the SUF community.',
     skills: ['React', 'JavaScript', 'C'],
