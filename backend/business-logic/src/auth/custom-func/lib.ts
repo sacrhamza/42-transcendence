@@ -1,15 +1,16 @@
 import { RegisterDto } from '../dto/RegisterDto.js';
 
 const password_validation = (dto: RegisterDto) => {
-  
-  return dto.password.includes(dto.username);
+  return dto.password
+    .toLocaleLowerCase()
+    .includes(dto.username.toLocaleLowerCase());
 };
 
 const validations = {
   validators: {
     register: {
       password: password_validation,
-      message: 'Password must not contain personal information',
+      message: 'Password must not contain username',
     },
   },
 };

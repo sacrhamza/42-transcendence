@@ -3,6 +3,10 @@ FROM node:${VERSION}
 
 WORKDIR /app
 
+# prisma needs openssl
+RUN apt update -y
+RUN apt install openssl -y
+
 COPY . .
 RUN npm install
 RUN npm i -g @nestjs/cli@12.0.11

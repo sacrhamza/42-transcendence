@@ -7,7 +7,7 @@ NGINX_ADDR=nginx
 NGINX_STUB_STATUS_PORT=8888
 NGINX_STUB_STATUS=/stub_status
 
-NGINX_PORT=3000
+NGINX_PORT=6666
 
 # ========================== POSTGRESQL ========================== #
 POSTGRES_DB=postgres
@@ -16,6 +16,10 @@ POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
 POSTGRES_USER_FILE=/run/secrets/postgres_user
 PGDATA=/var/lib/postgresql
 POSTGRES_PORT=5432
+
+# =======================  NEST JS ============================= #
+NESTJS_PORT=3000
+
 " > .env
 
 

@@ -1,0 +1,45 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "esm"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model ft_users {
+  fk_user_id BigInt @default(autoincrement())
+  intra_id   BigInt @id @default(autoincrement())
+  users      users  @relation(fields: [fk_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model normal_users {
+  fk_user_id BigInt @default(autoincrement())
+  mail       String @id @db.VarChar(50)
+  password   String @db.VarChar(100)
+  users      users  @relation(fields: [fk_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model peers {
+  fk_peer_id1                    BigInt @default(autoincrement())
+  fk_peer_id2                    BigInt @default(autoincrement())
+  users_peers_fk_peer_id1Tousers users  @relation("peers_fk_peer_id1Tousers", fields: [fk_peer_id1], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users_peers_fk_peer_id2Tousers users  @relation("peers_fk_peer_id2Tousers", fields: [fk_peer_id2], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([fk_peer_id1, fk_peer_id2])
+}
+
+model users {
+  id                             BigInt         @id @default(autoincrement())
+  name                           String         @unique @db.VarChar(75)
+  profile_image                  String         @default("default_image")
+  user_join_date                 DateTime       @default(dbgenerated("CURRENT_DATE")) @db.Date
+  bio                            String
+  updated_date                   DateTime       @default(dbgenerated("CURRENT_DATE")) @db.Date
+  deleted                        Boolean        @default(false)
+  ft_users                       ft_users[]
+  normal_users                   normal_users[]
+  peers_peers_fk_peer_id1Tousers peers[]        @relation("peers_fk_peer_id1Tousers")
+  peers_peers_fk_peer_id2Tousers peers[]        @relation("peers_fk_peer_id2Tousers")
+}

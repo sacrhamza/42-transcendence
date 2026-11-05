@@ -6,7 +6,6 @@ import {
 import { RegisterDto } from './dto/RegisterDto.js';
 import validations from './custom-func/lib.js';
 import { UsersService } from '../users/user.service.js';
-import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -19,16 +18,17 @@ export class AuthService {
         `${validations.validators.register.message}`,
       );
 
-    // const checkuser = await this.userservice.findByEmail(data.email);
-    // if (checkuser)
-    //   throw new ConflictException('Email or username already exists');
+    // check if this email already taken !
 
-    // const hashed_pass = await bcrypt.hash(data.password, 12);
-    // data.password = hashed_pass;
+    const existingEmail = await this.userservice.findByEmail(data.email);
+    if (existingEmail) throw new ConflictException('Email already registered');
 
-    // return this.userservice.createUser(data);
-    return {
-      mesg: 'validation pip is good',
-    };
+    // check if this username already taken !
+    const existingUsername = await this.userservice.findByUsername(
+      data.username,
+    );
+    if (existingUsername) throw new ConflictException('Username already taken');
+
+    return this.userservice.createUser(data);
   }
 }

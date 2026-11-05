@@ -49,7 +49,9 @@ main() {
   log "create suf user and grant privileges on database ${POSTGRES_DB}"
   psql -v ON_ERROR_STOP=1 --no-password --no-psqlrc -c \
     "CREATE USER \"${SUF_USER}\" WITH PASSWORD '${SUF_PASSWORD}';
-  GRANT ALL PRIVILEGES ON DATABASE \"${POSTGRES_DB}\" TO \"${SUF_USER}\";"
+     GRANT ALL PRIVILEGES ON DATABASE \"${POSTGRES_DB}\" TO \"${SUF_USER}\";
+    GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public to \"${SUF_USER}\";"
+ 
 }
 
 main "$@"

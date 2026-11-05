@@ -12,9 +12,15 @@ services:
       - POSTGRES_PORT
       - FASTAPI_URL='test'
       - INTERNAL_API_KEY='test'
+      - HOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
     secrets:
       - suf_user
       - suf_password
+    volumes:
+      - ./backend/business-logic:/app/
+    ports:
+      - 127.0.0.1:$NESTJS_PORT:$NESTJS_PORT
 
   nginx:
     container_name: nginx
@@ -53,6 +59,8 @@ services:
       - postgres_user
       - suf_user
       - suf_password
+    ports:
+      - "127.0.0.1:5432:5432"
     volumes:
       - ./database/postgresql/docker-entrypoint.d:/docker-entrypoint-initdb.d/:ro
     healthcheck:

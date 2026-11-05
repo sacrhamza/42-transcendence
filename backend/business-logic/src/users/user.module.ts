@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
-import { FastApiService } from '../fastapi-client/apiclient.service.js';
 import { UsersService } from './user.service.js';
-import { FastApiModule } from '../fastapi-client/apiclient.module.js';
+import { PrismaModule } from '../prisma/prisma.module.js';
 
 @Module({
-  imports: [FastApiModule],
+  imports: [PrismaModule],
   providers: [UsersService],
   exports: [UsersService],
 })

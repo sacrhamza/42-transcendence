@@ -1,48 +1,78 @@
-import { Injectable } from '@nestjs/common';
-import { FastApiService } from '../fastapi-client/apiclient.service.js';
+import { Injectable, ConflictException } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { RegisterDto } from '../auth/dto/RegisterDto.js';
+import { Prisma } from '../generated/prisma/client.js';
+
+
+import * as bcrypt from 'bcrypt';
 
 /*
-UsersService method	        HTTP	FastAPI endpoint
-createUser(data)	        POST	/internal/users
-findByEmail(email)	        ET	    /internal/users/by-email
-findById(id)	            GET	    /internal/users/:id
-findByUsername(username)	GET	    /internal/users/by-username
-updateUser(id, data)	    PATCH	/internal/users/:id
-deleteUser(id)	            DELETE	/internal/users/:id
+UsersService method	      HTTP
+------------------------------
+createUser(data)	        POST
+findByEmail(email)	      GET
+findById(id)	            GET
+findByUsername(username)	GET
+updateUser(id, data)	    PATCH
+deleteUser(id)	          DELETE
 */
 
 @Injectable()
 export class UsersService {
-  // Inject FastApiClientService through constructor
-  constructor(private readonly fastapiservice: FastApiService) {}
-  //   async findByEmail(email: string) {
-  //     // Call FastApiClientService to fetch user by email
-  //   }
+  constructor(private readonly prisma: PrismaService) {}
 
-  async createUser(data: {
-    username: string;
-    email: string;
-    password: string;
-  }) {
-    return await this.fastapiservice.post('api/creat-user', data);
+  // find
+  async findByUsername(username: string) {
+    return this.prisma.users.findUnique({
+      where: { name: username },
+    });
   }
 
-  //   async findById(id: string) {
-  //     // Call FastApiClientService to find user by ID
-  //   }
-
-  //   async findByUsername(username: string) {
-  //     // Call FastApiClientService to find user by username
-  //   }
   async findByEmail(email: string) {
-    return await this.fastapiservice.post('api/find-user', { email: email});
+    return this.prisma.normal_users.findUnique({
+      where: {
+        mail: email,
+      },
+      select: {
+        mail: true,
+      },
+    });
   }
 
-  //   async updateUser(id: string, data: UpdateUserData) {
-  //     // Call FastApiClientService to update user
-  //   }
+  async createUser(data: RegisterDto) {
+    // hash the password !
+    const hashedPass = await bcrypt.hash(data.password, 12);
 
-  //   async deleteUser(id: string) {
-  //     // Call FastApiClientService to delete user
-  //   }
+    try {
+      const res = await this.prisma.users.create({
+        data: {
+          name: data.username,
+          bio: '',
+          normal_users: {
+            create: {
+              mail: data.email,
+              password: hashedPass,
+            },
+          },
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      return {
+        message: 'User registered successfully',
+        userId: res.id.toString(),
+      };
+    } catch (error: unknown) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002'
+      ) {
+        throw new ConflictException('Username or email already registered');
+      }
+
+      throw error;
+    }
+  }
 }
