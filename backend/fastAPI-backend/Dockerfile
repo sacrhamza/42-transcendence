@@ -3,7 +3,7 @@ FROM python:${VERSION}
 
 # Use the same uv version as the local development environment.
 # COPY --from=ghcr.io/astral-sh/uv:0.9.13 /uv /uvx /bin/
-RUN pip install fastapi[standard]
+# RUN pip install fastapi[standard]
 RUN pip install uv
 WORKDIR /app
 
