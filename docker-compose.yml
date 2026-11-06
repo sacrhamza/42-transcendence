@@ -16,6 +16,22 @@ services:
       - suf_user
       - suf_password
 
+  fastapi-backend:
+    container_name: fastapiBackend
+    build: ./backend/fastAPI-backend/
+    depends_on:
+      postgresql:
+        condition: service_healthy
+        restart: true
+    environment:
+      - POSTGRES_DB
+      - POSTGRES_PORT
+    secrets:
+      - suf_user
+      - suf_password
+      - postgres_password
+      - postgres_user
+
   nginx:
     container_name: nginx
     build: ./devops/nginx/
@@ -48,6 +64,8 @@ services:
       POSTGRES_PASSWORD_FILE: "${POSTGRES_PASSWORD_FILE:?POSTGRES_PASSWORD is required}"
       POSTGRES_USER_FILE: "${POSTGRES_USER_FILE:?POSTGRES_USER_FILE is required}"
       DEVELOPMENT: ''
+    ports:
+      - $POSTGRES_PORT:$POSTGRES_PORT
     secrets:
       - postgres_password
       - postgres_user
