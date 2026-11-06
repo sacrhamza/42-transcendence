@@ -7,14 +7,18 @@ services:
       postgresql:
         condition: service_healthy
         restart: true
+      redis:
+        condition: service_healthy
     environment:
-      - POSTGRES_DB
-      - POSTGRES_PORT
-      - FASTAPI_URL='test'
-      - INTERNAL_API_KEY='test'
+      POSTGRES_DB: "${POSTGRES_DB:?POSTGRES_DB is required}"
+      POSTGRES_PORT: "${POSTGRES_PORT:?POSTGRES_PORT is required}"
+      FASTAPI_URL: 'test'
+      INTERNAL_API_KEY: 'test'
+      REDIS_PORT: "${REDIS_PORT:?REDIS_PORT is required}"
     secrets:
       - suf_user
       - suf_password
+      - redis_password
 
   fastapi-backend:
     container_name: fastapiBackend
@@ -23,14 +27,16 @@ services:
       postgresql:
         condition: service_healthy
         restart: true
+      redis:
+        condition: service_healthy
     environment:
-      - POSTGRES_DB
-      - POSTGRES_PORT
+      POSTGRES_DB: "${POSTGRES_DB:?POSTGRES_DB is required}"
+      POSTGRES_PORT: "${POSTGRES_PORT:?POSTGRES_PORT is required}"
+      REDIS_PORT: "${REDIS_PORT:?REDIS_PORT is required}"
     secrets:
       - suf_user
       - suf_password
-      - postgres_password
-      - postgres_user
+      - redis_password
 
   nginx:
     container_name: nginx
@@ -80,6 +86,19 @@ services:
       start_period: 10s
       timeout: 10s
 
+  redis:
+    container_name: redis
+    image: redis:8.10.3-alpine
+    command: sh -c 'exec redis-server --port $REDIS_PORT --requirepass "$(. /run/secrets/redis_password;echo $$REDIS_PASSWORD)"'
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      retries: 5
+      start_period: 10s
+      timeout: 10s
+    secrets:
+      - redis_password
+
 secrets:
   postgres_password:
     file: ./secrets/postgresql/postgres_password
@@ -89,3 +108,5 @@ secrets:
     file: ./secrets/postgresql/suf/suf_user
   suf_password:
     file: ./secrets/postgresql/suf/suf_password
+  redis_password:
+    file: ./secrets/redis/redis_password

@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 echo "
 #NGINX
@@ -16,6 +16,9 @@ POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
 POSTGRES_USER_FILE=/run/secrets/postgres_user
 PGDATA=/var/lib/postgresql
 POSTGRES_PORT=5432
+
+# ========================== REDIS ========================== #
+REDIS_PORT=6379
 " > .env
 
 
@@ -26,3 +29,7 @@ echo "SUF_PASSWORD=$(openssl rand -base64 32)" > ./secrets/postgresql/suf/suf_pa
 
 printf "postgres" > ./secrets/postgresql/postgres_user
 openssl rand -base64 32 > ./secrets/postgresql/postgres_password
+
+mkdir -p secrets/redis
+
+printf "%s" "REDIS_PASSWORD='$(openssl rand -base64 32)'"  > ./secrets/redis/redis_password
