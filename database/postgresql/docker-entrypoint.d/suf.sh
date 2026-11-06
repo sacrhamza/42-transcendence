@@ -43,15 +43,35 @@ main() {
   export  PGDATABASE="${POSTGRES_DB}"
 
   # TODO: in future change priv to just what backend needs not all priv
-  # for example: backend does not need to delete a database or tableREVOKE
+  # for example: backend does not need to delete a database or table REVOKE
   # for now i think it needs: SELECT, DELETE, UPDATE, CONNECT
   # NOTE: single quotes for values, and double quotes for columns,user names, databases and so on;
+  #
+  # log "create suf user and grant privileges on database ${POSTGRES_DB}"
+  # psql -v ON_ERROR_STOP=1 --no-password --no-psqlrc -c \
+  #   "CREATE USER \"${SUF_USER}\" WITH PASSWORD '${SUF_PASSWORD}';
+  #   GRANT ALL PRIVILEGES ON DATABASE \"${POSTGRES_DB}\" TO \"${SUF_USER}\";
+  #   GRANT ALL PRIVILEGES ON SCHEMA public TO \"${SUF_USER}\";
+  #   GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public to \"${SUF_USER}\";
+  #   GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO \"${SUF_USER}\";
+  #   ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON TABLES TO suf;
+  #   ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON SEQUENCES TO suf;"
+
   log "create suf user and grant privileges on database ${POSTGRES_DB}"
-  psql -v ON_ERROR_STOP=1 --no-password --no-psqlrc -c \
+  # first create user '$SUF_USER'
+  # allow $SUF_USER to connect to database ${POSTGRES_DB}
+  # allow $SUF_USER to see tables and see types inside the schema namespace
+  # allow user to just CRUD 
+ psql -v ON_ERROR_STOP=1 --no-password --no-psqlrc -c \
     "CREATE USER \"${SUF_USER}\" WITH PASSWORD '${SUF_PASSWORD}';
-     GRANT ALL PRIVILEGES ON DATABASE \"${POSTGRES_DB}\" TO \"${SUF_USER}\";
-    GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public to \"${SUF_USER}\";"
- 
+    GRANT CONNECT ON DATABASE \"${POSTGRES_DB}\" TO \"${SUF_USER}\";
+    GRANT USAGE ON SCHEMA public TO \"${SUF_USER}\";
+    GRANT SELECT,UPDATE,DELETE,INSERT ON ALL TABLES IN SCHEMA public to \"${SUF_USER}\";
+    GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO \"${SUF_USER}\";
+    -- future tables
+    ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON TABLES TO suf;
+    ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON SEQUENCES TO suf;"
+
 }
 
 main "$@"
