@@ -37,9 +37,9 @@ The project uses React 19 and Vite 6. Fonts are Inter and JetBrains Mono, with l
 
 ## Preview limitations
 
-This is a frontend prototype. Login does not authenticate against a server. Some data and activity counts are examples. Posts, projects, rooms, chat and attachments are temporary preview state; theme, saved-post IDs and profile edits use browser storage where available.
+This is a frontend prototype. Login does not authenticate against a server. Some data and activity counts are examples. Posts, projects, rooms and attachments use temporary preview state. Theme, saved-post IDs, profile edits, peer relationships and direct-message previews use browser storage where available.
 
-The Run snippet button does not compile or execute code. Reports and peer requests are local preview actions. Private messages, account management, notifications, public profiles and peer services remain to be implemented/connected.
+The Run snippet button does not compile or execute code. Reports and peer requests are local preview actions. Private messages, peer relationships and public profiles have local preview interfaces. Backend account management, notifications and shared services still need implementation or integration.
 
 42 verification, protected access, persistent uploads, account storage, real-time chat and code execution require backend services. Frontend visibility checks do not enforce access control.
 
@@ -52,18 +52,15 @@ The Run snippet button does not compile or execute code. Reports and peer reques
 - `src/utils/storage.js`: guarded browser storage.
 - `src/*.css`: shared and page styles.
 - `public/logo.png`: SUF logo.
-- `docs/`: product plan, compatibility review and backend handoff notes.
+- `docs/`: setup, frontend implementation, verification notes and backend integration guidance.
 
 ## Backend handoff
 
-Read these notes before connecting services:
+Read the [documentation index](docs/README.md), then use:
 
-- [Product plan](docs/PROJECT-PLAN.md)
-- [42 sign-in](docs/42-SIGN-IN.md)
-- [Projects](docs/PROJECTS-FRONTEND.md)
-- [Profile](docs/PROFILE-FRONTEND.md)
-- [Discussion rooms](docs/DISCUSSION-ROOMS-FRONTEND.md)
-- [Browser compatibility](docs/BROWSER-COMPATIBILITY.md)
+- [Setup and build](docs/SETUP.md)
+- [Frontend implementation and recent fixes](docs/FRONTEND.md)
+- [Backend integration](docs/BACKEND-INTEGRATION.md)
 
 `VITE_42_LOGIN_URL` may point to your backend's 42 sign-in endpoint. No sign-in endpoint is configured by default. Never place private secrets in frontend code or Vite environment variables: values exposed to frontend code are public.
 
