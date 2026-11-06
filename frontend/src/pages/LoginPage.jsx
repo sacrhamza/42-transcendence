@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
+import { navigate } from '../utils/navigation.js';
 
-export default function LoginPage({ onEnter, theme, onToggleTheme }) {
-    const [mode, setMode] = useState('login');
+export default function LoginPage({ onEnter, theme, onToggleTheme, mode = 'login' }) {
     const [visible, setVisible] = useState(false);
     const [notice, setNotice] = useState('');
+    const [passwordError, setPasswordError] = useState('');
     const signup = mode === 'signup';
 
     function continueWith42() {
@@ -27,17 +28,27 @@ export default function LoginPage({ onEnter, theme, onToggleTheme }) {
     }
 
     function changeMode(nextMode) {
-        setMode(nextMode);
+        navigate('/' + nextMode);
         setNotice('');
         setVisible(false);
     }
 
+    function validatePasswords(form) {
+        if (!signup) return true;
+        const password = form.elements.namedItem('password');
+        const confirm = form.elements.namedItem('confirm');
+        const message = confirm.value && password.value !== confirm.value
+            ? 'Your passwords do not match.'
+            : '';
+        confirm.setCustomValidity(message);
+        setPasswordError(message);
+        return !message;
+    }
+
     function submit(event) {
         event.preventDefault();
-        const data = new FormData(event.currentTarget);
-
-        if (signup && data.get('password') !== data.get('confirm')) {
-            setNotice('Your passwords do not match. Please try again.');
+        if (!validatePasswords(event.currentTarget)) {
+            event.currentTarget.reportValidity();
             return;
         }
 
@@ -70,7 +81,7 @@ export default function LoginPage({ onEnter, theme, onToggleTheme }) {
             >
                 <a
                     className="brand"
-                    href="#/login"
+                    href="/login"
                     aria-label="Stack Under Flow"
                 >
                     <img
@@ -168,6 +179,11 @@ export default function LoginPage({ onEnter, theme, onToggleTheme }) {
                     <form
                         key={mode}
                         onSubmit={submit}
+                        onInput={(event) => {
+                            if (['password', 'confirm'].includes(event.target.name)) {
+                                validatePasswords(event.currentTarget);
+                            }
+                        }}
                     >
                         {signup && (
                             <label>
@@ -232,16 +248,23 @@ export default function LoginPage({ onEnter, theme, onToggleTheme }) {
                                 Confirm password
                                 <input
                                     name="confirm"
+                                    aria-invalid={passwordError ? true : undefined}
+                                    aria-describedby={passwordError ? 'confirm-password-error' : undefined}
                                     type={visible ? 'text' : 'password'}
                                     autoComplete="new-password"
                                     placeholder="Enter your password again"
                                     required
                                 />
+                                {passwordError && (
+                                    <span id="confirm-password-error" className="notice" role="alert">
+                                        {passwordError}
+                                    </span>
+                                )}
                             </label>
                         )}
 
                         {!signup && (
-                            <a className="text-button" href="#/forgot-password">
+                            <a className="text-button" href="/forgot-password">
                                 Forgot password?
                             </a>
                         )}

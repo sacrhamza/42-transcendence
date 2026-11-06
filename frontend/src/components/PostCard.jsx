@@ -65,7 +65,7 @@ export default function PostCard({ post: sourcePost, saved, onToggleSaved, peerS
             <header className="post-author">
                 <Avatar initials={post.initials} photo={authorPhoto} />
                 <div>
-                    <a className="post-profile-link" href={post.author === 'you' ? '#/profile' : `#/profile/${post.author}`}>{post.author}</a>
+                    <a className="post-profile-link" href={post.author === 'you' ? '/profile' : `/profile/${post.author}`}>{post.author}</a>
                     {post.verified && <span className="verified">42 ✓</span>}
                     <span className="post-time">{post.time === 'now' ? 'just now' : `${post.time} ago`}</span>
                 </div>

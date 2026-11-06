@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { readStorage, writeStorage } from '../utils/storage.js';
+import { navigate } from '../utils/navigation.js';
 import { loadProfile } from '../utils/profile.js';
 import PostComposer from '../components/PostComposer.jsx';
 import { validatePostFile } from '../utils/community.js';
@@ -45,7 +46,7 @@ export default function HomePage({ onLogOut, theme, onToggleTheme, section = 'ho
         setConversations((current) => current[username] ? current : {
             ...current, [username]: { username, messages: [], unread: 0 },
         });
-        window.location.hash = '/messages/' + username;
+        navigate('/messages/' + username);
     }
 
     const [currentProfile, setCurrentProfile] = useState(loadProfile);
@@ -158,11 +159,11 @@ export default function HomePage({ onLogOut, theme, onToggleTheme, section = 'ho
 
     function selectNavigation(item) {
         if (['Projects', 'Peers', 'Messages'].includes(item)) {
-            window.location.hash = '/' + item.toLowerCase();
+            navigate('/' + item.toLowerCase());
             setQuery('');
             setPageNotice('');
         } else {
-            window.location.hash = '/home';
+            navigate('/home');
         }
         setActiveItem(['Projects', 'Peers', 'Messages'].includes(item) ? 'Home' : item);
         setCurrentPage(1);
@@ -189,7 +190,7 @@ export default function HomePage({ onLogOut, theme, onToggleTheme, section = 'ho
         setCurrentPage(1);
         setActiveItem('Home');
         setQuery('');
-        window.location.hash = '/home';
+        navigate('/home');
     }
 
     return (
@@ -197,7 +198,7 @@ export default function HomePage({ onLogOut, theme, onToggleTheme, section = 'ho
             <header className="home-topbar">
                 <a
                     className="home-logo"
-                    href="#/home"
+                    href="/home"
                     aria-label="SUF Home"
                 >
                     <img
@@ -244,7 +245,7 @@ export default function HomePage({ onLogOut, theme, onToggleTheme, section = 'ho
                     >
                         {theme === 'dark' ? '☀ Light' : '☾ Dark'}
                     </button>
-                    <a className="profile-header-link" href="#/profile" aria-label="Open your profile">
+                    <a className="profile-header-link" href="/profile" aria-label="Open your profile">
                         <Avatar initials="YO" photo={currentProfile.photo} small />
                     </a>
                     <button
@@ -316,7 +317,7 @@ export default function HomePage({ onLogOut, theme, onToggleTheme, section = 'ho
 
                     <PostComposer photo={currentProfile.photo} onPublish={publishPost} />
 
-                    {postId && <p className="page-notice"><a href="#/home">← Back to all posts</a> · Public post preview</p>}
+                    {postId && <p className="page-notice"><a href="/home">← Back to all posts</a> · Public post preview</p>}
                     {query && !postId && (
                         <p className="search-summary">
                             {visiblePosts.length} result

@@ -63,7 +63,7 @@ export default function MessagesPage({ conversations, selectedUsername, relation
                             <h2>Message a peer</h2>
                             <label>Find a peer<input type="search" value={peerQuery} onChange={(event) => setPeerQuery(event.target.value)} placeholder="Search your peers" /></label>
                             {myPeers.map((peer) => <button key={peer.username} type="button" onClick={() => { onStart(peer.username); setNewChat(false); }}><Avatar initials={peer.initials} small showStatus={false} /><span>{peer.name}<small>@{peer.username}</small></span><span aria-hidden="true">↗</span></button>)}
-                            {!myPeers.length && <p>No matching peers. <a href="#/peers">Find your peers</a> to start a conversation.</p>}
+                            {!myPeers.length && <p>No matching peers. <a href="/peers">Find your peers</a> to start a conversation.</p>}
                         </section>
                     )}
                     <div className="conversation-list">
@@ -84,9 +84,9 @@ export default function MessagesPage({ conversations, selectedUsername, relation
                 {activePeer ? (
                     <section className="direct-chat" aria-label={`Conversation with ${activePeer.name}`}>
                         <header className="direct-chat-header">
-                            <a className="chat-mobile-back" href="#/messages" aria-label="Back to inbox">←</a>
-                            <a className="direct-chat-person" href={`#/profile/${activePeer.username}`}><Avatar initials={activePeer.initials} small showStatus={false} /><span><b>{activePeer.name}</b><small>@{activePeer.username} · {connected ? 'Your peer' : 'Public profile'}</small></span></a>
-                            <a className="direct-profile-link" href={`#/profile/${activePeer.username}`}>View profile ↗</a>
+                            <a className="chat-mobile-back" href="/messages" aria-label="Back to inbox">←</a>
+                            <a className="direct-chat-person" href={`/profile/${activePeer.username}`}><Avatar initials={activePeer.initials} small showStatus={false} /><span><b>{activePeer.name}</b><small>@{activePeer.username} · {connected ? 'Your peer' : 'Public profile'}</small></span></a>
+                            <a className="direct-profile-link" href={`/profile/${activePeer.username}`}>View profile ↗</a>
                         </header>
                         <div className="direct-message-log" role="log" aria-label="Direct messages" aria-relevant="additions" ref={log}>
                             <p className="direct-chat-intro">Only this browser preview is connected. The initial conversation is an example.</p>
@@ -105,7 +105,7 @@ export default function MessagesPage({ conversations, selectedUsername, relation
                             {!messages.length && <div className="direct-start"><span aria-hidden="true">◇</span><h2>Say hello to {activePeer.name}.</h2><p>A question or a shared idea is a good place to start.</p></div>}
                         </div>
                         <form className="direct-composer" onSubmit={send}>
-                            {!connected && <p className="page-notice">Become peers to send messages. <a href={`#/profile/${activePeer.username}`}>Open profile</a></p>}
+                            {!connected && <p className="page-notice">Become peers to send messages. <a href={`/profile/${activePeer.username}`}>Open profile</a></p>}
                             <label><span className="visually-hidden">Message to {activePeer.username}</span><textarea ref={composer} value={draft} onChange={(event) => setDrafts((current) => ({ ...current, [selectedUsername]: event.target.value }))} disabled={!connected} maxLength={5000} rows={3} placeholder={`Message ${activePeer.name}...`} /></label>
                             <div className="direct-composer-actions"><span>{draft.length}/5000 · Text messages</span><button className="project-primary" type="submit" disabled={!connected || !draft.trim()}>Send ↗</button></div>
                             {status && <p className="direct-send-status" role="status">{status}</p>}

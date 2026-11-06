@@ -28,13 +28,12 @@ export default function ProfilePage({ posts = [], onUpdatePost, currentProfile, 
     useEffect(() => {
         if (editing && editForm.current) {
             editDialog.current?.showModal();
-            editForm.current.querySelector('input[name="displayName"]')?.focus({ preventScroll: true });
+            editForm.current.querySelector('input[name="username"]')?.focus({ preventScroll: true });
         }
     }, [editing]);
     const myPosts = posts.filter((post) => post.author === 'you');
     const verified = account?.is42Verified === true;
-    const initials = profile.name.split(/\s+/).filter(Boolean)
-        .slice(0, 2).map((part) => part[0]).join('').toUpperCase();
+    const initials = profile.username.slice(0, 2).toUpperCase();
     const links = [
         ['GitHub', profile.github],
         ['Portfolio', profile.portfolio],
@@ -74,8 +73,8 @@ export default function ProfilePage({ posts = [], onUpdatePost, currentProfile, 
 
     function saveProfile(event) {
         event.preventDefault();
-        if (!draft.name.trim() || !/^[A-Za-z0-9_]{3,24}$/.test(draft.username.trim())) {
-            setNotice('Enter your name and a username with 3–24 letters, numbers, or underscores.');
+        if (!/^[A-Za-z0-9_]{3,24}$/.test(draft.username.trim())) {
+            setNotice('Enter a username with 3–24 letters, numbers, or underscores.');
             return;
         }
         for (const field of ['github', 'portfolio', 'linkedin']) {
@@ -86,7 +85,6 @@ export default function ProfilePage({ posts = [], onUpdatePost, currentProfile, 
         }
         const updated = {
             ...draft,
-            name: draft.name.trim(),
             username: draft.username.trim(),
             bio: draft.bio.trim(),
             skills: [...new Set(draft.skillsText.split(',').map((value) => value.trim()).filter(Boolean))].slice(0, 12),
@@ -108,7 +106,7 @@ export default function ProfilePage({ posts = [], onUpdatePost, currentProfile, 
             </div>
             <div className="profile-summary">
                 <div className="profile-portrait">
-                    {profile.photo ? <img src={profile.photo} alt={`${profile.name}'s profile`} /> : <span>{initials || 'YO'}</span>}
+                    {profile.photo ? <img src={profile.photo} alt={`${profile.username}'s profile`} /> : <span>{initials || 'YO'}</span>}
                 </div>
                 <button
                     className="project-secondary"
@@ -124,7 +122,7 @@ export default function ProfilePage({ posts = [], onUpdatePost, currentProfile, 
                 </button>
                 <div className="profile-identity">
                     <h1 id="profile-title">
-                        {profile.name}
+                        {profile.username}
                         {verified && <span className="profile-42-badge">42 ✓</span>}
                     </h1>
                     <span className="profile-handle">@{profile.username}</span>
@@ -178,12 +176,8 @@ export default function ProfilePage({ posts = [], onUpdatePost, currentProfile, 
                         </div>
                     )}
                     <label>
-                        Display name
-                        <input name="displayName" value={draft.name} onChange={(event) => updateDraft('name', event.target.value)} required maxLength={60} />
-                    </label>
-                    <label>
                         Username
-                        <input value={draft.username} onChange={(event) => updateDraft('username', event.target.value)} required pattern="[A-Za-z0-9_]{3,24}" title="3–24 letters, numbers, or underscores" />
+                        <input name="username" autoComplete="username" value={draft.username} onChange={(event) => updateDraft('username', event.target.value)} required pattern="[A-Za-z0-9_]{3,24}" title="3–24 letters, numbers, or underscores" />
                     </label>
                     <label>
                         Bio
@@ -224,7 +218,7 @@ export default function ProfilePage({ posts = [], onUpdatePost, currentProfile, 
                     <h2>{activeTab === 'Posts' ? 'Your next idea starts here.' : activeTab === 'Projects' ? 'Build something with your peers.' : 'Good conversations build great code.'}</h2>
                     <p>{activeTab === 'Posts' ? 'Share an update on Home and it will appear here.' : activeTab === 'Projects' ? 'Your project activity will appear here once accounts are connected.' : 'Your discussion activity will appear here when rooms are ready.'}</p>
                     {activeTab !== 'Discussion rooms' && (
-                        <a className="project-secondary" href={activeTab === 'Posts' ? '#/home' : '#/projects'}>{activeTab === 'Posts' ? 'Share a post ↗' : 'Explore projects ↗'}</a>
+                        <a className="project-secondary" href={activeTab === 'Posts' ? '/home' : '/projects'}>{activeTab === 'Posts' ? 'Share a post ↗' : 'Explore projects ↗'}</a>
                     )}
                 </div>
             )}
