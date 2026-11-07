@@ -11,8 +11,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Send Discord notification
+      - name: Checkout repository
         uses: actions/checkout@v4
+
+
+      - name: Send Discord notification
         env:
           DISCROD_HOOK: ${{ secrets.DISCORD_HOOK }}
           REPO: ${{ github.repository }}
