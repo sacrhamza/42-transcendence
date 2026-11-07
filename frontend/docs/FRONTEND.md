@@ -23,7 +23,7 @@
 | `/forgot-password` | Request password recovery |
 | `/reset-password?token=…` | Reset password using a backend-issued token |
 | `/home` | Feed |
-| `/home?post=<id>` | Selected post preview |
+| `/home_post_<id>` | Selected post preview |
 | `/projects` | Project directory |
 | `/projects?project=<id>` | Selected project |
 | `/profile` | Own profile |
@@ -31,6 +31,8 @@
 | `/peers` | Peer directory |
 | `/messages` | Message inbox |
 | `/messages/<username>` | Selected conversation |
+
+Shared post links use `/home_post_<id>` without a query string. Older `/home?post=<id>` bookmarks still open the selected post.
 
 Opening `/` replaces the address with `/login`. Old bookmarks such as `/#/login` are converted to `/login` at startup. Internal navigation uses the History API and supports Back/Forward without clearing all application state. Unknown routes show the login view; they are not server-side 404 pages.
 
@@ -67,9 +69,11 @@ The snippet editor presents C, JavaScript, and C++ code with input/output contro
 | `suf-profile` | Username, bio, skills, links, and photo |
 | `suf-saved-posts` | Saved post IDs |
 | `suf-peer-relationships` | Local peer relationship states |
-| `suf-direct-messages` | Local preview conversations |
+| `suf-direct-messages` | Legacy conversations, imported when IndexedDB has no messages record |
 
-Storage helpers handle unavailable storage. Some interactions remain in memory only, including newly created posts, projects, rooms, and attachments. Refreshing or leaving a view can reset that state. Clearing browser site data removes locally saved data. Browser storage is not a backend database.
+Posts, projects, rooms, and direct messages are stored in the `suf-preview` IndexedDB database (`state` object store). File bytes are stored as Blobs and temporary display URLs are rebuilt on load. Updates read and change the latest stored record in a transaction, so two tabs do not replace each other's conversation snapshots. BroadcastChannel notifies other tabs of saves where supported; returning to a tab also reloads saved state.
+
+If storage is unavailable or a write fails, affected state continues in memory with an explicit warning. After a failed write, background reloads do not overwrite those unsaved changes. Copy important content before closing or refreshing. Clearing site data or browser eviction removes local content. Changing origin (for example, localhost to a LAN IP or another port) uses separate storage. This is browser persistence, not a backend database or cross-device synchronization.
 
 ## Recent work
 
@@ -77,6 +81,11 @@ Storage helpers handle unavailable storage. Some interactions remain in memory o
 - Updated recovery links and query-token handling for clean URLs.
 - Removed Display name from the profile and retained username.
 - Added immediate password-confirmation feedback and native validation.
+- Fixed post sharing to use `/home_post_<id>` and clamped pagination when a shared post reduces the result count.
+- Handled malformed 42 sign-in URLs with a visible notice instead of an uncaught error.
+- Added extension/signature checks for binary attachments, UTF-8 validation for text/code, and image decoding before accepting images. Validation runs before adding files to posts, project briefs, or room messages; pending checks disable submission. Binary header checks are best-effort format checks, not complete validation of complex document/media formats. Server-side validation is still required.
+- Persisted local content and file bytes in IndexedDB and made message updates transactional across tabs.
+- Replaced timestamp-only post/project/room IDs with random IDs that also work on HTTP LAN previews.
 
 Related commits: `6003b6f` (`fixing # / login&singup problem`) and `a92c829` (`Fix signup password confirmation validation`).
 
@@ -84,6 +93,15 @@ Related commits: `6003b6f` (`fixing # / login&singup problem`) and `a92c829` (`F
 
 The production build passed after the recent code changes. Temporary DOM interaction checks covered login/signup switching, direct route initialization, Back/Forward, legacy bookmarks, recovery navigation, token submission, and profile navigation. Password checks covered the mismatch `1234567890abc` / `1234567890abcd`, correction, editing either field, required confirmation, and successful matching submission.
 
-Those scripts were run outside the repository. There is no committed automated test suite or `npm test` script for this frontend. DOM checks do not establish full browser compatibility or backend correctness.
+Run the committed regression suite from `frontend/` with:
+
+```sh
+npm install
+npm test
+```
+
+The Node test runner and development-only `fake-indexeddb` dependency cover simultaneous message writes, persisted attachments and rebuilt download URLs, failed transaction rollback, invalid and valid file formats, image-decode failure, and ID uniqueness. The dependency lockfile includes the test dependency.
+
+Additional temporary DOM checks cover malformed OAuth configuration, clean share URLs, shared-post pagination, post/project/room/message/file reloads, and storage-denial feedback. These interaction scripts run outside the repository. DOM tests and simulated IndexedDB do not establish full browser compatibility, real disk quota behavior, or backend correctness.
 
 For manual checks, run the frontend, switch between login and signup, test mismatching and matching passwords, try Back/Forward, refresh `/signup`, edit and save a username, then refresh `/profile` to verify local persistence. Check light/dark themes and narrow screens as part of UI review.

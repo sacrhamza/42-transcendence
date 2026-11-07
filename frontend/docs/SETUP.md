@@ -37,6 +37,10 @@ npm run preview
 
 The build writes production files into `dist/`. Preview serves that build locally; open the address printed in the terminal. Rebuild after source changes before checking preview.
 
+## Regression tests
+
+From `frontend/`, run `npm test` after installing dependencies (including development dependencies). The tests use Node's built-in test runner and a simulated IndexedDB database; they do not connect to a backend or modify your browser's data.
+
 ## Production hosting
 
 Serve the contents of `dist/`. Configure the server to fall back to `index.html` for frontend routes such as `/signup`, `/profile`, and `/messages/alex`. Static assets and backend API routes need their own handling. This fallback allows direct links and browser refreshes to work without hash URLs.

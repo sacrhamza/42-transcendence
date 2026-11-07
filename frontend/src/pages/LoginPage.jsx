@@ -17,7 +17,13 @@ export default function LoginPage({ onEnter, theme, onToggleTheme, mode = 'login
             return;
         }
 
-        const destination = new URL(loginUrl, window.location.origin);
+        let destination;
+        try {
+            destination = new URL(loginUrl, window.location.origin);
+        } catch {
+            setNotice('42 sign-in is unavailable. Please try again later.');
+            return;
+        }
 
         if (!['http:', 'https:'].includes(destination.protocol)) {
             setNotice('42 sign-in is unavailable. Please try again later.');
