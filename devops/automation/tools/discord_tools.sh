@@ -26,7 +26,8 @@ send_file() {
 }
 
 send_text() {
+  echo $DISCORD_HOOK
 	text=$(to_safe_json "$1")
 	echo $text
-	curl -H "Content-Type: application/json" -X POST -d "{\"content\": \"${text}\"}" ${DISCORD_HOOK}
+	curl -H "Content-Type: application/json" -X POST -d "{\"content\": \"${text}\"}" "${DISCORD_HOOK}"
 }
