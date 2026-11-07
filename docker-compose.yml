@@ -38,6 +38,7 @@ services:
       - suf_password
       - redis_password
 
+
   nginx:
     container_name: nginx
     build: ./devops/nginx/
@@ -86,10 +87,17 @@ services:
       start_period: 10s
       timeout: 10s
 
+  # in memory database
+  # because it does not support env or secrets
+  # i have used shell to get secret password and REDIS_PORT env
   redis:
     container_name: redis
     image: redis:8.10.3-alpine
-    command: sh -c 'exec redis-server --port $REDIS_PORT --requirepass "$(. /run/secrets/redis_password;echo $$REDIS_PASSWORD)"'
+    command: sh -c 'exec redis-server --port "$REDIS_PORT" --requirepass "$(. /run/secrets/redis_password;echo $$REDIS_PASSWORD)"'
+    # ports:
+    #   - ${REDIS_PORT}:${REDIS_PORT}
+    environment:
+      - REDIS_PORT
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 30s
