@@ -22,11 +22,45 @@ send_file() {
 		echo "no file: ${path_to_file}" 1>&2
 		exit 1
 	fi
-	curl -F "content=@${path_to_file}" -X POST ${DISCORD_HOOK}
+	curl -F "content=@${path_to_file}" -X POST "${DISCORD_HOOK}"
 }
 
 send_text() {
 	text=$(to_safe_json "$1")
-	echo $text
 	curl -H "Content-Type: application/json" -X POST -d "{\"content\": \"${text}\"}" "${DISCORD_HOOK}"
+}
+
+commit() {
+  curl -H "Content-Type: application/json" -X POST -d "
+{
+  \"embeds\": [
+    {
+      \"title\": \"🚀 New commit pushed!\",
+      \"description\": \"A new commit was pushed to **${REPO}**.\",
+      \"color\": 2383104,
+      \"fields\": [
+        {
+          \"name\": \"Branch\",
+          \"value\": "\`${BRANCH}\`",
+          \"inline\": true
+        },
+        {
+          \"name\": \"Author\",
+          \"value\": \"${AUTHOR}\",
+          \"inline\": true
+        },
+        {
+          \"name\": \"Commit\",
+          \"value\": \"${COMMIT}\",
+          \"inline\": false
+        }
+      ],
+      \"footer\": {
+        \"text\": \"GitHub Actions\"
+      },
+    \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%S%Z)\"
+    }
+  ]
+}
+" "${DISCORD_HOOK}"
 }
