@@ -15,4 +15,4 @@ jobs:
           REPO: ${{ github.repository }}
           COMMIT:  ${{ github.event.head_commit.message }}
           AUTHOR: ${{ github.event.head_commit.author.name }}
-        run: ls ./devops/automation/tools/* || echo hey
+        run: ./42-transcendence/devops/automation/tools/github.sh
