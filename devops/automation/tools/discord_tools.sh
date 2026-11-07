@@ -31,7 +31,8 @@ send_text() {
 }
 
 commit() {
-  curl -H "Content-Type: application/json" -X POST -d "
+  echo hey
+  curl -i -H "Content-Type: application/json" -X POST -d "
 {
   \"embeds\": [
     {
@@ -41,17 +42,17 @@ commit() {
       \"fields\": [
         {
           \"name\": \"Branch\",
-          \"value\": "\`${BRANCH}\`",
+          \"value\": "\`test${BRANCH}\`",
           \"inline\": true
         },
         {
           \"name\": \"Author\",
-          \"value\": \"${AUTHOR}\",
+          \"value\": \"test${AUTHOR}\",
           \"inline\": true
         },
         {
           \"name\": \"Commit\",
-          \"value\": \"${COMMIT}\",
+          \"value\": \"test${COMMIT}\",
           \"inline\": false
         }
       ],
