@@ -92,8 +92,7 @@ services:
   # i have used shell to get secret password and REDIS_PORT env
   redis:
     container_name: redis
-    image: redis:8.10.3-alpine
-    command: sh -c 'exec redis-server --port "$REDIS_PORT" --requirepass "$(. /run/secrets/redis_password;echo $$REDIS_PASSWORD)"'
+    build: ./devops/redis/
     # ports:
     #   - ${REDIS_PORT}:${REDIS_PORT}
     environment:
