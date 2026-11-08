@@ -54,7 +54,6 @@ test_users() {
    run_psql "UPDATE users SET name = 'newname',bio = 'new bio'
   where name = 'root';
   "
-
   # test delete priv
   run_psql "DELETE FROM normal_users WHERE mail = 'mail';
   DELETE FROM users WHERE name = 'newname';"
