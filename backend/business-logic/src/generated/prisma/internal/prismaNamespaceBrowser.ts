@@ -51,7 +51,9 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
+  ft_users: 'ft_users',
   normal_users: 'normal_users',
+  peers: 'peers',
   users: 'users'
 } as const
 
@@ -71,6 +73,14 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
+export const Ft_usersScalarFieldEnum = {
+  fk_user_id: 'fk_user_id',
+  intra_id: 'intra_id'
+} as const
+
+export type Ft_usersScalarFieldEnum = (typeof Ft_usersScalarFieldEnum)[keyof typeof Ft_usersScalarFieldEnum]
+
+
 export const Normal_usersScalarFieldEnum = {
   fk_user_id: 'fk_user_id',
   mail: 'mail',
@@ -78,6 +88,14 @@ export const Normal_usersScalarFieldEnum = {
 } as const
 
 export type Normal_usersScalarFieldEnum = (typeof Normal_usersScalarFieldEnum)[keyof typeof Normal_usersScalarFieldEnum]
+
+
+export const PeersScalarFieldEnum = {
+  fk_peer_id1: 'fk_peer_id1',
+  fk_peer_id2: 'fk_peer_id2'
+} as const
+
+export type PeersScalarFieldEnum = (typeof PeersScalarFieldEnum)[keyof typeof PeersScalarFieldEnum]
 
 
 export const UsersScalarFieldEnum = {

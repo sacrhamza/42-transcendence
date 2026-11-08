@@ -31,8 +31,8 @@ export * from "./enums.js"
  * const prisma = new PrismaClient({
  *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
  * })
- * // Fetch zero or more Normal_users
- * const normal_users = await prisma.normal_users.findMany()
+ * // Fetch zero or more Ft_users
+ * const ft_users = await prisma.ft_users.findMany()
  * ```
  * 
  * Read more in our [docs](https://pris.ly/d/client).
@@ -42,10 +42,20 @@ export type PrismaClient<LogOpts extends Prisma.LogLevel = never, OmitOpts exten
 export { Prisma }
 
 /**
+ * Model ft_users
+ * 
+ */
+export type ft_users = Prisma.ft_usersModel
+/**
  * Model normal_users
  * 
  */
 export type normal_users = Prisma.normal_usersModel
+/**
+ * Model peers
+ * 
+ */
+export type peers = Prisma.peersModel
 /**
  * Model users
  * 

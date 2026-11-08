@@ -397,7 +397,9 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 
 export const ModelName = {
+  ft_users: 'ft_users',
   normal_users: 'normal_users',
+  peers: 'peers',
   users: 'users'
 } as const
 
@@ -414,10 +416,84 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "normal_users" | "users"
+    modelProps: "ft_users" | "normal_users" | "peers" | "users"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
+    ft_users: {
+      payload: Prisma.$ft_usersPayload<ExtArgs>
+      fields: Prisma.ft_usersFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ft_usersFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ft_usersPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ft_usersFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ft_usersPayload>
+        }
+        findFirst: {
+          args: Prisma.ft_usersFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ft_usersPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ft_usersFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ft_usersPayload>
+        }
+        findMany: {
+          args: Prisma.ft_usersFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ft_usersPayload>[]
+        }
+        create: {
+          args: Prisma.ft_usersCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ft_usersPayload>
+        }
+        createMany: {
+          args: Prisma.ft_usersCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ft_usersCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ft_usersPayload>[]
+        }
+        delete: {
+          args: Prisma.ft_usersDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ft_usersPayload>
+        }
+        update: {
+          args: Prisma.ft_usersUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ft_usersPayload>
+        }
+        deleteMany: {
+          args: Prisma.ft_usersDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ft_usersUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ft_usersUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ft_usersPayload>[]
+        }
+        upsert: {
+          args: Prisma.ft_usersUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ft_usersPayload>
+        }
+        aggregate: {
+          args: Prisma.Ft_usersAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFt_users>
+        }
+        groupBy: {
+          args: Prisma.ft_usersGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Ft_usersGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ft_usersCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Ft_usersCountAggregateOutputType> | number
+        }
+      }
+    }
     normal_users: {
       payload: Prisma.$normal_usersPayload<ExtArgs>
       fields: Prisma.normal_usersFieldRefs
@@ -489,6 +565,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.normal_usersCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.Normal_usersCountAggregateOutputType> | number
+        }
+      }
+    }
+    peers: {
+      payload: Prisma.$peersPayload<ExtArgs>
+      fields: Prisma.peersFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.peersFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$peersPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.peersFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$peersPayload>
+        }
+        findFirst: {
+          args: Prisma.peersFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$peersPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.peersFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$peersPayload>
+        }
+        findMany: {
+          args: Prisma.peersFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$peersPayload>[]
+        }
+        create: {
+          args: Prisma.peersCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$peersPayload>
+        }
+        createMany: {
+          args: Prisma.peersCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.peersCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$peersPayload>[]
+        }
+        delete: {
+          args: Prisma.peersDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$peersPayload>
+        }
+        update: {
+          args: Prisma.peersUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$peersPayload>
+        }
+        deleteMany: {
+          args: Prisma.peersDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.peersUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.peersUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$peersPayload>[]
+        }
+        upsert: {
+          args: Prisma.peersUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$peersPayload>
+        }
+        aggregate: {
+          args: Prisma.PeersAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePeers>
+        }
+        groupBy: {
+          args: Prisma.peersGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PeersGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.peersCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PeersCountAggregateOutputType> | number
         }
       }
     }
@@ -605,6 +755,14 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
+export const Ft_usersScalarFieldEnum = {
+  fk_user_id: 'fk_user_id',
+  intra_id: 'intra_id'
+} as const
+
+export type Ft_usersScalarFieldEnum = (typeof Ft_usersScalarFieldEnum)[keyof typeof Ft_usersScalarFieldEnum]
+
+
 export const Normal_usersScalarFieldEnum = {
   fk_user_id: 'fk_user_id',
   mail: 'mail',
@@ -612,6 +770,14 @@ export const Normal_usersScalarFieldEnum = {
 } as const
 
 export type Normal_usersScalarFieldEnum = (typeof Normal_usersScalarFieldEnum)[keyof typeof Normal_usersScalarFieldEnum]
+
+
+export const PeersScalarFieldEnum = {
+  fk_peer_id1: 'fk_peer_id1',
+  fk_peer_id2: 'fk_peer_id2'
+} as const
+
+export type PeersScalarFieldEnum = (typeof PeersScalarFieldEnum)[keyof typeof PeersScalarFieldEnum]
 
 
 export const UsersScalarFieldEnum = {
@@ -876,7 +1042,9 @@ export interface PrismaClientOptionsWithAdapter extends PrismaClientBaseOptions 
  */
 export type PrismaClientOptions = PrismaClientOptionsWithAccelerateUrl | PrismaClientOptionsWithAdapter
 export type GlobalOmitConfig = {
+  ft_users?: Prisma.ft_usersOmit
   normal_users?: Prisma.normal_usersOmit
+  peers?: Prisma.peersOmit
   users?: Prisma.usersOmit
 }
 

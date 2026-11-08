@@ -6,6 +6,7 @@ import {
   MaxLength,
   MinLength,
   Matches,
+  NotEquals,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 

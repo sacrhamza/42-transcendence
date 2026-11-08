@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './users/user.module.js';
 // import { FastApiModule } from './fastapi-client/apiclient.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
+import { RedisModule } from './redis/redis.module.js';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { PrismaModule } from './prisma/prisma.module.js';
     UserModule,
     // FastApiModule,
     PrismaModule,
+    RedisModule,
   ],
   controllers: [],
   providers: [],

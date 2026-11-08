@@ -232,7 +232,10 @@ export type usersWhereInput = {
   bio?: Prisma.StringFilter<"users"> | string
   updated_date?: Prisma.DateTimeFilter<"users"> | Date | string
   deleted?: Prisma.BoolFilter<"users"> | boolean
+  ft_users?: Prisma.Ft_usersListRelationFilter
   normal_users?: Prisma.Normal_usersListRelationFilter
+  peers_peers_fk_peer_id1Tousers?: Prisma.PeersListRelationFilter
+  peers_peers_fk_peer_id2Tousers?: Prisma.PeersListRelationFilter
 }
 
 export type usersOrderByWithRelationInput = {
@@ -243,7 +246,10 @@ export type usersOrderByWithRelationInput = {
   bio?: Prisma.SortOrder
   updated_date?: Prisma.SortOrder
   deleted?: Prisma.SortOrder
+  ft_users?: Prisma.ft_usersOrderByRelationAggregateInput
   normal_users?: Prisma.normal_usersOrderByRelationAggregateInput
+  peers_peers_fk_peer_id1Tousers?: Prisma.peersOrderByRelationAggregateInput
+  peers_peers_fk_peer_id2Tousers?: Prisma.peersOrderByRelationAggregateInput
 }
 
 export type usersWhereUniqueInput = Prisma.AtLeast<{
@@ -257,7 +263,10 @@ export type usersWhereUniqueInput = Prisma.AtLeast<{
   bio?: Prisma.StringFilter<"users"> | string
   updated_date?: Prisma.DateTimeFilter<"users"> | Date | string
   deleted?: Prisma.BoolFilter<"users"> | boolean
+  ft_users?: Prisma.Ft_usersListRelationFilter
   normal_users?: Prisma.Normal_usersListRelationFilter
+  peers_peers_fk_peer_id1Tousers?: Prisma.PeersListRelationFilter
+  peers_peers_fk_peer_id2Tousers?: Prisma.PeersListRelationFilter
 }, "id" | "name">
 
 export type usersOrderByWithAggregationInput = {
@@ -296,7 +305,10 @@ export type usersCreateInput = {
   bio: string
   updated_date?: Date | string
   deleted?: boolean
+  ft_users?: Prisma.ft_usersCreateNestedManyWithoutUsersInput
   normal_users?: Prisma.normal_usersCreateNestedManyWithoutUsersInput
+  peers_peers_fk_peer_id1Tousers?: Prisma.peersCreateNestedManyWithoutUsers_peers_fk_peer_id1TousersInput
+  peers_peers_fk_peer_id2Tousers?: Prisma.peersCreateNestedManyWithoutUsers_peers_fk_peer_id2TousersInput
 }
 
 export type usersUncheckedCreateInput = {
@@ -307,7 +319,10 @@ export type usersUncheckedCreateInput = {
   bio: string
   updated_date?: Date | string
   deleted?: boolean
+  ft_users?: Prisma.ft_usersUncheckedCreateNestedManyWithoutUsersInput
   normal_users?: Prisma.normal_usersUncheckedCreateNestedManyWithoutUsersInput
+  peers_peers_fk_peer_id1Tousers?: Prisma.peersUncheckedCreateNestedManyWithoutUsers_peers_fk_peer_id1TousersInput
+  peers_peers_fk_peer_id2Tousers?: Prisma.peersUncheckedCreateNestedManyWithoutUsers_peers_fk_peer_id2TousersInput
 }
 
 export type usersUpdateInput = {
@@ -318,7 +333,10 @@ export type usersUpdateInput = {
   bio?: Prisma.StringFieldUpdateOperationsInput | string
   updated_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ft_users?: Prisma.ft_usersUpdateManyWithoutUsersNestedInput
   normal_users?: Prisma.normal_usersUpdateManyWithoutUsersNestedInput
+  peers_peers_fk_peer_id1Tousers?: Prisma.peersUpdateManyWithoutUsers_peers_fk_peer_id1TousersNestedInput
+  peers_peers_fk_peer_id2Tousers?: Prisma.peersUpdateManyWithoutUsers_peers_fk_peer_id2TousersNestedInput
 }
 
 export type usersUncheckedUpdateInput = {
@@ -329,7 +347,10 @@ export type usersUncheckedUpdateInput = {
   bio?: Prisma.StringFieldUpdateOperationsInput | string
   updated_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ft_users?: Prisma.ft_usersUncheckedUpdateManyWithoutUsersNestedInput
   normal_users?: Prisma.normal_usersUncheckedUpdateManyWithoutUsersNestedInput
+  peers_peers_fk_peer_id1Tousers?: Prisma.peersUncheckedUpdateManyWithoutUsers_peers_fk_peer_id1TousersNestedInput
+  peers_peers_fk_peer_id2Tousers?: Prisma.peersUncheckedUpdateManyWithoutUsers_peers_fk_peer_id2TousersNestedInput
 }
 
 export type usersCreateManyInput = {
@@ -405,6 +426,20 @@ export type usersSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
 }
 
+export type usersCreateNestedOneWithoutFt_usersInput = {
+  create?: Prisma.XOR<Prisma.usersCreateWithoutFt_usersInput, Prisma.usersUncheckedCreateWithoutFt_usersInput>
+  connectOrCreate?: Prisma.usersCreateOrConnectWithoutFt_usersInput
+  connect?: Prisma.usersWhereUniqueInput
+}
+
+export type usersUpdateOneRequiredWithoutFt_usersNestedInput = {
+  create?: Prisma.XOR<Prisma.usersCreateWithoutFt_usersInput, Prisma.usersUncheckedCreateWithoutFt_usersInput>
+  connectOrCreate?: Prisma.usersCreateOrConnectWithoutFt_usersInput
+  upsert?: Prisma.usersUpsertWithoutFt_usersInput
+  connect?: Prisma.usersWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.usersUpdateToOneWithWhereWithoutFt_usersInput, Prisma.usersUpdateWithoutFt_usersInput>, Prisma.usersUncheckedUpdateWithoutFt_usersInput>
+}
+
 export type usersCreateNestedOneWithoutNormal_usersInput = {
   create?: Prisma.XOR<Prisma.usersCreateWithoutNormal_usersInput, Prisma.usersUncheckedCreateWithoutNormal_usersInput>
   connectOrCreate?: Prisma.usersCreateOrConnectWithoutNormal_usersInput
@@ -419,12 +454,108 @@ export type usersUpdateOneRequiredWithoutNormal_usersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.usersUpdateToOneWithWhereWithoutNormal_usersInput, Prisma.usersUpdateWithoutNormal_usersInput>, Prisma.usersUncheckedUpdateWithoutNormal_usersInput>
 }
 
+export type usersCreateNestedOneWithoutPeers_peers_fk_peer_id1TousersInput = {
+  create?: Prisma.XOR<Prisma.usersCreateWithoutPeers_peers_fk_peer_id1TousersInput, Prisma.usersUncheckedCreateWithoutPeers_peers_fk_peer_id1TousersInput>
+  connectOrCreate?: Prisma.usersCreateOrConnectWithoutPeers_peers_fk_peer_id1TousersInput
+  connect?: Prisma.usersWhereUniqueInput
+}
+
+export type usersCreateNestedOneWithoutPeers_peers_fk_peer_id2TousersInput = {
+  create?: Prisma.XOR<Prisma.usersCreateWithoutPeers_peers_fk_peer_id2TousersInput, Prisma.usersUncheckedCreateWithoutPeers_peers_fk_peer_id2TousersInput>
+  connectOrCreate?: Prisma.usersCreateOrConnectWithoutPeers_peers_fk_peer_id2TousersInput
+  connect?: Prisma.usersWhereUniqueInput
+}
+
+export type usersUpdateOneRequiredWithoutPeers_peers_fk_peer_id1TousersNestedInput = {
+  create?: Prisma.XOR<Prisma.usersCreateWithoutPeers_peers_fk_peer_id1TousersInput, Prisma.usersUncheckedCreateWithoutPeers_peers_fk_peer_id1TousersInput>
+  connectOrCreate?: Prisma.usersCreateOrConnectWithoutPeers_peers_fk_peer_id1TousersInput
+  upsert?: Prisma.usersUpsertWithoutPeers_peers_fk_peer_id1TousersInput
+  connect?: Prisma.usersWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.usersUpdateToOneWithWhereWithoutPeers_peers_fk_peer_id1TousersInput, Prisma.usersUpdateWithoutPeers_peers_fk_peer_id1TousersInput>, Prisma.usersUncheckedUpdateWithoutPeers_peers_fk_peer_id1TousersInput>
+}
+
+export type usersUpdateOneRequiredWithoutPeers_peers_fk_peer_id2TousersNestedInput = {
+  create?: Prisma.XOR<Prisma.usersCreateWithoutPeers_peers_fk_peer_id2TousersInput, Prisma.usersUncheckedCreateWithoutPeers_peers_fk_peer_id2TousersInput>
+  connectOrCreate?: Prisma.usersCreateOrConnectWithoutPeers_peers_fk_peer_id2TousersInput
+  upsert?: Prisma.usersUpsertWithoutPeers_peers_fk_peer_id2TousersInput
+  connect?: Prisma.usersWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.usersUpdateToOneWithWhereWithoutPeers_peers_fk_peer_id2TousersInput, Prisma.usersUpdateWithoutPeers_peers_fk_peer_id2TousersInput>, Prisma.usersUncheckedUpdateWithoutPeers_peers_fk_peer_id2TousersInput>
+}
+
 export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
 }
 
 export type BoolFieldUpdateOperationsInput = {
   set?: boolean
+}
+
+export type usersCreateWithoutFt_usersInput = {
+  id?: bigint | number
+  name: string
+  profile_image?: string
+  user_join_date?: Date | string
+  bio: string
+  updated_date?: Date | string
+  deleted?: boolean
+  normal_users?: Prisma.normal_usersCreateNestedManyWithoutUsersInput
+  peers_peers_fk_peer_id1Tousers?: Prisma.peersCreateNestedManyWithoutUsers_peers_fk_peer_id1TousersInput
+  peers_peers_fk_peer_id2Tousers?: Prisma.peersCreateNestedManyWithoutUsers_peers_fk_peer_id2TousersInput
+}
+
+export type usersUncheckedCreateWithoutFt_usersInput = {
+  id?: bigint | number
+  name: string
+  profile_image?: string
+  user_join_date?: Date | string
+  bio: string
+  updated_date?: Date | string
+  deleted?: boolean
+  normal_users?: Prisma.normal_usersUncheckedCreateNestedManyWithoutUsersInput
+  peers_peers_fk_peer_id1Tousers?: Prisma.peersUncheckedCreateNestedManyWithoutUsers_peers_fk_peer_id1TousersInput
+  peers_peers_fk_peer_id2Tousers?: Prisma.peersUncheckedCreateNestedManyWithoutUsers_peers_fk_peer_id2TousersInput
+}
+
+export type usersCreateOrConnectWithoutFt_usersInput = {
+  where: Prisma.usersWhereUniqueInput
+  create: Prisma.XOR<Prisma.usersCreateWithoutFt_usersInput, Prisma.usersUncheckedCreateWithoutFt_usersInput>
+}
+
+export type usersUpsertWithoutFt_usersInput = {
+  update: Prisma.XOR<Prisma.usersUpdateWithoutFt_usersInput, Prisma.usersUncheckedUpdateWithoutFt_usersInput>
+  create: Prisma.XOR<Prisma.usersCreateWithoutFt_usersInput, Prisma.usersUncheckedCreateWithoutFt_usersInput>
+  where?: Prisma.usersWhereInput
+}
+
+export type usersUpdateToOneWithWhereWithoutFt_usersInput = {
+  where?: Prisma.usersWhereInput
+  data: Prisma.XOR<Prisma.usersUpdateWithoutFt_usersInput, Prisma.usersUncheckedUpdateWithoutFt_usersInput>
+}
+
+export type usersUpdateWithoutFt_usersInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  profile_image?: Prisma.StringFieldUpdateOperationsInput | string
+  user_join_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  updated_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  normal_users?: Prisma.normal_usersUpdateManyWithoutUsersNestedInput
+  peers_peers_fk_peer_id1Tousers?: Prisma.peersUpdateManyWithoutUsers_peers_fk_peer_id1TousersNestedInput
+  peers_peers_fk_peer_id2Tousers?: Prisma.peersUpdateManyWithoutUsers_peers_fk_peer_id2TousersNestedInput
+}
+
+export type usersUncheckedUpdateWithoutFt_usersInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  profile_image?: Prisma.StringFieldUpdateOperationsInput | string
+  user_join_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  updated_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  normal_users?: Prisma.normal_usersUncheckedUpdateManyWithoutUsersNestedInput
+  peers_peers_fk_peer_id1Tousers?: Prisma.peersUncheckedUpdateManyWithoutUsers_peers_fk_peer_id1TousersNestedInput
+  peers_peers_fk_peer_id2Tousers?: Prisma.peersUncheckedUpdateManyWithoutUsers_peers_fk_peer_id2TousersNestedInput
 }
 
 export type usersCreateWithoutNormal_usersInput = {
@@ -435,6 +566,9 @@ export type usersCreateWithoutNormal_usersInput = {
   bio: string
   updated_date?: Date | string
   deleted?: boolean
+  ft_users?: Prisma.ft_usersCreateNestedManyWithoutUsersInput
+  peers_peers_fk_peer_id1Tousers?: Prisma.peersCreateNestedManyWithoutUsers_peers_fk_peer_id1TousersInput
+  peers_peers_fk_peer_id2Tousers?: Prisma.peersCreateNestedManyWithoutUsers_peers_fk_peer_id2TousersInput
 }
 
 export type usersUncheckedCreateWithoutNormal_usersInput = {
@@ -445,6 +579,9 @@ export type usersUncheckedCreateWithoutNormal_usersInput = {
   bio: string
   updated_date?: Date | string
   deleted?: boolean
+  ft_users?: Prisma.ft_usersUncheckedCreateNestedManyWithoutUsersInput
+  peers_peers_fk_peer_id1Tousers?: Prisma.peersUncheckedCreateNestedManyWithoutUsers_peers_fk_peer_id1TousersInput
+  peers_peers_fk_peer_id2Tousers?: Prisma.peersUncheckedCreateNestedManyWithoutUsers_peers_fk_peer_id2TousersInput
 }
 
 export type usersCreateOrConnectWithoutNormal_usersInput = {
@@ -471,6 +608,9 @@ export type usersUpdateWithoutNormal_usersInput = {
   bio?: Prisma.StringFieldUpdateOperationsInput | string
   updated_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ft_users?: Prisma.ft_usersUpdateManyWithoutUsersNestedInput
+  peers_peers_fk_peer_id1Tousers?: Prisma.peersUpdateManyWithoutUsers_peers_fk_peer_id1TousersNestedInput
+  peers_peers_fk_peer_id2Tousers?: Prisma.peersUpdateManyWithoutUsers_peers_fk_peer_id2TousersNestedInput
 }
 
 export type usersUncheckedUpdateWithoutNormal_usersInput = {
@@ -481,6 +621,145 @@ export type usersUncheckedUpdateWithoutNormal_usersInput = {
   bio?: Prisma.StringFieldUpdateOperationsInput | string
   updated_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ft_users?: Prisma.ft_usersUncheckedUpdateManyWithoutUsersNestedInput
+  peers_peers_fk_peer_id1Tousers?: Prisma.peersUncheckedUpdateManyWithoutUsers_peers_fk_peer_id1TousersNestedInput
+  peers_peers_fk_peer_id2Tousers?: Prisma.peersUncheckedUpdateManyWithoutUsers_peers_fk_peer_id2TousersNestedInput
+}
+
+export type usersCreateWithoutPeers_peers_fk_peer_id1TousersInput = {
+  id?: bigint | number
+  name: string
+  profile_image?: string
+  user_join_date?: Date | string
+  bio: string
+  updated_date?: Date | string
+  deleted?: boolean
+  ft_users?: Prisma.ft_usersCreateNestedManyWithoutUsersInput
+  normal_users?: Prisma.normal_usersCreateNestedManyWithoutUsersInput
+  peers_peers_fk_peer_id2Tousers?: Prisma.peersCreateNestedManyWithoutUsers_peers_fk_peer_id2TousersInput
+}
+
+export type usersUncheckedCreateWithoutPeers_peers_fk_peer_id1TousersInput = {
+  id?: bigint | number
+  name: string
+  profile_image?: string
+  user_join_date?: Date | string
+  bio: string
+  updated_date?: Date | string
+  deleted?: boolean
+  ft_users?: Prisma.ft_usersUncheckedCreateNestedManyWithoutUsersInput
+  normal_users?: Prisma.normal_usersUncheckedCreateNestedManyWithoutUsersInput
+  peers_peers_fk_peer_id2Tousers?: Prisma.peersUncheckedCreateNestedManyWithoutUsers_peers_fk_peer_id2TousersInput
+}
+
+export type usersCreateOrConnectWithoutPeers_peers_fk_peer_id1TousersInput = {
+  where: Prisma.usersWhereUniqueInput
+  create: Prisma.XOR<Prisma.usersCreateWithoutPeers_peers_fk_peer_id1TousersInput, Prisma.usersUncheckedCreateWithoutPeers_peers_fk_peer_id1TousersInput>
+}
+
+export type usersCreateWithoutPeers_peers_fk_peer_id2TousersInput = {
+  id?: bigint | number
+  name: string
+  profile_image?: string
+  user_join_date?: Date | string
+  bio: string
+  updated_date?: Date | string
+  deleted?: boolean
+  ft_users?: Prisma.ft_usersCreateNestedManyWithoutUsersInput
+  normal_users?: Prisma.normal_usersCreateNestedManyWithoutUsersInput
+  peers_peers_fk_peer_id1Tousers?: Prisma.peersCreateNestedManyWithoutUsers_peers_fk_peer_id1TousersInput
+}
+
+export type usersUncheckedCreateWithoutPeers_peers_fk_peer_id2TousersInput = {
+  id?: bigint | number
+  name: string
+  profile_image?: string
+  user_join_date?: Date | string
+  bio: string
+  updated_date?: Date | string
+  deleted?: boolean
+  ft_users?: Prisma.ft_usersUncheckedCreateNestedManyWithoutUsersInput
+  normal_users?: Prisma.normal_usersUncheckedCreateNestedManyWithoutUsersInput
+  peers_peers_fk_peer_id1Tousers?: Prisma.peersUncheckedCreateNestedManyWithoutUsers_peers_fk_peer_id1TousersInput
+}
+
+export type usersCreateOrConnectWithoutPeers_peers_fk_peer_id2TousersInput = {
+  where: Prisma.usersWhereUniqueInput
+  create: Prisma.XOR<Prisma.usersCreateWithoutPeers_peers_fk_peer_id2TousersInput, Prisma.usersUncheckedCreateWithoutPeers_peers_fk_peer_id2TousersInput>
+}
+
+export type usersUpsertWithoutPeers_peers_fk_peer_id1TousersInput = {
+  update: Prisma.XOR<Prisma.usersUpdateWithoutPeers_peers_fk_peer_id1TousersInput, Prisma.usersUncheckedUpdateWithoutPeers_peers_fk_peer_id1TousersInput>
+  create: Prisma.XOR<Prisma.usersCreateWithoutPeers_peers_fk_peer_id1TousersInput, Prisma.usersUncheckedCreateWithoutPeers_peers_fk_peer_id1TousersInput>
+  where?: Prisma.usersWhereInput
+}
+
+export type usersUpdateToOneWithWhereWithoutPeers_peers_fk_peer_id1TousersInput = {
+  where?: Prisma.usersWhereInput
+  data: Prisma.XOR<Prisma.usersUpdateWithoutPeers_peers_fk_peer_id1TousersInput, Prisma.usersUncheckedUpdateWithoutPeers_peers_fk_peer_id1TousersInput>
+}
+
+export type usersUpdateWithoutPeers_peers_fk_peer_id1TousersInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  profile_image?: Prisma.StringFieldUpdateOperationsInput | string
+  user_join_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  updated_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ft_users?: Prisma.ft_usersUpdateManyWithoutUsersNestedInput
+  normal_users?: Prisma.normal_usersUpdateManyWithoutUsersNestedInput
+  peers_peers_fk_peer_id2Tousers?: Prisma.peersUpdateManyWithoutUsers_peers_fk_peer_id2TousersNestedInput
+}
+
+export type usersUncheckedUpdateWithoutPeers_peers_fk_peer_id1TousersInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  profile_image?: Prisma.StringFieldUpdateOperationsInput | string
+  user_join_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  updated_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ft_users?: Prisma.ft_usersUncheckedUpdateManyWithoutUsersNestedInput
+  normal_users?: Prisma.normal_usersUncheckedUpdateManyWithoutUsersNestedInput
+  peers_peers_fk_peer_id2Tousers?: Prisma.peersUncheckedUpdateManyWithoutUsers_peers_fk_peer_id2TousersNestedInput
+}
+
+export type usersUpsertWithoutPeers_peers_fk_peer_id2TousersInput = {
+  update: Prisma.XOR<Prisma.usersUpdateWithoutPeers_peers_fk_peer_id2TousersInput, Prisma.usersUncheckedUpdateWithoutPeers_peers_fk_peer_id2TousersInput>
+  create: Prisma.XOR<Prisma.usersCreateWithoutPeers_peers_fk_peer_id2TousersInput, Prisma.usersUncheckedCreateWithoutPeers_peers_fk_peer_id2TousersInput>
+  where?: Prisma.usersWhereInput
+}
+
+export type usersUpdateToOneWithWhereWithoutPeers_peers_fk_peer_id2TousersInput = {
+  where?: Prisma.usersWhereInput
+  data: Prisma.XOR<Prisma.usersUpdateWithoutPeers_peers_fk_peer_id2TousersInput, Prisma.usersUncheckedUpdateWithoutPeers_peers_fk_peer_id2TousersInput>
+}
+
+export type usersUpdateWithoutPeers_peers_fk_peer_id2TousersInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  profile_image?: Prisma.StringFieldUpdateOperationsInput | string
+  user_join_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  updated_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ft_users?: Prisma.ft_usersUpdateManyWithoutUsersNestedInput
+  normal_users?: Prisma.normal_usersUpdateManyWithoutUsersNestedInput
+  peers_peers_fk_peer_id1Tousers?: Prisma.peersUpdateManyWithoutUsers_peers_fk_peer_id1TousersNestedInput
+}
+
+export type usersUncheckedUpdateWithoutPeers_peers_fk_peer_id2TousersInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  profile_image?: Prisma.StringFieldUpdateOperationsInput | string
+  user_join_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bio?: Prisma.StringFieldUpdateOperationsInput | string
+  updated_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ft_users?: Prisma.ft_usersUncheckedUpdateManyWithoutUsersNestedInput
+  normal_users?: Prisma.normal_usersUncheckedUpdateManyWithoutUsersNestedInput
+  peers_peers_fk_peer_id1Tousers?: Prisma.peersUncheckedUpdateManyWithoutUsers_peers_fk_peer_id1TousersNestedInput
 }
 
 
@@ -489,11 +768,17 @@ export type usersUncheckedUpdateWithoutNormal_usersInput = {
  */
 
 export type UsersCountOutputType = {
+  ft_users: number
   normal_users: number
+  peers_peers_fk_peer_id1Tousers: number
+  peers_peers_fk_peer_id2Tousers: number
 }
 
 export type UsersCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  ft_users?: boolean | UsersCountOutputTypeCountFt_usersArgs
   normal_users?: boolean | UsersCountOutputTypeCountNormal_usersArgs
+  peers_peers_fk_peer_id1Tousers?: boolean | UsersCountOutputTypeCountPeers_peers_fk_peer_id1TousersArgs
+  peers_peers_fk_peer_id2Tousers?: boolean | UsersCountOutputTypeCountPeers_peers_fk_peer_id2TousersArgs
 }
 
 /**
@@ -509,8 +794,29 @@ export type UsersCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extens
 /**
  * UsersCountOutputType without action
  */
+export type UsersCountOutputTypeCountFt_usersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ft_usersWhereInput
+}
+
+/**
+ * UsersCountOutputType without action
+ */
 export type UsersCountOutputTypeCountNormal_usersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.normal_usersWhereInput
+}
+
+/**
+ * UsersCountOutputType without action
+ */
+export type UsersCountOutputTypeCountPeers_peers_fk_peer_id1TousersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.peersWhereInput
+}
+
+/**
+ * UsersCountOutputType without action
+ */
+export type UsersCountOutputTypeCountPeers_peers_fk_peer_id2TousersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.peersWhereInput
 }
 
 
@@ -522,7 +828,10 @@ export type usersSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   bio?: boolean
   updated_date?: boolean
   deleted?: boolean
+  ft_users?: boolean | Prisma.users$ft_usersArgs<ExtArgs>
   normal_users?: boolean | Prisma.users$normal_usersArgs<ExtArgs>
+  peers_peers_fk_peer_id1Tousers?: boolean | Prisma.users$peers_peers_fk_peer_id1TousersArgs<ExtArgs>
+  peers_peers_fk_peer_id2Tousers?: boolean | Prisma.users$peers_peers_fk_peer_id2TousersArgs<ExtArgs>
   _count?: boolean | Prisma.UsersCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["users"]>
 
@@ -558,7 +867,10 @@ export type usersSelectScalar = {
 
 export type usersOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "profile_image" | "user_join_date" | "bio" | "updated_date" | "deleted", ExtArgs["result"]["users"]>
 export type usersInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  ft_users?: boolean | Prisma.users$ft_usersArgs<ExtArgs>
   normal_users?: boolean | Prisma.users$normal_usersArgs<ExtArgs>
+  peers_peers_fk_peer_id1Tousers?: boolean | Prisma.users$peers_peers_fk_peer_id1TousersArgs<ExtArgs>
+  peers_peers_fk_peer_id2Tousers?: boolean | Prisma.users$peers_peers_fk_peer_id2TousersArgs<ExtArgs>
   _count?: boolean | Prisma.UsersCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type usersIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -567,7 +879,10 @@ export type usersIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
 export type $usersPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "users"
   objects: {
+    ft_users: Prisma.$ft_usersPayload<ExtArgs>[]
     normal_users: Prisma.$normal_usersPayload<ExtArgs>[]
+    peers_peers_fk_peer_id1Tousers: Prisma.$peersPayload<ExtArgs>[]
+    peers_peers_fk_peer_id2Tousers: Prisma.$peersPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: bigint
@@ -971,7 +1286,10 @@ readonly fields: usersFieldRefs;
  */
 export interface Prisma__usersClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  ft_users<T extends Prisma.users$ft_usersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.users$ft_usersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ft_usersPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   normal_users<T extends Prisma.users$normal_usersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.users$normal_usersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$normal_usersPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  peers_peers_fk_peer_id1Tousers<T extends Prisma.users$peers_peers_fk_peer_id1TousersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.users$peers_peers_fk_peer_id1TousersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$peersPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  peers_peers_fk_peer_id2Tousers<T extends Prisma.users$peers_peers_fk_peer_id2TousersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.users$peers_peers_fk_peer_id2TousersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$peersPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1401,6 +1719,30 @@ export type usersDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
 }
 
 /**
+ * users.ft_users
+ */
+export type users$ft_usersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ft_users
+   */
+  select?: Prisma.ft_usersSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ft_users
+   */
+  omit?: Prisma.ft_usersOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ft_usersInclude<ExtArgs> | null
+  where?: Prisma.ft_usersWhereInput
+  orderBy?: Prisma.ft_usersOrderByWithRelationInput | Prisma.ft_usersOrderByWithRelationInput[]
+  cursor?: Prisma.ft_usersWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.Ft_usersScalarFieldEnum | Prisma.Ft_usersScalarFieldEnum[]
+}
+
+/**
  * users.normal_users
  */
 export type users$normal_usersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1422,6 +1764,54 @@ export type users$normal_usersArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.Normal_usersScalarFieldEnum | Prisma.Normal_usersScalarFieldEnum[]
+}
+
+/**
+ * users.peers_peers_fk_peer_id1Tousers
+ */
+export type users$peers_peers_fk_peer_id1TousersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the peers
+   */
+  select?: Prisma.peersSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the peers
+   */
+  omit?: Prisma.peersOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.peersInclude<ExtArgs> | null
+  where?: Prisma.peersWhereInput
+  orderBy?: Prisma.peersOrderByWithRelationInput | Prisma.peersOrderByWithRelationInput[]
+  cursor?: Prisma.peersWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PeersScalarFieldEnum | Prisma.PeersScalarFieldEnum[]
+}
+
+/**
+ * users.peers_peers_fk_peer_id2Tousers
+ */
+export type users$peers_peers_fk_peer_id2TousersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the peers
+   */
+  select?: Prisma.peersSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the peers
+   */
+  omit?: Prisma.peersOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.peersInclude<ExtArgs> | null
+  where?: Prisma.peersWhereInput
+  orderBy?: Prisma.peersOrderByWithRelationInput | Prisma.peersOrderByWithRelationInput[]
+  cursor?: Prisma.peersWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PeersScalarFieldEnum | Prisma.PeersScalarFieldEnum[]
 }
 
 /**

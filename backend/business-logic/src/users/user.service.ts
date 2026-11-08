@@ -1,48 +1,105 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  Logger,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
-import { RegisterDto } from '../auth/dto/RegisterDto.js';
+import { RegisterDto } from '../dto/RegisterDto.js';
 import { Prisma } from '../generated/prisma/client.js';
 
-
-import * as bcrypt from 'bcrypt';
-
-/*
-UsersService method	      HTTP
-------------------------------
-createUser(data)	        POST
-findByEmail(email)	      GET
-findById(id)	            GET
-findByUsername(username)	GET
-updateUser(id, data)	    PATCH
-deleteUser(id)	          DELETE
-*/
+import { CreateUserDataDto } from '../dto/CreateUserDataDto.js';
+import { RedisService } from '../redis/redis.service.js';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/client';
+import { MailService } from '../mail/mail.service.js';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  private readonly logger = new Logger(UsersService.name);
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly redisService: RedisService,
+    private readonly mailservice: MailService,
+  ) {}
 
   // find
   async findByUsername(username: string) {
-    return this.prisma.users.findUnique({
-      where: { name: username },
-    });
+    try {
+      return await this.prisma.users.findUnique({
+        where: { name: username },
+      });
+    } catch (err) {
+      this.logger.error('PostgreSQL username lookup failed', err);
+
+      if (
+        err instanceof PrismaClientKnownRequestError &&
+        err.code === 'P1001'
+      ) {
+        throw new ServiceUnavailableException(
+          'Database temporarily unavailable',
+        );
+      }
+      throw err;
+    }
   }
 
   async findByEmail(email: string) {
-    return this.prisma.normal_users.findUnique({
-      where: {
-        mail: email,
-      },
-      select: {
-        mail: true,
-      },
-    });
+    try {
+      return await this.prisma.normal_users.findUnique({
+        where: {
+          mail: email,
+        },
+        select: {
+          mail: true,
+        },
+      });
+    } catch (err) {
+      this.logger.error('PostgreSQL username lookup failed', err);
+
+      if (
+        err instanceof PrismaClientKnownRequestError &&
+        err.code === 'P1001'
+      ) {
+        throw new ServiceUnavailableException(
+          'Database temporarily unavailable',
+        );
+      }
+      throw err;
+    }
   }
 
-  async createUser(data: RegisterDto) {
-    // hash the password !
-    const hashedPass = await bcrypt.hash(data.password, 12);
+  async findByEmailForAuth(email: string) {
+    try {
+      return await this.prisma.normal_users.findUnique({
+        where: {
+          mail: email,
+        },
+        select: {
+          password: true,
+          users: {
+            select: {
+              id: true,
+              name: true,
+            }
+          }
+        },
+      });
+    } catch (err) {
+      this.logger.error('PostgreSQL username lookup failed', err);
 
+      if (
+        err instanceof PrismaClientKnownRequestError &&
+        err.code === 'P1001'
+      ) {
+        throw new ServiceUnavailableException(
+          'Database temporarily unavailable',
+        );
+      }
+      throw err;
+    }
+  }
+
+  async createUser(data: CreateUserDataDto) {
     try {
       const res = await this.prisma.users.create({
         data: {
@@ -51,7 +108,7 @@ export class UsersService {
           normal_users: {
             create: {
               mail: data.email,
-              password: hashedPass,
+              password: data.passwordHash,
             },
           },
         },
@@ -60,9 +117,21 @@ export class UsersService {
         },
       });
 
+      // set list for caching ...
+      try {
+        if (this.redisService.client.isReady) {
+          await this.redisService.client.sAdd('names', data.username);
+          await this.redisService.client.sAdd('mails', data.email);
+        }
+      } catch (error) {
+        this.logger.warn('Redis cache update failed after user creation');
+      }
+
       return {
         message: 'User registered successfully',
         userId: res.id.toString(),
+        email: data.email,
+        username: data.username,
       };
     } catch (error: unknown) {
       if (
@@ -71,7 +140,19 @@ export class UsersService {
       ) {
         throw new ConflictException('Username or email already registered');
       }
-
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        (error.code === 'P1001' || error.code === 'P1002')
+      ) {
+        // send msg 3lam fih user ...
+        await this.mailservice.send_try_registreation(
+          data.email,
+          data.username,
+        );
+        throw new ServiceUnavailableException(
+          'Database temporarily unavailable',
+        );
+      }
       throw error;
     }
   }

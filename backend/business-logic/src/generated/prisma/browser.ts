@@ -18,10 +18,20 @@ export { Prisma }
 export * as $Enums from './enums.js'
 export * from './enums.js';
 /**
+ * Model ft_users
+ * 
+ */
+export type ft_users = Prisma.ft_usersModel
+/**
  * Model normal_users
  * 
  */
 export type normal_users = Prisma.normal_usersModel
+/**
+ * Model peers
+ * 
+ */
+export type peers = Prisma.peersModel
 /**
  * Model users
  * 

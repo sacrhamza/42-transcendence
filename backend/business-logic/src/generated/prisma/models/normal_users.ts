@@ -321,14 +321,6 @@ export type StringFieldUpdateOperationsInput = {
   set?: string
 }
 
-export type BigIntFieldUpdateOperationsInput = {
-  set?: bigint | number
-  increment?: bigint | number
-  decrement?: bigint | number
-  multiply?: bigint | number
-  divide?: bigint | number
-}
-
 export type normal_usersCreateNestedManyWithoutUsersInput = {
   create?: Prisma.XOR<Prisma.normal_usersCreateWithoutUsersInput, Prisma.normal_usersUncheckedCreateWithoutUsersInput> | Prisma.normal_usersCreateWithoutUsersInput[] | Prisma.normal_usersUncheckedCreateWithoutUsersInput[]
   connectOrCreate?: Prisma.normal_usersCreateOrConnectWithoutUsersInput | Prisma.normal_usersCreateOrConnectWithoutUsersInput[]

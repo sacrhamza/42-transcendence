@@ -8,6 +8,8 @@
  *
  * 🟢 You can import this file directly.
  */
+export type * from './models/ft_users.js'
 export type * from './models/normal_users.js'
+export type * from './models/peers.js'
 export type * from './models/users.js'
 export type * from './commonInputTypes.js'

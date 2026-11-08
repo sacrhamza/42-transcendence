@@ -1,4 +1,4 @@
-import { RegisterDto } from '../dto/RegisterDto.js';
+import { RegisterDto } from '../../dto/RegisterDto.js';
 
 const password_validation = (dto: RegisterDto) => {
   return dto.password
