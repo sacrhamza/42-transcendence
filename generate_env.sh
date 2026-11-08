@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 echo "
 #NGINX
@@ -20,13 +20,19 @@ POSTGRES_PORT=5432
 # =======================  NEST JS ============================= #
 NESTJS_PORT=3000
 
+# ========================== REDIS ========================== #
+REDIS_PORT=6379
 " > .env
 
 
 mkdir -p secrets/postgresql/suf
 
 printf "SUF_USER=suf" > ./secrets/postgresql/suf/suf_user
-echo "SUF_PASSWORD=$(openssl rand -base64 32)" > ./secrets/postgresql/suf/suf_password
+echo "SUF_PASSWORD=$(openssl rand -hex  32)" > ./secrets/postgresql/suf/suf_password
 
 printf "postgres" > ./secrets/postgresql/postgres_user
-openssl rand -base64 32 > ./secrets/postgresql/postgres_password
+openssl rand  -hex   32 > ./secrets/postgresql/postgres_password
+
+mkdir -p secrets/redis
+
+printf "%s" "REDIS_PASSWORD='$(openssl rand  -hex  32)'"  > ./secrets/redis/redis_password

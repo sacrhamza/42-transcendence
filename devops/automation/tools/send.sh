@@ -2,7 +2,8 @@
 
 set -e
 
-source ./discord_tools.sh
+PARENT_DIR=$(dirname "$0")
+source "$PARENT_DIR/discord_tools.sh"
 
 params=("$@")
 len=${#params[@]}

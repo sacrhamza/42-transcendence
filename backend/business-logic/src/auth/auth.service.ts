@@ -12,7 +12,7 @@ import { RedisService } from '../redis/redis.service.js';
 import { LoginDto } from '../dto/LogingDto.js';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { name } from 'nodemailer/lib/package-info.js';
+// import { name } from 'nodemailer/lib/package-info.js';
 
 @Injectable()
 export class AuthService {
