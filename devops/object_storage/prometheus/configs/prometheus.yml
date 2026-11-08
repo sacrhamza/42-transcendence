@@ -1,2 +1,0 @@
-scrape_config_files:
-  - /etc/prometheus/scrapes.d/*.yml

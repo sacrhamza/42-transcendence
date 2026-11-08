@@ -1,6 +1,0 @@
-scrape_configs:
-  - job_name: nginx
-    metrics_path: /metrics
-    scheme: http
-    static_configs:
-      - targets: ['nginx_prometheus_exporter:${NGINX_EXPORTER}']

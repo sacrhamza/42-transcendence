@@ -1,1 +1,0 @@
-for more enformation see: 
