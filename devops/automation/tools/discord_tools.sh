@@ -31,37 +31,46 @@ send_text() {
 }
 
 commit() {
-  echo hey
-  curl -i -H "Content-Type: application/json" -X POST -d "
-{
-  \"embeds\": [
-    {
-      \"title\": \"🚀 New commit pushed!\",
-      \"description\": \"A new commit was pushed to **${REPO}**.\",
-      \"color\": 2383104,
-      \"fields\": [
-        {
-          \"name\": \"Branch\",
-          \"value\": "\`test${BRANCH}\`",
-          \"inline\": true
+  local payload
+
+  payload=$(jq -n \
+    --arg repo "$REPO" \
+    --arg branch "${BRANCH}" \
+    --arg author "${AUTHOR}" \
+    --arg commit "${COMMIT}" \
+    --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+    '{
+      embeds: [{
+        title: "🚀 New commit pushed!",
+        description: ("A new commit was pushed to **" + $repo + "**."),
+        color: 2383104,
+        fields: [
+          {
+            name: "Branch",
+            value: ("`" + $branch + "`"),
+            inline: true
+          },
+          {
+            name: "Author",
+            value: $author,
+            inline: true
+          },
+          {
+            name: "Commit",
+            value: $commit,
+            inline: false
+          }
+        ],
+        footer: {
+          text: "GitHub Actions"
         },
-        {
-          \"name\": \"Author\",
-          \"value\": \"test${AUTHOR}\",
-          \"inline\": true
-        },
-        {
-          \"name\": \"Commit\",
-          \"value\": \"test${COMMIT}\",
-          \"inline\": false
-        }
-      ],
-      \"footer\": {
-        \"text\": \"GitHub Actions\"
-      },
-    \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%S%Z)\"
-    }
-  ]
-}
-" "${DISCORD_HOOK}"
+        timestamp: $timestamp
+      }]
+    }')
+
+  curl -i \
+    -H "Content-Type: application/json" \
+    -X POST \
+    -d "$payload" \
+    "$DISCORD_HOOK"
 }
