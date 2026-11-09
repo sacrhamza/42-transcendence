@@ -4,18 +4,27 @@ CREATE TABLE refresh_sessions (
       PRIMARY KEY,
 
       fk_user_id
-      BIGSERIAL,
-
-      token_hash
-      TEXT UNIQUE
+      BIGINT
       NOT NULL,
 
+      jti
+      VARCHAR(36) 
+      DEFAULT UUIDV7()
+      NOT NULL,
+
+      token_hash
+      TEXT 
+      NOT NULL
+      UNIQUE,
+
       created_at
-      DATE DEFAULT CURRENT_DATE
+      TIMESTAMP WITH TIME ZONE
+      DEFAULT CURRENT_TIMESTAMP(2)
       NOT NULL,
 
       expires_at
-      DATE
+      TIMESTAMP WITH TIME ZONE
+      DEFAULT CURRENT_TIMESTAMP(2)
       NOT NULL,
 
       FOREIGN KEY (fk_user_id)

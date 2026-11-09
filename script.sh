@@ -13,6 +13,11 @@ up() {
   compose up --build "$@" 
 }
 
+re() {
+  down "$@"
+  up "$@"
+}
+
 down() {
   compose down "${@}" 
 }
@@ -73,7 +78,7 @@ help() {
 }
 
 function main() {
-  if [[ $# -eq 0 ]] || [[ "$1" != @('up'|'down'|'clean'|'logs'|'fclean'|'wipe_out') ]]
+  if [[ $# -eq 0 ]] || [[ "$1" != @('up'|'down'|'clean'|'logs'|'fclean'|'wipe_out'|'re') ]]
 	then
     help
     exit 1
