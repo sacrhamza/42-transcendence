@@ -10,6 +10,7 @@ CREATE TABLE refresh_sessions (
       jti
       VARCHAR(36) 
       DEFAULT UUIDV7()
+      UNIQUE
       NOT NULL,
 
       token_hash
