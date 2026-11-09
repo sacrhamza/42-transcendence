@@ -83,5 +83,35 @@ CREATE TABLE peers (
     FOREIGN KEY (fk_peer_id2)
     REFERENCES users (id),
 
+    CONSTRAINT chk_user_order
+    CHECK (fk_peer_id1 < fk_peer_id2),
+
+    time 
+    TIMESTAMP WITH TIME ZONE
+    DEFAULT CURRENT_TIMESTAMP(2)
+    NOT NULL,
+
+
     PRIMARY KEY (fk_peer_id1, fk_peer_id2)
+);
+
+CREATE TABLE peer_requests (
+    fk_sender_id
+    BIGSERIAL,
+
+    fk_recipient_id
+    BIGSERIAL,
+
+    time 
+    TIMESTAMP WITH TIME ZONE
+    DEFAULT CURRENT_TIMESTAMP(2)
+    NOT NULL,
+
+    FOREIGN KEY (fk_sender_id)
+    REFERENCES users (id),
+
+    FOREIGN KEY (fk_recipient_id)
+    REFERENCES users (id),
+
+    PRIMARY KEY (fk_sender_id, fk_recipient_id)
 );
