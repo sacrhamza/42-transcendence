@@ -31,15 +31,26 @@ model peers {
 }
 
 model users {
-  id                             BigInt         @id @default(autoincrement())
-  name                           String         @unique @db.VarChar(75)
-  profile_image                  String         @default("default_image")
-  user_join_date                 DateTime       @default(dbgenerated("CURRENT_DATE")) @db.Date
+  id                             BigInt             @id @default(autoincrement())
+  name                           String             @unique @db.VarChar(75)
+  profile_image                  String             @default("default_image")
+  user_join_date                 DateTime           @default(dbgenerated("CURRENT_DATE")) @db.Date
   bio                            String
-  updated_date                   DateTime       @default(dbgenerated("CURRENT_DATE")) @db.Date
-  deleted                        Boolean        @default(false)
+  updated_date                   DateTime           @default(dbgenerated("CURRENT_DATE")) @db.Date
+  deleted                        Boolean            @default(false)
   ft_users                       ft_users[]
   normal_users                   normal_users[]
-  peers_peers_fk_peer_id1Tousers peers[]        @relation("peers_fk_peer_id1Tousers")
-  peers_peers_fk_peer_id2Tousers peers[]        @relation("peers_fk_peer_id2Tousers")
+  peers_peers_fk_peer_id1Tousers peers[]            @relation("peers_fk_peer_id1Tousers")
+  peers_peers_fk_peer_id2Tousers peers[]            @relation("peers_fk_peer_id2Tousers")
+  refresh_sessions               refresh_sessions[]
+}
+
+model refresh_sessions {
+  id         BigInt   @id @default(autoincrement())
+  fk_user_id BigInt
+  jti        String   @unique @default(dbgenerated("uuidv7()")) @db.VarChar(36)
+  token_hash String   @unique
+  created_at DateTime @default(dbgenerated("CURRENT_TIMESTAMP(2)")) @db.Timestamptz(6)
+  expires_at DateTime @db.Timestamptz(6)
+  users      users    @relation(fields: [fk_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }

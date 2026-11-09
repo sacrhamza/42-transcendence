@@ -61,3 +61,8 @@ export type peers = Prisma.peersModel
  * 
  */
 export type users = Prisma.usersModel
+/**
+ * Model refresh_sessions
+ * 
+ */
+export type refresh_sessions = Prisma.refresh_sessionsModel

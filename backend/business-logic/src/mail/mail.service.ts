@@ -58,9 +58,9 @@ The SUF Team
         `,
       });
 
-      console.log('Message sent: %s', info.messageId);
-      // Preview URL is only available when using an Ethereal test account
-      console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+      // console.log('Message sent: %s', info.messageId);
+      // // Preview URL is only available when using an Ethereal test account
+      // console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
     } catch (err) {
       console.error('Error while sending mail:', err);
       throw err;

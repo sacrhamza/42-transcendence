@@ -112,6 +112,8 @@ services:
       timeout: 10s
     secrets:
       - redis_password
+    ports:
+      - "0.0.0.0:6379:6379"
 
 secrets:
   postgres_password:

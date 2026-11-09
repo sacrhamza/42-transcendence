@@ -5,25 +5,19 @@ import { UserModule } from '../users/user.module.js';
 import { EmailVerificationModule } from '../email-verification/email-verification.module.js';
 import { RedisModule } from '../redis/redis.module.js';
 import { JwtModule } from '@nestjs/jwt';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { SecretsModule } from '../Secrets/secrets.module.js';
+import { PrismaModule } from '../prisma/prisma.module.js';
+import { SessionService } from './SessionService/session.service.js';
 @Module({
   imports: [
     UserModule,
     EmailVerificationModule,
     RedisModule,
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-
-      useFactory: (config: ConfigService) => ({
-        secret: config.getOrThrow<string>('JWT_ACCESS_SECRET'),
-        signOptions: {
-          expiresIn: '5m',
-        },
-      }),
-    }),
+    JwtModule.register({}),
+    SecretsModule,
+    PrismaModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, SessionService],
 })
 export class AuthModule {}

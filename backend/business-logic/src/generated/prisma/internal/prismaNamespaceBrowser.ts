@@ -54,7 +54,8 @@ export const ModelName = {
   ft_users: 'ft_users',
   normal_users: 'normal_users',
   peers: 'peers',
-  users: 'users'
+  users: 'users',
+  refresh_sessions: 'refresh_sessions'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -109,6 +110,18 @@ export const UsersScalarFieldEnum = {
 } as const
 
 export type UsersScalarFieldEnum = (typeof UsersScalarFieldEnum)[keyof typeof UsersScalarFieldEnum]
+
+
+export const Refresh_sessionsScalarFieldEnum = {
+  id: 'id',
+  fk_user_id: 'fk_user_id',
+  jti: 'jti',
+  token_hash: 'token_hash',
+  created_at: 'created_at',
+  expires_at: 'expires_at'
+} as const
+
+export type Refresh_sessionsScalarFieldEnum = (typeof Refresh_sessionsScalarFieldEnum)[keyof typeof Refresh_sessionsScalarFieldEnum]
 
 
 export const SortOrder = {
