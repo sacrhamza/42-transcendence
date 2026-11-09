@@ -24,7 +24,6 @@ CREATE TABLE refresh_sessions (
 
       expires_at
       TIMESTAMP WITH TIME ZONE
-      DEFAULT CURRENT_TIMESTAMP(2)
       NOT NULL,
 
       FOREIGN KEY (fk_user_id)
