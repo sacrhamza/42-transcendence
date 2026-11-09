@@ -72,5 +72,5 @@ commit() {
     -H "Content-Type: application/json" \
     -X POST \
     -d "$payload" \
-    "$DISCORD_HOOK"
+    "$DISCORD_HOOK/github"
 }
