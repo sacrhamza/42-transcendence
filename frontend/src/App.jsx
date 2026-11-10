@@ -17,6 +17,13 @@ function getPageFromLocation() {
 
 export default function App() {
     const [page, setPage] = useState(getPageFromLocation);
+    // Keep credentials in memory, never in localStorage or URLs.
+    const [session, setSession] = useState(null);
+    const requiresSession = !['login', 'signup', 'verify-email', 'forgot-password', 'reset-password'].includes(page.split(/[/?]/)[0]);
+
+    useEffect(() => {
+        if (requiresSession && !session) navigate('/login', { replace: true });
+    }, [requiresSession, session, page]);
     const [theme, setTheme] = useState(() => {
         return readStorage('suf-theme', 'dark');
     });
@@ -56,6 +63,7 @@ export default function App() {
     }
 
     const recoveryPage = page.split('?')[0];
+    if (requiresSession && !session) return null;
     if (recoveryPage === 'verify-email') return <EmailVerificationPage />;
     if (['forgot-password', 'reset-password'].includes(recoveryPage)) {
         return (
@@ -76,7 +84,10 @@ export default function App() {
                 profileUsername={page.startsWith('profile/') ? page.slice(8).split('?')[0] : null}
                 postId={page.startsWith('home?') ? new URLSearchParams(page.split('?')[1]).get('post') : null}
                 projectId={page.startsWith('projects?') ? new URLSearchParams(page.split('?')[1]).get('project') : null}
-                onLogOut={() => navigate('/login')}
+                onLogOut={() => {
+                    setSession(null);
+                    navigate('/login');
+                }}
                 theme={theme}
                 onToggleTheme={toggleTheme}
             />
@@ -92,7 +103,10 @@ export default function App() {
                 : new URLSearchParams(page.split('?')[1]).get('verification') === 'expired'
                     ? 'Your verification link is invalid, expired, or already used. Please sign up again to get a new link. If you already verified your email, try logging in.'
                     : ''}
-            onEnter={() => navigate('/home')}
+            onEnter={(authenticatedSession) => {
+                setSession(authenticatedSession);
+                navigate('/home');
+            }}
             theme={theme}
             onToggleTheme={toggleTheme}
         />

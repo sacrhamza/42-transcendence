@@ -2,7 +2,9 @@
 
 ## Current boundary
 
-Signup and email verification call the authentication backend. Login remains a local prototype. Directly opening `/home` or `/profile` is possible. Backend authentication and authorization must be added before those routes represent protected account data.
+Signup, email verification, and login call the authentication backend. Login sends email and password to `POST /api/auth/login`. Only a successful response with `accessToken`, `refreshToken`, and `tokenType: "Bearer"` opens the home page. Invalid credentials remain on login with an error.
+
+Session tokens are kept in React memory only; logout clears them, and reloading the app requires login again. Home and profile routes redirect to login without a session. Refresh-token renewal and server-side logout are not implemented yet. Backend endpoints must enforce their own authentication and authorization; the frontend route check does not secure backend data.
 
 ## Signup and email verification
 
@@ -50,7 +52,7 @@ Reset links use `/reset-password?token=...`. The page reads the token, removes i
 
 ## Services to connect
 
-- Login, authenticated sessions, and logout.
+- Refresh-token renewal, authenticated data requests, and server-side logout.
 - Profile persistence and durable photo uploads.
 - Shared posts, comments, reactions, saved items, projects, rooms, and attachments.
 - Peer requests, public profile lookup, and direct messages backed by accounts.
@@ -58,4 +60,4 @@ Reset links use `/reset-password?token=...`. The page reads the token, removes i
 - 42 verification and permissions enforced on the server.
 - Code execution infrastructure for the snippet editor if that feature is implemented.
 
-Except for signup, email verification, recovery requests, and the configurable 42 redirect above, these service contracts still need agreement with the backend team. Existing mock data and local state are not an API specification.
+Except for signup, email verification, login, recovery requests, and the configurable 42 redirect above, these service contracts still need agreement with the backend team. Existing mock data and local state are not an API specification.
