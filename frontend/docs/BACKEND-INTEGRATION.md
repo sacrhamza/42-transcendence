@@ -2,7 +2,19 @@
 
 ## Current boundary
 
-The frontend is a local prototype. Login and signup do not call authentication endpoints. Directly opening `/home` or `/profile` is possible. Backend authentication and authorization must be added before those routes represent protected account data.
+Signup and email verification call the authentication backend. Login remains a local prototype. Directly opening `/home` or `/profile` is possible. Backend authentication and authorization must be added before those routes represent protected account data.
+
+## Signup and email verification
+
+Vite proxies `/api` to `http://localhost:3000` by default. Set the `BACKEND_URL` shell environment variable before starting Vite if the backend uses another address.
+
+- Signup sends `POST /api/auth/register` with username, email, and password, then asks the user to check their email.
+- The frontend verification page is `/verify-email?token=...`. It sends `GET /api/auth/verify-email?token=...` with `Accept: application/json` once per token during the page session.
+- A successful response containing `userId` redirects to `/login` with a registration confirmation. A 400 response redirects to `/signup` with an invalid, expired, or already-used link explanation. Network and server failures show an error on the verification page instead of claiming the token expired.
+
+For local development, set the backend's `NEST_URL` to the frontend origin, for example `http://localhost:5173`. The backend currently creates links at `/api/auth/verify-email`. Vite redirects browser HTML navigation at that path to `/verify-email` before any API request consumes the token. JSON API requests continue through the proxy unchanged.
+
+For deployment, the web server needs the same browser-navigation redirect and `/api` backend proxy, plus the frontend SPA fallback. Vite's development middleware is not included in the static build. Alternatively, the backend team can generate email links directly to the frontend `/verify-email` page. Links to a separate backend origin cannot display the frontend's notifications without a backend or web-server redirect.
 
 ## Existing environment settings
 
@@ -38,7 +50,7 @@ Reset links use `/reset-password?token=...`. The page reads the token, removes i
 
 ## Services to connect
 
-- Login, signup, authenticated sessions, logout, and server validation of email/username uniqueness.
+- Login, authenticated sessions, and logout.
 - Profile persistence and durable photo uploads.
 - Shared posts, comments, reactions, saved items, projects, rooms, and attachments.
 - Peer requests, public profile lookup, and direct messages backed by accounts.
@@ -46,4 +58,4 @@ Reset links use `/reset-password?token=...`. The page reads the token, removes i
 - 42 verification and permissions enforced on the server.
 - Code execution infrastructure for the snippet editor if that feature is implemented.
 
-Except for the recovery requests and configurable 42 redirect above, these service contracts still need agreement with the backend team. Existing mock data and local state are not an API specification.
+Except for signup, email verification, recovery requests, and the configurable 42 redirect above, these service contracts still need agreement with the backend team. Existing mock data and local state are not an API specification.

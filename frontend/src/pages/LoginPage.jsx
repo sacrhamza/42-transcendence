@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { navigate } from '../utils/navigation.js';
 
-export default function LoginPage({ onEnter, theme, onToggleTheme, mode = 'login' }) {
+export default function LoginPage({ onEnter, theme, onToggleTheme, mode = 'login', initialNotice = '' }) {
     const [visible, setVisible] = useState(false);
-    const [notice, setNotice] = useState('');
+    const [notice, setNotice] = useState(initialNotice);
     const [passwordError, setPasswordError] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const signup = mode === 'signup';
