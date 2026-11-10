@@ -33,15 +33,15 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async login(
     @Body() data: LoginDto,
-    @Res({ passthrough: true }) res: Response,
+    @Res({ passthrough: true }) res: Response,  // @Res() is a parameter decorater that give u object of http resqense object 
+    // for this req so u can add somthing in the headers ...
   ) {
     const { accessToken, refreshToken } = await this.authService.login(data);
-    const isProduction = process.env.NODE_ENV === 'production';
 
     // Refresh Token: 15 min
     res.cookie('access_token', accessToken, {
       httpOnly: true,
-      secure: isProduction,
+      secure: false,
       sameSite: 'lax',
       maxAge: 5 * 60 * 1000,
       path: '/',
@@ -50,7 +50,7 @@ export class AuthController {
     // Refresh Token: 7 days
     res.cookie('refresh_token', refreshToken, {
       httpOnly: true,
-      secure: isProduction,
+      secure: true,
       sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
       path: '/api/auth/refresh',
