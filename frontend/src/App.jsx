@@ -3,6 +3,7 @@ import { readStorage, writeStorage } from './utils/storage.js';
 import HomePage from './pages/HomePage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import PasswordRecoveryPage from './pages/PasswordRecoveryPage.jsx';
+import EmailVerificationPage from './pages/EmailVerificationPage.jsx';
 import { navigate } from './utils/navigation.js';
 
 function getPageFromLocation() {
@@ -11,7 +12,7 @@ function getPageFromLocation() {
     // Keep feed selection consistent for both new links and older bookmarks.
     if (sharedPost) return `home?post=${sharedPost[1]}`;
     const base = route.split(/[/?]/)[0];
-    return ['login', 'signup', 'home', 'projects', 'profile', 'peers', 'messages', 'forgot-password', 'reset-password'].includes(base) ? route : 'login';
+    return ['login', 'signup', 'verify-email', 'home', 'projects', 'profile', 'peers', 'messages', 'forgot-password', 'reset-password'].includes(base) ? route : 'login';
 }
 
 export default function App() {
@@ -55,6 +56,7 @@ export default function App() {
     }
 
     const recoveryPage = page.split('?')[0];
+    if (recoveryPage === 'verify-email') return <EmailVerificationPage />;
     if (['forgot-password', 'reset-password'].includes(recoveryPage)) {
         return (
             <PasswordRecoveryPage
@@ -83,8 +85,13 @@ export default function App() {
 
     return (
         <LoginPage
-            key={page.split('?')[0]}
+            key={page}
             mode={page.split('?')[0]}
+            initialNotice={new URLSearchParams(page.split('?')[1]).get('verification') === 'success'
+                ? 'You have registered successfully. You can now log in to SUF.'
+                : new URLSearchParams(page.split('?')[1]).get('verification') === 'expired'
+                    ? 'Your verification link is invalid, expired, or already used. Please sign up again to get a new link. If you already verified your email, try logging in.'
+                    : ''}
             onEnter={() => navigate('/home')}
             theme={theme}
             onToggleTheme={toggleTheme}
