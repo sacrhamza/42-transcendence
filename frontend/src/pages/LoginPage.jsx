@@ -5,6 +5,7 @@ export default function LoginPage({ onEnter, theme, onToggleTheme, mode = 'login
     const [visible, setVisible] = useState(false);
     const [notice, setNotice] = useState('');
     const [passwordError, setPasswordError] = useState('');
+    const [submitting, setSubmitting] = useState(false);
     const signup = mode === 'signup';
 
     function continueWith42() {
@@ -17,7 +18,13 @@ export default function LoginPage({ onEnter, theme, onToggleTheme, mode = 'login
             return;
         }
 
-        const destination = new URL(loginUrl, window.location.origin);
+        let destination;
+        try {
+            destination = new URL(loginUrl, window.location.origin);
+        } catch {
+            setNotice('42 sign-in is unavailable. Please try again later.');
+            return;
+        }
 
         if (!['http:', 'https:'].includes(destination.protocol)) {
             setNotice('42 sign-in is unavailable. Please try again later.');
@@ -45,14 +52,51 @@ export default function LoginPage({ onEnter, theme, onToggleTheme, mode = 'login
         return !message;
     }
 
-    function submit(event) {
+    async function submit(event) {
         event.preventDefault();
+        if (submitting) return;
         if (!validatePasswords(event.currentTarget)) {
             event.currentTarget.reportValidity();
             return;
         }
 
-        onEnter();
+        if (!signup) {
+            onEnter();
+            return;
+        }
+
+        const form = event.currentTarget;
+        const fields = new FormData(form);
+        setSubmitting(true);
+        setNotice('');
+        try {
+            const response = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: fields.get('username'),
+                    email: fields.get('email'),
+                    password: fields.get('password'),
+                }),
+            });
+            const data = await response.json().catch(() => null);
+            if (!response.ok) {
+                const message = data?.message;
+                throw new Error(
+                    Array.isArray(message) ? message.join(' ') :
+                        typeof message === 'string' ? message :
+                            'Registration failed. Please try again later.',
+                );
+            }
+            form.reset();
+            setNotice('Check your email for a verification link to complete your registration.');
+        } catch (error) {
+            setNotice(error instanceof TypeError
+                ? 'Unable to reach the registration service. Please try again later.'
+                : error.message);
+        } finally {
+            setSubmitting(false);
+        }
     }
 
     return (
@@ -192,8 +236,10 @@ export default function LoginPage({ onEnter, theme, onToggleTheme, mode = 'login
                                     name="username"
                                     autoComplete="username"
                                     placeholder="Choose your username"
-                                    pattern="[A-Za-z0-9_]{3,24}"
-                                    title="Use 3–24 letters, numbers, or underscores"
+                                    minLength={2}
+                                    maxLength={50}
+                                    pattern="\S+"
+                                    title="Use 2–50 characters without whitespace"
                                     required
                                 />
                             </label>
@@ -205,6 +251,7 @@ export default function LoginPage({ onEnter, theme, onToggleTheme, mode = 'login
                                 name="email"
                                 type="email"
                                 autoComplete="email"
+                                maxLength={signup ? 50 : undefined}
                                 placeholder="you@example.com"
                                 required
                             />
@@ -223,10 +270,12 @@ export default function LoginPage({ onEnter, theme, onToggleTheme, mode = 'login
                                     }
                                     placeholder={
                                         signup
-                                            ? 'At least 12 characters'
+                                            ? '8–50 characters'
                                             : 'Enter your password'
                                     }
-                                    minLength={signup ? 12 : undefined}
+                                    minLength={signup ? 8 : undefined}
+                                    maxLength={signup ? 50 : undefined}
+                                    aria-describedby={signup ? 'password-requirements' : undefined}
                                     required
                                 />
                                 <button
@@ -242,6 +291,13 @@ export default function LoginPage({ onEnter, theme, onToggleTheme, mode = 'login
                                 </button>
                             </div>
                         </label>
+
+                        {signup && (
+                            <p id="password-requirements" className="notice">
+                                Use 8–50 characters with uppercase and lowercase letters,
+                                a number, and a symbol. No whitespace or your username.
+                            </p>
+                        )}
 
                         {signup && (
                             <label>
@@ -271,8 +327,9 @@ export default function LoginPage({ onEnter, theme, onToggleTheme, mode = 'login
                         <button
                             className="primary"
                             type="submit"
+                            disabled={submitting}
                         >
-                            {signup ? 'Create account' : 'Log in'}{' '}
+                            {submitting ? 'Creating account…' : signup ? 'Create account' : 'Log in'}{' '}
                             <span aria-hidden="true">↗</span>
                         </button>
                     </form>
@@ -297,7 +354,7 @@ export default function LoginPage({ onEnter, theme, onToggleTheme, mode = 'login
                     )}
 
                     <p className="prototype">
-                        Frontend preview · Account services coming next
+                        {signup ? 'Verify your email to complete registration.' : 'Frontend preview · Login integration coming next'}
                     </p>
                 </div>
             </section>

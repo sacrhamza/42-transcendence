@@ -7,6 +7,9 @@ import { navigate } from './utils/navigation.js';
 
 function getPageFromLocation() {
     const route = window.location.pathname.slice(1) + window.location.search;
+    const sharedPost = /^home_post_([A-Za-z0-9_-]+)$/.exec(window.location.pathname.slice(1));
+    // Keep feed selection consistent for both new links and older bookmarks.
+    if (sharedPost) return `home?post=${sharedPost[1]}`;
     const base = route.split(/[/?]/)[0];
     return ['login', 'signup', 'home', 'projects', 'profile', 'peers', 'messages', 'forgot-password', 'reset-password'].includes(base) ? route : 'login';
 }

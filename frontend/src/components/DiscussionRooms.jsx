@@ -1,3 +1,5 @@
+import { validateAttachment } from '../utils/attachmentValidation.js';
+import { createId } from '../utils/createId.js';
 import React, { useEffect, useRef, useState } from 'react';
 import VoteControls from './VoteControls.jsx';
 import { canManageRoom, removeRoomMember, roomMembers, setRoomJoined, voteOn } from '../utils/community.js';
@@ -24,6 +26,8 @@ function RoomChat({ project, room, onUpdate, onActivity, onBack, onAttach, onDel
     const [output, setOutput] = useState('Run a snippet to see its output here.');
     const [notice, setNotice] = useState('');
     const [file, setFile] = useState(null);
+    const [checkingFile, setCheckingFile] = useState(false);
+    const fileVersion = useRef(0);
     const fileInput = useRef(null);
     const log = useRef(null);
     const code = drafts[language];
@@ -55,26 +59,26 @@ function RoomChat({ project, room, onUpdate, onActivity, onBack, onAttach, onDel
         setNotice('');
     }
 
-    function chooseFile(event) {
-        const next = event.target.files[0];
-        if (!next) {
-            setFile(null);
-            return;
+    async function chooseFile(event) {
+        const input = event.target;
+        const next = input.files[0];
+        const version = ++fileVersion.current;
+        setFile(null);
+        setCheckingFile(Boolean(next));
+        if (!next) return;
+        try {
+            await validateAttachment(next, { extensions: ['pdf', 'txt', 'md', 'c', 'h', 'js', 'cpp', 'hpp', 'png', 'jpg', 'jpeg', 'webp'], maxBytes: 5 * 1024 * 1024 });
+            if (version === fileVersion.current) { setFile(next); setNotice(''); }
+        } catch (error) {
+            if (version === fileVersion.current) { setNotice(error.message); input.value = ''; }
+        } finally {
+            if (version === fileVersion.current) setCheckingFile(false);
         }
-        if (!/\.(pdf|txt|md|c|h|js|cpp|hpp|png|jpg|jpeg|webp)$/i.test(next.name)
-            || next.size === 0 || next.size > 5 * 1024 * 1024) {
-            setNotice('Choose a PDF, text, code, or image file up to 5 MB.');
-            event.target.value = '';
-            setFile(null);
-            return;
-        }
-        setFile(next);
-        setNotice('');
     }
 
     function send(event) {
         event.preventDefault();
-        if (!room.joined || (!text.trim() && !file)) {
+        if (checkingFile || !room.joined || (!text.trim() && !file)) {
             return;
         }
         postMessage({ text: text.trim(), attachment: file ? onAttach(file) : null });
@@ -180,9 +184,9 @@ function RoomChat({ project, room, onUpdate, onActivity, onBack, onAttach, onDel
                         <div className="room-compose-tools">
                             <label className="room-file-label">
                                 Attach file
-                                <input ref={fileInput} type="file" accept=".pdf,.txt,.md,.c,.h,.js,.cpp,.hpp,.png,.jpg,.jpeg,.webp" onChange={chooseFile} disabled={!room.joined} />
+                                <input ref={fileInput} type="file" accept=".pdf,.txt,.md,.c,.h,.js,.cpp,.hpp,.png,.jpg,.jpeg,.webp" onChange={chooseFile} disabled={!room.joined || checkingFile} />
                             </label>
-                            <button className="project-primary" type="submit" disabled={!room.joined || (!text.trim() && !file)}>Send ↵</button>
+                            <button className="project-primary" type="submit" disabled={checkingFile || !room.joined || (!text.trim() && !file)}>Send ↵</button>
                         </div>
                         {file && (
                             <div className="room-hint" role="status">
@@ -237,8 +241,9 @@ function RoomChat({ project, room, onUpdate, onActivity, onBack, onAttach, onDel
                     <p className="room-hint">Small snippets only · Execution service coming next.</p>
                 </section>
             </div>
+            {checkingFile && <p role="status">Checking file…</p>}
             {notice && <p className="page-notice" role="status">{notice}</p>}
-            <p className="room-hint">Local preview · Messages and files remain until you refresh or leave Projects.</p>
+            <p className="room-hint">Local preview · Messages and files are saved in this browser when storage is available. They are not delivered to other users.</p>
         </section>
     );
 }
@@ -264,7 +269,7 @@ export default function DiscussionRooms({ project, rooms, onChange, onActivity, 
             return;
         }
         const room = {
-            id: `room-${Date.now()}`,
+            id: `room-${createId()}`,
             name,
             topic: data.get('topic').trim() || `A discussion about ${project.name}.`,
             joined: true,

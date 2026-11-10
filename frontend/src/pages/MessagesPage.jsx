@@ -13,6 +13,7 @@ export default function MessagesPage({ conversations, selectedUsername, relation
     const [newChat, setNewChat] = useState(false);
     const [drafts, setDrafts] = useState({});
     const [status, setStatus] = useState('');
+    const [sending, setSending] = useState(false);
     const log = useRef(null);
     const composer = useRef(null);
     const activePeer = peerDirectory.find((peer) => peer.username === selectedUsername);
@@ -34,12 +35,14 @@ export default function MessagesPage({ conversations, selectedUsername, relation
         if (log.current) log.current.scrollTop = log.current.scrollHeight;
     }, [selectedUsername, messages.length]);
 
-    function send(event) {
+    async function send(event) {
         event.preventDefault();
-        if (!connected || !draft.trim()) return;
-        onSend(selectedUsername, draft);
+        if (sending || !connected || !draft.trim()) return;
+        setSending(true);
+        const saved = await onSend(selectedUsername, draft);
+        setSending(false);
         setDrafts((current) => ({ ...current, [selectedUsername]: '' }));
-        setStatus('Message saved in this browser preview. It has not been delivered to another user.');
+        setStatus(saved ? 'Message saved in this browser preview. It has not been delivered to another user.' : 'Message is temporary because browser storage is unavailable. Keep a copy before refreshing.');
         composer.current?.focus();
     }
 
@@ -106,8 +109,8 @@ export default function MessagesPage({ conversations, selectedUsername, relation
                         </div>
                         <form className="direct-composer" onSubmit={send}>
                             {!connected && <p className="page-notice">Become peers to send messages. <a href={`/profile/${activePeer.username}`}>Open profile</a></p>}
-                            <label><span className="visually-hidden">Message to {activePeer.username}</span><textarea ref={composer} value={draft} onChange={(event) => setDrafts((current) => ({ ...current, [selectedUsername]: event.target.value }))} disabled={!connected} maxLength={5000} rows={3} placeholder={`Message ${activePeer.name}...`} /></label>
-                            <div className="direct-composer-actions"><span>{draft.length}/5000 · Text messages</span><button className="project-primary" type="submit" disabled={!connected || !draft.trim()}>Send ↗</button></div>
+                            <label><span className="visually-hidden">Message to {activePeer.username}</span><textarea ref={composer} value={draft} onChange={(event) => setDrafts((current) => ({ ...current, [selectedUsername]: event.target.value }))} disabled={!connected || sending} maxLength={5000} rows={3} placeholder={`Message ${activePeer.name}...`} /></label>
+                            <div className="direct-composer-actions"><span>{draft.length}/5000 · Text messages</span><button className="project-primary" type="submit" disabled={sending || !connected || !draft.trim()}>Send ↗</button></div>
                             {status && <p className="direct-send-status" role="status">{status}</p>}
                         </form>
                     </section>

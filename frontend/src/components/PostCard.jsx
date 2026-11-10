@@ -13,9 +13,7 @@ export default function PostCard({ post: sourcePost, saved, onToggleSaved, peerS
     const [shareOpen, setShareOpen] = useState(false);
     const [shareNotice, setShareNotice] = useState('');
     const comments = post.thread || (post.recentComments || []).map((comment) => ({ ...comment, id: `sample-${comment.author}-${comment.id}`, parentId: null }));
-    const shareUrl = new URL(window.location.href);
-    shareUrl.search = '';
-    shareUrl.hash = `/home?post=${encodeURIComponent(post.id)}`;
+    const shareUrl = new URL(`/home_post_${encodeURIComponent(post.id)}`, window.location.origin);
 
     function update(change) {
         if (onUpdatePost) onUpdatePost(post.id, change);
@@ -108,7 +106,7 @@ export default function PostCard({ post: sourcePost, saved, onToggleSaved, peerS
                     <label>Post link<input value={shareUrl.href} readOnly onFocus={(event) => event.target.select()} /></label>
                     <button type="button" onClick={copyLink}>Copy link</button>
                     {shareNotice && <p role="status">{shareNotice}</p>}
-                    <small>Local preview links work on this PC. New posts and attached files need backend storage before others can access them.</small>
+                    <small>This link opens locally saved content in this browser. Sharing content with another user or device requires backend storage.</small>
                 </section>
             )}
             {commentsOpen && (
