@@ -37,7 +37,7 @@ The project uses React 19 and Vite 6. Fonts are Inter and JetBrains Mono, with l
 
 ## Preview limitations
 
-This is a frontend prototype. Login does not authenticate against a server. Some data and activity counts are examples. Posts, projects, rooms, messages and attachments use IndexedDB to survive local refreshes. Theme, saved-post IDs, profile edits and peer relationships use localStorage. If browser storage is unavailable or full, the UI warns that affected changes are temporary. Data is local to this browser and origin, not shared with other users.
+Signup, email verification, and login connect to the authentication backend through the `/api` proxy. Login uses HttpOnly cookies; session restoration, token refresh, and server-side logout are not implemented yet. See [Backend integration](docs/BACKEND-INTEGRATION.md). Some data and activity counts are examples. Posts, projects, rooms, messages and attachments use IndexedDB to survive local refreshes. Theme, saved-post IDs, profile edits and peer relationships use localStorage. If browser storage is unavailable or full, the UI warns that affected changes are temporary. Data is local to this browser and origin, not shared with other users.
 
 The Run snippet button does not compile or execute code. Reports and peer requests are local preview actions. Private messages, peer relationships and public profiles have local preview interfaces. Backend account management, notifications and shared services still need implementation or integration.
 

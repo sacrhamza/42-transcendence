@@ -14,10 +14,9 @@ export async function login({ email, password }, request = fetch) {
             ? Array.isArray(message) ? message.join(' ') : String(message)
             : 'Unable to log in right now. Please try again later.');
     }
-    if (typeof data?.accessToken !== 'string' || !data.accessToken.trim()
-        || typeof data.refreshToken !== 'string' || !data.refreshToken.trim()
-        || data.tokenType !== 'Bearer') {
-        throw new Error('The login service returned an invalid session. Please try again later.');
+    // The backend sets HttpOnly cookies; tokens are never exposed to JavaScript.
+    if (response.status !== 200 || data?.message !== 'Login successful') {
+        throw new Error('The login service returned an unexpected response. Please try again later.');
     }
     return data;
 }

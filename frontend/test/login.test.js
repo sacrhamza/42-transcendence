@@ -16,17 +16,27 @@ test('wrong credentials reject login and never trigger entry to home', async () 
     assert.equal(entered, false);
 });
 
-test('successful login returns the backend session', async () => {
-    const session = { accessToken: 'test-access-token', refreshToken: 'test-refresh-token', tokenType: 'Bearer' };
-    const result = await login(credentials, async () => new Response(JSON.stringify(session), { status: 200 }));
-    assert.deepEqual(result, session);
+test('successful cookie-based login accepts the backend acknowledgement without JSON tokens', async () => {
+    const acknowledgement = { message: 'Login successful' };
+    const result = await login(credentials, async (url, options) => {
+        assert.equal(url, '/api/auth/login');
+        assert.equal(options.method, 'POST');
+        assert.equal(options.credentials, 'include');
+        assert.equal(options.headers['Content-Type'], 'application/json');
+        assert.equal(options.headers.Accept, 'application/json');
+        assert.deepEqual(JSON.parse(options.body), credentials);
+        return new Response(JSON.stringify(acknowledgement), { status: 200 });
+    });
+    assert.deepEqual(result, acknowledgement);
 });
 
-test('an HTTP success without session tokens cannot grant access', async () => {
-    for (const data of [{}, { accessToken: 'token' }, { accessToken: '', refreshToken: 'token', tokenType: 'Bearer' }]) {
-        await assert.rejects(login(credentials, async () => new Response(JSON.stringify(data))), /invalid session/);
+test('unexpected success bodies cannot grant access', async () => {
+    for (const data of [null, {}, { message: 'check your email' }, { accessToken: 'token', refreshToken: 'token', tokenType: 'Bearer' }]) {
+        await assert.rejects(login(credentials, async () => new Response(JSON.stringify(data))), /unexpected response/);
     }
-    await assert.rejects(login(credentials, async () => new Response('<html>fallback page</html>')), /invalid session/);
+    await assert.rejects(login(credentials, async () => new Response('<html>fallback page</html>')), /unexpected response/);
+    await assert.rejects(login(credentials, async () => new Response(null, { status: 204 })), /unexpected response/);
+    await assert.rejects(login(credentials, async () => new Response(JSON.stringify({ message: 'Login successful' }), { status: 202 })), /unexpected response/);
 });
 
 test('backend outages and rate limiting do not authenticate the user', async () => {

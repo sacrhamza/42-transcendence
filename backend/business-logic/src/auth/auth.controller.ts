@@ -7,7 +7,9 @@ import {
   Query,
   HttpStatus,
   Redirect,
+  Res,
 } from '@nestjs/common';
+import type { Response } from 'express';
 import { AuthService } from './auth.service.js';
 import { RegisterDto } from '../dto/RegisterDto.js';
 import { LoginDto } from '../dto/LogingDto.js';
@@ -29,8 +31,33 @@ export class AuthController {
   }
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  async login(@Body() data: LoginDto) {
-    return this.authService.login(data);
+  async login(
+    @Body() data: LoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const { accessToken, refreshToken } = await this.authService.login(data);
+    const isProduction = process.env.NODE_ENV === 'production';
+
+    // Refresh Token: 15 min
+    res.cookie('access_token', accessToken, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: 'lax',
+      maxAge: 5 * 60 * 1000,
+      path: '/',
+    });
+
+    // Refresh Token: 7 days
+    res.cookie('refresh_token', refreshToken, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/api/auth/refresh',
+    });
+    return {
+      message: 'Login successful',
+    };
   }
 
   // @Post('refresh')

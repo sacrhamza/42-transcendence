@@ -40,14 +40,14 @@ Opening `/` replaces the address with `/login`. Old bookmarks such as `/#/login`
 
 The same component renders the two forms, with the mode controlled by the route. Switching forms resets their input state.
 
-- Signup username: required, 3–24 letters, numbers, or underscores.
+- Signup username: required, 2–50 characters without whitespace.
 - Email: required and checked using the browser's email validation.
-- Signup password: required, minimum 12 characters.
+- Signup password: required, 8–50 characters. The backend requires uppercase and lowercase letters, a number, a symbol, no whitespace, and no full username in the password.
 - Confirmation: required and must match the password.
 - Mismatches show “Your passwords do not match” next to confirmation, set native custom validity, and block submission. Editing either password updates the warning.
 - Password visibility can be toggled.
 
-Successful form submission currently opens `/home` as a preview. It does not create an account, verify credentials, or establish an authenticated session.
+Signup calls `/api/auth/register` and asks the user to verify their email before logging in. Login calls `/api/auth/login`; a `200` response with `{ "message": "Login successful" }` opens `/home`, while the backend stores tokens in HttpOnly cookies. The frontend keeps only an in-memory navigation flag. Session restoration, token refresh, and server-side logout are not implemented; see [Backend integration](BACKEND-INTEGRATION.md).
 
 ## Profile
 

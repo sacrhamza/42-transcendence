@@ -17,13 +17,13 @@ function getPageFromLocation() {
 
 export default function App() {
     const [page, setPage] = useState(getPageFromLocation);
-    // Keep credentials in memory, never in localStorage or URLs.
-    const [session, setSession] = useState(null);
+    // Tokens live in HttpOnly cookies. This flag only controls frontend navigation.
+    const [authenticated, setAuthenticated] = useState(false);
     const requiresSession = !['login', 'signup', 'verify-email', 'forgot-password', 'reset-password'].includes(page.split(/[/?]/)[0]);
 
     useEffect(() => {
-        if (requiresSession && !session) navigate('/login', { replace: true });
-    }, [requiresSession, session, page]);
+        if (requiresSession && !authenticated) navigate('/login', { replace: true });
+    }, [requiresSession, authenticated, page]);
     const [theme, setTheme] = useState(() => {
         return readStorage('suf-theme', 'dark');
     });
@@ -63,7 +63,7 @@ export default function App() {
     }
 
     const recoveryPage = page.split('?')[0];
-    if (requiresSession && !session) return null;
+    if (requiresSession && !authenticated) return null;
     if (recoveryPage === 'verify-email') return <EmailVerificationPage />;
     if (['forgot-password', 'reset-password'].includes(recoveryPage)) {
         return (
@@ -85,7 +85,7 @@ export default function App() {
                 postId={page.startsWith('home?') ? new URLSearchParams(page.split('?')[1]).get('post') : null}
                 projectId={page.startsWith('projects?') ? new URLSearchParams(page.split('?')[1]).get('project') : null}
                 onLogOut={() => {
-                    setSession(null);
+                    setAuthenticated(false);
                     navigate('/login');
                 }}
                 theme={theme}
@@ -103,8 +103,8 @@ export default function App() {
                 : new URLSearchParams(page.split('?')[1]).get('verification') === 'expired'
                     ? 'Your verification link is invalid, expired, or already used. Please sign up again to get a new link. If you already verified your email, try logging in.'
                     : ''}
-            onEnter={(authenticatedSession) => {
-                setSession(authenticatedSession);
+            onEnter={() => {
+                setAuthenticated(true);
                 navigate('/home');
             }}
             theme={theme}

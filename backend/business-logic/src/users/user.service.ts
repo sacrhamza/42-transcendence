@@ -31,14 +31,14 @@ export class UsersService {
     } catch (err) {
       this.logger.error('PostgreSQL username lookup failed', err);
 
-      if (
-        err instanceof PrismaClientKnownRequestError &&
-        err.code === 'P1001'
-      ) {
-        throw new ServiceUnavailableException(
-          'Database temporarily unavailable',
-        );
-      }
+      // if (
+      //   err instanceof PrismaClientKnownRequestError &&
+      //   err.code === 'P1001'
+      // ) {
+      //   throw new ServiceUnavailableException(
+      //     'Database temporarily unavailable',
+      //   );
+      // }
       throw err;
     }
   }

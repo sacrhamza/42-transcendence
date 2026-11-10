@@ -67,12 +67,12 @@ export default function LoginPage({ onEnter, theme, onToggleTheme, mode = 'login
         setNotice('');
         try {
             if (!signup) {
-                const session = await login({
+                await login({
                     email: fields.get('email'),
                     password: fields.get('password'),
                 });
                 form.reset();
-                onEnter(session);
+                onEnter();
                 return;
             }
             const response = await fetch('/api/auth/register', {

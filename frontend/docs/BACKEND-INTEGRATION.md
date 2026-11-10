@@ -2,9 +2,9 @@
 
 ## Current boundary
 
-Signup, email verification, and login call the authentication backend. Login sends email and password to `POST /api/auth/login`. Only a successful response with `accessToken`, `refreshToken`, and `tokenType: "Bearer"` opens the home page. Invalid credentials remain on login with an error.
+Signup, email verification, and login call the authentication backend. Login sends only email and password to `POST /api/auth/login` with `credentials: 'include'`. A `200 OK` response with `{ "message": "Login successful" }` opens the home page. Invalid credentials remain on login with an error.
 
-Session tokens are kept in React memory only; logout clears them, and reloading the app requires login again. Home and profile routes redirect to login without a session. Refresh-token renewal and server-side logout are not implemented yet. Backend endpoints must enforce their own authentication and authorization; the frontend route check does not secure backend data.
+The backend sets `access_token` (5 minutes, path `/`) and `refresh_token` (7 days, path `/api/auth/refresh`) as HttpOnly, SameSite=Lax cookies; Secure is enabled in production. JavaScript does not read or store these tokens. React keeps only an in-memory flag for navigation, so reloading currently returns to login even if cookies remain valid. Logout clears that flag but does not clear cookies or revoke the backend session. Session restoration, refresh-token renewal, and server-side logout need backend endpoints before they can be connected. Backend endpoints must enforce their own authentication and authorization; the frontend route check does not secure backend data.
 
 ## Signup and email verification
 
