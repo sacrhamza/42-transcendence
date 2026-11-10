@@ -17,6 +17,7 @@ test('email browser navigation reaches the frontend before a single verification
     let vite;
     try {
         vite = await createServer({
+            optimizeDeps: { noDiscovery: true, include: [] },
             server: {
                 host: '127.0.0.1', port: 0,
                 proxy: { '/api': { target: `http://127.0.0.1:${backend.address().port}` } },

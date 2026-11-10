@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { navigate } from '../utils/navigation.js';
+import { login } from '../utils/login.js';
 
 export default function LoginPage({ onEnter, theme, onToggleTheme, mode = 'login', initialNotice = '' }) {
     const [visible, setVisible] = useState(false);
@@ -60,16 +61,20 @@ export default function LoginPage({ onEnter, theme, onToggleTheme, mode = 'login
             return;
         }
 
-        if (!signup) {
-            onEnter();
-            return;
-        }
-
         const form = event.currentTarget;
         const fields = new FormData(form);
         setSubmitting(true);
         setNotice('');
         try {
+            if (!signup) {
+                const session = await login({
+                    email: fields.get('email'),
+                    password: fields.get('password'),
+                });
+                form.reset();
+                onEnter(session);
+                return;
+            }
             const response = await fetch('/api/auth/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -92,7 +97,7 @@ export default function LoginPage({ onEnter, theme, onToggleTheme, mode = 'login
             setNotice('Check your email for a verification link to complete your registration.');
         } catch (error) {
             setNotice(error instanceof TypeError
-                ? 'Unable to reach the registration service. Please try again later.'
+                ? `Unable to reach the ${signup ? 'registration' : 'login'} service. Please try again later.`
                 : error.message);
         } finally {
             setSubmitting(false);
@@ -329,7 +334,7 @@ export default function LoginPage({ onEnter, theme, onToggleTheme, mode = 'login
                             type="submit"
                             disabled={submitting}
                         >
-                            {submitting ? 'Creating account…' : signup ? 'Create account' : 'Log in'}{' '}
+                            {submitting ? signup ? 'Creating account…' : 'Logging in…' : signup ? 'Create account' : 'Log in'}{' '}
                             <span aria-hidden="true">↗</span>
                         </button>
                     </form>
@@ -354,7 +359,7 @@ export default function LoginPage({ onEnter, theme, onToggleTheme, mode = 'login
                     )}
 
                     <p className="prototype">
-                        {signup ? 'Verify your email to complete registration.' : 'Frontend preview · Login integration coming next'}
+                        {signup ? 'Verify your email to complete registration.' : 'Log in with your verified SUF account.'}
                     </p>
                 </div>
             </section>
