@@ -16,6 +16,7 @@ import { SecretsService } from '../Secrets/secrets.service.js';
 import { hash, randomUUID } from 'node:crypto';
 import { SessionService } from './SessionService/session.service.js';
 import { setServers } from 'node:dns';
+import { name } from 'nodemailer/lib/package-info.js';
 
 @Injectable()
 export class AuthService {
@@ -85,8 +86,6 @@ export class AuthService {
     const accessToken = await this.jwtservice.signAsync(
       {
         sub: user.users.id.toString(),
-        name: user.users.name,
-        email: data.email,
       },
       {
         secret: this.secretsserver.getSecret('JWT_ACCESS_SECRET'),
@@ -129,39 +128,83 @@ export class AuthService {
       tokenType: 'Bearer',
     };
   }
-  // in progriss ...
-  // async refresh(refreshToken: string) {
-  //   // hadchy kaml f 30 min inchaalah
-  //   // amz imik omarg tncht ardor tsow9 lalak i blackhool ikhan ...
-  //   // Verify refresh token : done
-  //   // Find session by JTI : done
-  //   // Compare token hash : done
-  //   // Generate new tokens: 
-  //   // Rotate session : 
-  //   // Return new tokens :
+  // in progriss just  testing ! ...
+  async refresh(refreshToken: string) {
+    let pylode: {
+      sub: string;
+      jti: string;
+      exp: number;
+    };
+    try {
+      pylode = await this.jwtservice.verifyAsync<{
+        sub: string;
+        jti: string;
+        exp: number;
+      }>(refreshToken, {
+        secret: this.secretsserver.getSecret('JWT_REFRESH_SECRET'),
+      });
+      console.log('STEP 1: JWT VERIFIED SUCCESSFULLY');
+    } catch (error) {
+      console.error(
+        'STEP 1: JWT VERIFICATION FAILED:',
+        error instanceof Error ? error.message : 'Unknown error',
+      );
+      throw new UnauthorizedException('Invalid refresh token');
+    }
 
-  //   const pylode = await this.jwtservice.verifyAsync<{
-  //     sub: string;
-  //     jti: string;
-  //     expires_at: Date;
-  //   }>(refreshToken, {
-  //     secret: this.secretsserver.getSecret('JWT_REFRESH_SECRET'),
-  //   });
+    const session = await this.sesstionservice.findSessionByJti(pylode.jti);
+    console.log('STEP 2: SESSION FOUND:', !!session);
+    if (!session) throw new UnauthorizedException('Invalid refresh token');
 
-  //   const session = await this.sesstionservice.findSessionByJti(pylode.jti);
-  //   if (!session) throw new UnauthorizedException('Invalid refresh token');
+    // Verify session ownership and expiration
+    if (
+      session.fk_user_id.toString() !== pylode.sub ||
+      session.expires_at <= new Date()
+    ) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
 
-  //   // Verify session ownership and expiration
-  //   if (
-  //     session.fk_user_id.toString() !== pylode.sub ||
-  //     session.expires_at < new Date()
-  //   ) {
-  //     throw new UnauthorizedException('Invalid refresh token');
-  //   }
+    const verify = await bcrypt.compare(refreshToken, session.token_hash);
+    if (!verify) throw new UnauthorizedException('Invalid refresh token');
 
-  //   const verify = await bcrypt.compare(refreshToken, session.token_hash);
-  //   if (!verify) throw new UnauthorizedException('Invalid refresh token');
+    const newAccessToken = await this.jwtservice.signAsync(
+      { sub: pylode.sub },
+      {
+        secret: this.secretsserver.getSecret('JWT_ACCESS_SECRET'),
+        expiresIn: '5m',
+      },
+    );
 
-  //   // ...
-  // }
+    const new_jti: string = randomUUID();
+    const newRefreshToken = await this.jwtservice.signAsync(
+      {
+        sub: pylode.sub,
+        jti: new_jti,
+        exp: pylode.exp,
+      },
+      {
+        secret: this.secretsserver.getSecret('JWT_REFRESH_SECRET'),
+      },
+    );
+
+    const hashed_new_refresh_token = await bcrypt.hash(newRefreshToken, 12);
+
+    // converte old expiration to mils socend
+    const exp: Date = new Date(pylode.exp * 1000);
+
+    await this.sesstionservice.rotateSession(
+      {
+        jti: new_jti,
+        tokenHash: hashed_new_refresh_token,
+        expiresAt: exp,
+      },
+      session.id,
+      session.jti,
+    );
+    return {
+      accessToken: newAccessToken,
+      refreshToken: newRefreshToken,
+      refreshExpiresAt: exp,
+    };
+  }
 }

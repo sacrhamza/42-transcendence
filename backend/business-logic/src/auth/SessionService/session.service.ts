@@ -24,6 +24,7 @@ export class SessionService {
           fk_user_id: sub.userId,
           token_hash: sub.tokenHash,
           expires_at: sub.expiresAt,
+          jti: sub.jti,
         },
       });
     } catch (err) {
@@ -58,7 +59,7 @@ export class SessionService {
     }
   }
   async rotateSession(
-    sub: {
+    data: {
       jti: string;
       tokenHash: string;
       expiresAt: Date;
@@ -66,24 +67,25 @@ export class SessionService {
     sessionid: bigint,
     old_jti: string,
   ) {
+    let object;
     try {
-      const object = await this.prisma.refresh_sessions.updateMany({
+      object = await this.prisma.refresh_sessions.updateMany({
         where: {
           id: sessionid,
           jti: old_jti,
         },
         data: {
-          jti: sub.jti,
-          token_hash: sub.tokenHash,
-          expires_at: sub.expiresAt,
+          jti: data.jti,
+          token_hash: data.tokenHash,
+          expires_at: data.expiresAt,
         },
       });
-      if (object.count !== 1) {
-        throw new UnauthorizedException('Session expired or already rotated');
-      }
     } catch (err) {
       this.logger.error('Failed to update session', err);
       throw new ServiceUnavailableException('Database temporarily unavailable');
+    }
+    if (object.count !== 1) {
+      throw new UnauthorizedException('Session expired or already rotated');
     }
   }
   // updateSession()
