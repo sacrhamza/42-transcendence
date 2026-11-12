@@ -40,7 +40,7 @@ Opening `/` replaces the address with `/login`. Old bookmarks such as `/#/login`
 
 The same component renders the two forms, with the mode controlled by the route. Switching forms resets their input state.
 
-- Signup username: required, 3–24 letters, numbers, or underscores.
+- Signup username: required, 2–50 ASCII letters and numbers, including at least one letter. Symbols, spaces, and numbers-only names are rejected.
 - Email: required and checked using the browser's email validation.
 - Signup password: required, minimum 12 characters.
 - Confirmation: required and must match the password.

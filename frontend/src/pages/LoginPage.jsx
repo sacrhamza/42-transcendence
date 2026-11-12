@@ -243,10 +243,14 @@ export default function LoginPage({ onEnter, theme, onToggleTheme, mode = 'login
                                     placeholder="Choose your username"
                                     minLength={2}
                                     maxLength={50}
-                                    pattern="\S+"
-                                    title="Use 2–50 characters without whitespace"
+                                    pattern="[A-Za-z0-9]*[A-Za-z][A-Za-z0-9]*"
+                                    title="Use 2–50 letters and numbers, with at least one letter. Symbols and spaces are not allowed."
+                                    aria-describedby="username-requirements"
                                     required
                                 />
+                                <span id="username-requirements" className="notice">
+                                    Use 2–50 letters and numbers, including at least one letter. No symbols or spaces.
+                                </span>
                             </label>
                         )}
 
