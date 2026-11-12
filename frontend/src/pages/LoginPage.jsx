@@ -248,7 +248,7 @@ export default function LoginPage({ onEnter, theme, onToggleTheme, mode = 'login
                                     aria-describedby="username-requirements"
                                     required
                                 />
-                                <span id="username-requirements" className="notice">
+                                <span id="username-requirements" className="notice field-hint">
                                     Use 2–50 letters and numbers, including at least one letter. No symbols or spaces.
                                 </span>
                             </label>
