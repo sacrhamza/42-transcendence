@@ -9,13 +9,15 @@ import {
   Res,
   Req,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { AuthService } from './auth.service.js';
 import { RegisterDto } from '../dto/RegisterDto.js';
 import { LoginDto } from '../dto/LogingDto.js';
-import { PassThrough } from 'node:stream';
 import type { Request } from 'express';
+import { AuthGuard } from '../guards/auth.guard.js';
+import type { AuthRequest } from '../common/types/auth-request.type.js';
 
 @Controller('auth')
 export class AuthController {
@@ -42,7 +44,7 @@ export class AuthController {
   ) {
     const { accessToken, refreshToken } = await this.authService.login(data);
 
-    // Refresh Token: 5 min
+    // Access Token: 5 min
     res.cookie('access_token', accessToken, {
       httpOnly: true,
       secure: true,
@@ -57,7 +59,7 @@ export class AuthController {
       secure: true,
       sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
-      path: '/api/auth/refresh',
+      path: '/api/auth',
     });
     return {
       message: 'Login successful',
@@ -95,10 +97,47 @@ export class AuthController {
       secure: true,
       sameSite: 'lax',
       maxAge: remaining_time,
-      path: '/api/auth/refresh',
+      path: '/api/auth',
     });
     return {
       message: 'Tokens is refreshed successful',
     };
   }
+
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    const all_cookis = req.cookies;
+    const target: string | undefined = all_cookis?.['refresh_token'];
+
+    if (typeof target === 'string' && target) {
+      await this.authService.logout(target);
+    }
+
+    // deletion session !
+    res.clearCookie('access_token', { path: '/' });
+    res.clearCookie('refresh_token', { path: '/api/auth' });
+    return {
+      message: 'Logout successful',
+    };
+  }
+
+  // just test for authorisation ...
+  @Get('user')
+  @UseGuards(AuthGuard)
+  someprotectedroute1() {
+    return {
+      msg: 'hello from protected route guards it work perfectly',
+    };
+  }
+  // just for testing if req hold the userid !
+  @Get('users')
+  @UseGuards(AuthGuard)
+  someprotectedroute2(@Req() req: AuthRequest) {
+    return {
+      userId: req.user,
+      msg: 'Protected route works',
+    };
+  }
+ 
 }

@@ -89,5 +89,17 @@ export class SessionService {
     }
   }
   // updateSession()
-  // deleteSession()
+  async deleteSession(jti: string, userId: bigint) {
+    try {
+      return await this.prisma.refresh_sessions.deleteMany({
+        where: {
+          fk_user_id: userId,
+          jti: jti,
+        },
+      });
+    } catch (err) {
+      this.logger.error('Failed to delete session', err);
+      throw new ServiceUnavailableException('Database temporarily unavailable');
+    }
+  }
 }

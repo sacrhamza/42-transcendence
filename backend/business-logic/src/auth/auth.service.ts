@@ -3,6 +3,7 @@ import {
   Injectable,
   ConflictException,
   UnauthorizedException,
+  ServiceUnavailableException,
 } from '@nestjs/common';
 import { RegisterDto } from '../dto/RegisterDto.js';
 import validations from './custom-func/lib.js';
@@ -17,6 +18,7 @@ import { hash, randomUUID } from 'node:crypto';
 import { SessionService } from './SessionService/session.service.js';
 import { setServers } from 'node:dns';
 import { name } from 'nodemailer/lib/package-info.js';
+import { PrismaClientRustPanicError } from '@prisma/client/runtime/client';
 
 @Injectable()
 export class AuthService {
@@ -206,5 +208,23 @@ export class AuthService {
       refreshToken: newRefreshToken,
       refreshExpiresAt: exp,
     };
+  }
+  async logout(refresh_token: string) {
+    let pylode: {
+      sub: string;
+      jti: string;
+    };
+    try {
+      pylode = await this.jwtservice.verifyAsync<{ sub: string; jti: string }>(
+        refresh_token,
+        {
+          secret: this.secretsserver.getSecret('JWT_REFRESH_SECRET'),
+        },
+      );
+    } catch {
+      return;
+    }
+
+    await this.sesstionservice.deleteSession(pylode.jti, BigInt(pylode.sub));
   }
 }
