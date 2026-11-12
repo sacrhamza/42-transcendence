@@ -2,6 +2,11 @@
 secrets/
 tests/
 
+# Keep the business-logic manual API test plans in version control.
+!/backend/business-logic/tests/
+/backend/business-logic/tests/*
+!/backend/business-logic/tests/*.md
+
 # Created by https://www.toptal.com/developers/gitignore/api/react,python,dotenv
 # Edit at https://www.toptal.com/developers/gitignore?templates=react,python,dotenv
 

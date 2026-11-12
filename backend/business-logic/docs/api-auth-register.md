@@ -2,6 +2,8 @@
 
 This document describes the current implementation in this working tree. Registration has two steps: submit account details, then verify the email address. **The account is created only during email verification.**
 
+For login, refresh, logout, cookies, and protected endpoints, see the [complete API reference](api.md).
+
 This replaces the previous description of immediate account creation with a `201` response from `/register`. The behavior below is based on code inspection; it is not a report of executed integration tests.
 
 ## 1. Endpoints and response contract
@@ -110,7 +112,7 @@ This endpoint expects a query parameter, not a JSON body. Its current implementa
    }
    ```
 
-The endpoint returns **JSON directly**. It does not redirect to a frontend success page. Clicking the current email link in a browser therefore displays the backend response. A future frontend verification page would need the emailed URL to point to that page, or another agreed integration change; such routing is not implemented here.
+The Nest endpoint returns **JSON directly** and does not redirect. A link targeting the backend origin displays that response. The frontend now has a `/verify-email` page and Vite development middleware: when `NEST_URL` points to the frontend origin, browser HTML navigation to `/api/auth/verify-email` redirects to `/verify-email`, which sends the JSON verification request through the Vite proxy. That development redirect is not part of the static build; deployment needs corresponding web-server routing or an agreed change to emailed URLs.
 
 **A token is consumed before the database write and welcome email.** A later failure does not restore it. Do not automatically retry verification on page reload, mount effects, or network errors: a second request may return an invalid-token error even if the first request created the account.
 
@@ -154,7 +156,7 @@ Support both `string` and `string[]` for `message`; do not assume `error` exists
 | `409` | `User already registered` | Username found in Redis duplicate cache |
 | `409` | `Username already taken` | Username found in PostgreSQL |
 | `409` | `Email already registered` | Email found in Redis cache or PostgreSQL |
-| `503` | `Database temporarily unavailable` | Database lookup failed with the explicitly handled Prisma `P1001` error |
+| `503` | `Database temporarily unavailable` | Email lookup failed with the explicitly handled Prisma `P1001` error; username lookup currently rethrows database errors without this mapping |
 | `503` | `Registration service temporarily unavailable` | Saving the pending registration in Redis failed |
 | `500` | Normally `Internal server error` | Unhandled failure, including verification-mail errors or database errors outside the explicit mapping |
 
@@ -205,7 +207,7 @@ The token query parameter has no DTO or explicit hex/length validation. Send exa
 2. Send only the three registration fields. Disable the submit button while awaiting the response.
 3. On `202`, show “Check your email to complete registration. The link expires in 15 minutes.” Keep the user unauthenticated and clear the password from form state when it is no longer needed.
 4. On `400`, show validation messages; on `409`, show the relevant conflict and a login option where appropriate; on `503`, offer a later retry. On `500` or transport failure, show a general failure without promising that no pending registration exists.
-5. Email verification currently happens at the backend URL. After a successful `201`, the user can go to login. If a frontend verification route is added later, it should call the endpoint once, render success/error, and require explicit recovery after an uncertain result.
+5. The backend verification URL returns JSON; the frontend verification page can call it through the configured proxy. After a successful `201`, the user can go to login. Call verification once per token and require explicit recovery after an uncertain result.
 6. If verification fails after a possible account-creation attempt, offer login as well as starting registration again. Reusing the old link cannot restore consumed pending data.
 
 Example registration request and minimal response handling:
@@ -240,7 +242,7 @@ async function requestRegistration(apiOrigin, { username, email, password }) {
 }
 ```
 
-Deployment detail: `main.ts` currently has no `enableCors()` configuration, and the checked-in main Nginx template does not proxy `/api` to Nest. A browser frontend on another origin needs an agreed CORS configuration or a working same-origin proxy. Use the actual API origin for your environment; do not assume the frontend origin already serves these endpoints.
+Deployment detail: `main.ts` currently has no `enableCors()` configuration, and the checked-in main Nginx template does not proxy `/api` to Nest. Vite provides a development `/api` proxy, targeting `BACKEND_URL` or `http://localhost:3000` by default. Production needs a working same-origin proxy or an agreed CORS configuration for a separate API origin, plus the verification-page routing described above.
 
 ## 8. Integration scenarios to verify
 
@@ -273,3 +275,4 @@ These are proposed checks derived from the implementation, **not tests executed 
 - [Verification URL and email delivery](../src/mail/mail.service.ts)
 - [Database fields and unique constraints](../prisma/schema.prisma)
 - [Current Nginx main template](../../../devops/nginx/templates/main.conf.template)
+- [Frontend development proxy and verification redirect](../../../frontend/vite.config.js)
