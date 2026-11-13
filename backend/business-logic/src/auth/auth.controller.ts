@@ -16,7 +16,7 @@ import { AuthService } from './auth.service.js';
 import { RegisterDto } from '../dto/RegisterDto.js';
 import { LoginDto } from '../dto/LogingDto.js';
 import type { Request } from 'express';
-import { AuthGuard } from '../guards/auth.guard.js';
+import { AuthenticationGuard } from '../guards/authentication.guard.js';
 import type { AuthRequest } from '../common/types/auth-request.type.js';
 
 @Controller('auth')
@@ -124,7 +124,7 @@ export class AuthController {
 
   // just test for authorisation ...
   @Get('user')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthenticationGuard)
   someprotectedroute1() {
     return {
       msg: 'hello from protected route guards it work perfectly',
@@ -132,12 +132,11 @@ export class AuthController {
   }
   // just for testing if req hold the userid !
   @Get('users')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthenticationGuard)
   someprotectedroute2(@Req() req: AuthRequest) {
     return {
       userId: req.user,
       msg: 'Protected route works',
     };
   }
- 
 }

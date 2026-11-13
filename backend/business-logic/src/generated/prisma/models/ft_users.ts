@@ -39,16 +39,19 @@ export type Ft_usersSumAggregateOutputType = {
 export type Ft_usersMinAggregateOutputType = {
   fk_user_id: bigint | null
   intra_id: bigint | null
+  name: string | null
 }
 
 export type Ft_usersMaxAggregateOutputType = {
   fk_user_id: bigint | null
   intra_id: bigint | null
+  name: string | null
 }
 
 export type Ft_usersCountAggregateOutputType = {
   fk_user_id: number
   intra_id: number
+  name: number
   _all: number
 }
 
@@ -66,16 +69,19 @@ export type Ft_usersSumAggregateInputType = {
 export type Ft_usersMinAggregateInputType = {
   fk_user_id?: true
   intra_id?: true
+  name?: true
 }
 
 export type Ft_usersMaxAggregateInputType = {
   fk_user_id?: true
   intra_id?: true
+  name?: true
 }
 
 export type Ft_usersCountAggregateInputType = {
   fk_user_id?: true
   intra_id?: true
+  name?: true
   _all?: true
 }
 
@@ -168,6 +174,7 @@ export type ft_usersGroupByArgs<ExtArgs extends runtime.Types.Extensions.Interna
 export type Ft_usersGroupByOutputType = {
   fk_user_id: bigint
   intra_id: bigint
+  name: string
   _count: Ft_usersCountAggregateOutputType | null
   _avg: Ft_usersAvgAggregateOutputType | null
   _sum: Ft_usersSumAggregateOutputType | null
@@ -196,27 +203,31 @@ export type ft_usersWhereInput = {
   NOT?: Prisma.ft_usersWhereInput | Prisma.ft_usersWhereInput[]
   fk_user_id?: Prisma.BigIntFilter<"ft_users"> | bigint | number
   intra_id?: Prisma.BigIntFilter<"ft_users"> | bigint | number
+  name?: Prisma.StringFilter<"ft_users"> | string
   users?: Prisma.XOR<Prisma.UsersScalarRelationFilter, Prisma.usersWhereInput>
 }
 
 export type ft_usersOrderByWithRelationInput = {
   fk_user_id?: Prisma.SortOrder
   intra_id?: Prisma.SortOrder
+  name?: Prisma.SortOrder
   users?: Prisma.usersOrderByWithRelationInput
 }
 
 export type ft_usersWhereUniqueInput = Prisma.AtLeast<{
   intra_id?: bigint | number
+  name?: string
   AND?: Prisma.ft_usersWhereInput | Prisma.ft_usersWhereInput[]
   OR?: Prisma.ft_usersWhereInput[]
   NOT?: Prisma.ft_usersWhereInput | Prisma.ft_usersWhereInput[]
   fk_user_id?: Prisma.BigIntFilter<"ft_users"> | bigint | number
   users?: Prisma.XOR<Prisma.UsersScalarRelationFilter, Prisma.usersWhereInput>
-}, "intra_id">
+}, "intra_id" | "name">
 
 export type ft_usersOrderByWithAggregationInput = {
   fk_user_id?: Prisma.SortOrder
   intra_id?: Prisma.SortOrder
+  name?: Prisma.SortOrder
   _count?: Prisma.ft_usersCountOrderByAggregateInput
   _avg?: Prisma.ft_usersAvgOrderByAggregateInput
   _max?: Prisma.ft_usersMaxOrderByAggregateInput
@@ -230,45 +241,54 @@ export type ft_usersScalarWhereWithAggregatesInput = {
   NOT?: Prisma.ft_usersScalarWhereWithAggregatesInput | Prisma.ft_usersScalarWhereWithAggregatesInput[]
   fk_user_id?: Prisma.BigIntWithAggregatesFilter<"ft_users"> | bigint | number
   intra_id?: Prisma.BigIntWithAggregatesFilter<"ft_users"> | bigint | number
+  name?: Prisma.StringWithAggregatesFilter<"ft_users"> | string
 }
 
 export type ft_usersCreateInput = {
   intra_id?: bigint | number
+  name: string
   users?: Prisma.usersCreateNestedOneWithoutFt_usersInput
 }
 
 export type ft_usersUncheckedCreateInput = {
   fk_user_id?: bigint | number
   intra_id?: bigint | number
+  name: string
 }
 
 export type ft_usersUpdateInput = {
   intra_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
   users?: Prisma.usersUpdateOneRequiredWithoutFt_usersNestedInput
 }
 
 export type ft_usersUncheckedUpdateInput = {
   fk_user_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   intra_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type ft_usersCreateManyInput = {
   fk_user_id?: bigint | number
   intra_id?: bigint | number
+  name: string
 }
 
 export type ft_usersUpdateManyMutationInput = {
   intra_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type ft_usersUncheckedUpdateManyInput = {
   fk_user_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   intra_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type ft_usersCountOrderByAggregateInput = {
   fk_user_id?: Prisma.SortOrder
   intra_id?: Prisma.SortOrder
+  name?: Prisma.SortOrder
 }
 
 export type ft_usersAvgOrderByAggregateInput = {
@@ -279,11 +299,13 @@ export type ft_usersAvgOrderByAggregateInput = {
 export type ft_usersMaxOrderByAggregateInput = {
   fk_user_id?: Prisma.SortOrder
   intra_id?: Prisma.SortOrder
+  name?: Prisma.SortOrder
 }
 
 export type ft_usersMinOrderByAggregateInput = {
   fk_user_id?: Prisma.SortOrder
   intra_id?: Prisma.SortOrder
+  name?: Prisma.SortOrder
 }
 
 export type ft_usersSumOrderByAggregateInput = {
@@ -307,6 +329,10 @@ export type BigIntFieldUpdateOperationsInput = {
   decrement?: bigint | number
   multiply?: bigint | number
   divide?: bigint | number
+}
+
+export type StringFieldUpdateOperationsInput = {
+  set?: string
 }
 
 export type ft_usersCreateNestedManyWithoutUsersInput = {
@@ -353,10 +379,12 @@ export type ft_usersUncheckedUpdateManyWithoutUsersNestedInput = {
 
 export type ft_usersCreateWithoutUsersInput = {
   intra_id?: bigint | number
+  name: string
 }
 
 export type ft_usersUncheckedCreateWithoutUsersInput = {
   intra_id?: bigint | number
+  name: string
 }
 
 export type ft_usersCreateOrConnectWithoutUsersInput = {
@@ -391,22 +419,27 @@ export type ft_usersScalarWhereInput = {
   NOT?: Prisma.ft_usersScalarWhereInput | Prisma.ft_usersScalarWhereInput[]
   fk_user_id?: Prisma.BigIntFilter<"ft_users"> | bigint | number
   intra_id?: Prisma.BigIntFilter<"ft_users"> | bigint | number
+  name?: Prisma.StringFilter<"ft_users"> | string
 }
 
 export type ft_usersCreateManyUsersInput = {
   intra_id?: bigint | number
+  name: string
 }
 
 export type ft_usersUpdateWithoutUsersInput = {
   intra_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type ft_usersUncheckedUpdateWithoutUsersInput = {
   intra_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type ft_usersUncheckedUpdateManyWithoutUsersInput = {
   intra_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 
@@ -414,27 +447,31 @@ export type ft_usersUncheckedUpdateManyWithoutUsersInput = {
 export type ft_usersSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   fk_user_id?: boolean
   intra_id?: boolean
+  name?: boolean
   users?: boolean | Prisma.usersDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["ft_users"]>
 
 export type ft_usersSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   fk_user_id?: boolean
   intra_id?: boolean
+  name?: boolean
   users?: boolean | Prisma.usersDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["ft_users"]>
 
 export type ft_usersSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   fk_user_id?: boolean
   intra_id?: boolean
+  name?: boolean
   users?: boolean | Prisma.usersDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["ft_users"]>
 
 export type ft_usersSelectScalar = {
   fk_user_id?: boolean
   intra_id?: boolean
+  name?: boolean
 }
 
-export type ft_usersOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"fk_user_id" | "intra_id", ExtArgs["result"]["ft_users"]>
+export type ft_usersOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"fk_user_id" | "intra_id" | "name", ExtArgs["result"]["ft_users"]>
 export type ft_usersInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   users?: boolean | Prisma.usersDefaultArgs<ExtArgs>
 }
@@ -453,6 +490,7 @@ export type $ft_usersPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     fk_user_id: bigint
     intra_id: bigint
+    name: string
   }, ExtArgs["result"]["ft_users"]>
   composites: {}
 }
@@ -879,6 +917,7 @@ export interface Prisma__ft_usersClient<T, Null = never, ExtArgs extends runtime
 export interface ft_usersFieldRefs {
   readonly fk_user_id: Prisma.FieldRef<"ft_users", 'BigInt'>
   readonly intra_id: Prisma.FieldRef<"ft_users", 'BigInt'>
+  readonly name: Prisma.FieldRef<"ft_users", 'String'>
 }
     
 

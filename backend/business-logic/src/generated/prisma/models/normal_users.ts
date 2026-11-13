@@ -38,18 +38,21 @@ export type Normal_usersMinAggregateOutputType = {
   fk_user_id: bigint | null
   mail: string | null
   password: string | null
+  name: string | null
 }
 
 export type Normal_usersMaxAggregateOutputType = {
   fk_user_id: bigint | null
   mail: string | null
   password: string | null
+  name: string | null
 }
 
 export type Normal_usersCountAggregateOutputType = {
   fk_user_id: number
   mail: number
   password: number
+  name: number
   _all: number
 }
 
@@ -66,18 +69,21 @@ export type Normal_usersMinAggregateInputType = {
   fk_user_id?: true
   mail?: true
   password?: true
+  name?: true
 }
 
 export type Normal_usersMaxAggregateInputType = {
   fk_user_id?: true
   mail?: true
   password?: true
+  name?: true
 }
 
 export type Normal_usersCountAggregateInputType = {
   fk_user_id?: true
   mail?: true
   password?: true
+  name?: true
   _all?: true
 }
 
@@ -171,6 +177,7 @@ export type Normal_usersGroupByOutputType = {
   fk_user_id: bigint
   mail: string
   password: string
+  name: string
   _count: Normal_usersCountAggregateOutputType | null
   _avg: Normal_usersAvgAggregateOutputType | null
   _sum: Normal_usersSumAggregateOutputType | null
@@ -200,6 +207,7 @@ export type normal_usersWhereInput = {
   fk_user_id?: Prisma.BigIntFilter<"normal_users"> | bigint | number
   mail?: Prisma.StringFilter<"normal_users"> | string
   password?: Prisma.StringFilter<"normal_users"> | string
+  name?: Prisma.StringFilter<"normal_users"> | string
   users?: Prisma.XOR<Prisma.UsersScalarRelationFilter, Prisma.usersWhereInput>
 }
 
@@ -207,23 +215,26 @@ export type normal_usersOrderByWithRelationInput = {
   fk_user_id?: Prisma.SortOrder
   mail?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  name?: Prisma.SortOrder
   users?: Prisma.usersOrderByWithRelationInput
 }
 
 export type normal_usersWhereUniqueInput = Prisma.AtLeast<{
   mail?: string
+  name?: string
   AND?: Prisma.normal_usersWhereInput | Prisma.normal_usersWhereInput[]
   OR?: Prisma.normal_usersWhereInput[]
   NOT?: Prisma.normal_usersWhereInput | Prisma.normal_usersWhereInput[]
   fk_user_id?: Prisma.BigIntFilter<"normal_users"> | bigint | number
   password?: Prisma.StringFilter<"normal_users"> | string
   users?: Prisma.XOR<Prisma.UsersScalarRelationFilter, Prisma.usersWhereInput>
-}, "mail">
+}, "mail" | "name">
 
 export type normal_usersOrderByWithAggregationInput = {
   fk_user_id?: Prisma.SortOrder
   mail?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  name?: Prisma.SortOrder
   _count?: Prisma.normal_usersCountOrderByAggregateInput
   _avg?: Prisma.normal_usersAvgOrderByAggregateInput
   _max?: Prisma.normal_usersMaxOrderByAggregateInput
@@ -238,11 +249,13 @@ export type normal_usersScalarWhereWithAggregatesInput = {
   fk_user_id?: Prisma.BigIntWithAggregatesFilter<"normal_users"> | bigint | number
   mail?: Prisma.StringWithAggregatesFilter<"normal_users"> | string
   password?: Prisma.StringWithAggregatesFilter<"normal_users"> | string
+  name?: Prisma.StringWithAggregatesFilter<"normal_users"> | string
 }
 
 export type normal_usersCreateInput = {
   mail: string
   password: string
+  name: string
   users?: Prisma.usersCreateNestedOneWithoutNormal_usersInput
 }
 
@@ -250,11 +263,13 @@ export type normal_usersUncheckedCreateInput = {
   fk_user_id?: bigint | number
   mail: string
   password: string
+  name: string
 }
 
 export type normal_usersUpdateInput = {
   mail?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
   users?: Prisma.usersUpdateOneRequiredWithoutNormal_usersNestedInput
 }
 
@@ -262,29 +277,34 @@ export type normal_usersUncheckedUpdateInput = {
   fk_user_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   mail?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type normal_usersCreateManyInput = {
   fk_user_id?: bigint | number
   mail: string
   password: string
+  name: string
 }
 
 export type normal_usersUpdateManyMutationInput = {
   mail?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type normal_usersUncheckedUpdateManyInput = {
   fk_user_id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   mail?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type normal_usersCountOrderByAggregateInput = {
   fk_user_id?: Prisma.SortOrder
   mail?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  name?: Prisma.SortOrder
 }
 
 export type normal_usersAvgOrderByAggregateInput = {
@@ -295,12 +315,14 @@ export type normal_usersMaxOrderByAggregateInput = {
   fk_user_id?: Prisma.SortOrder
   mail?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  name?: Prisma.SortOrder
 }
 
 export type normal_usersMinOrderByAggregateInput = {
   fk_user_id?: Prisma.SortOrder
   mail?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  name?: Prisma.SortOrder
 }
 
 export type normal_usersSumOrderByAggregateInput = {
@@ -315,10 +337,6 @@ export type Normal_usersListRelationFilter = {
 
 export type normal_usersOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
-}
-
-export type StringFieldUpdateOperationsInput = {
-  set?: string
 }
 
 export type normal_usersCreateNestedManyWithoutUsersInput = {
@@ -366,11 +384,13 @@ export type normal_usersUncheckedUpdateManyWithoutUsersNestedInput = {
 export type normal_usersCreateWithoutUsersInput = {
   mail: string
   password: string
+  name: string
 }
 
 export type normal_usersUncheckedCreateWithoutUsersInput = {
   mail: string
   password: string
+  name: string
 }
 
 export type normal_usersCreateOrConnectWithoutUsersInput = {
@@ -406,26 +426,31 @@ export type normal_usersScalarWhereInput = {
   fk_user_id?: Prisma.BigIntFilter<"normal_users"> | bigint | number
   mail?: Prisma.StringFilter<"normal_users"> | string
   password?: Prisma.StringFilter<"normal_users"> | string
+  name?: Prisma.StringFilter<"normal_users"> | string
 }
 
 export type normal_usersCreateManyUsersInput = {
   mail: string
   password: string
+  name: string
 }
 
 export type normal_usersUpdateWithoutUsersInput = {
   mail?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type normal_usersUncheckedUpdateWithoutUsersInput = {
   mail?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type normal_usersUncheckedUpdateManyWithoutUsersInput = {
   mail?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 
@@ -434,6 +459,7 @@ export type normal_usersSelect<ExtArgs extends runtime.Types.Extensions.Internal
   fk_user_id?: boolean
   mail?: boolean
   password?: boolean
+  name?: boolean
   users?: boolean | Prisma.usersDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["normal_users"]>
 
@@ -441,6 +467,7 @@ export type normal_usersSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   fk_user_id?: boolean
   mail?: boolean
   password?: boolean
+  name?: boolean
   users?: boolean | Prisma.usersDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["normal_users"]>
 
@@ -448,6 +475,7 @@ export type normal_usersSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   fk_user_id?: boolean
   mail?: boolean
   password?: boolean
+  name?: boolean
   users?: boolean | Prisma.usersDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["normal_users"]>
 
@@ -455,9 +483,10 @@ export type normal_usersSelectScalar = {
   fk_user_id?: boolean
   mail?: boolean
   password?: boolean
+  name?: boolean
 }
 
-export type normal_usersOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"fk_user_id" | "mail" | "password", ExtArgs["result"]["normal_users"]>
+export type normal_usersOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"fk_user_id" | "mail" | "password" | "name", ExtArgs["result"]["normal_users"]>
 export type normal_usersInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   users?: boolean | Prisma.usersDefaultArgs<ExtArgs>
 }
@@ -477,6 +506,7 @@ export type $normal_usersPayload<ExtArgs extends runtime.Types.Extensions.Intern
     fk_user_id: bigint
     mail: string
     password: string
+    name: string
   }, ExtArgs["result"]["normal_users"]>
   composites: {}
 }
@@ -904,6 +934,7 @@ export interface normal_usersFieldRefs {
   readonly fk_user_id: Prisma.FieldRef<"normal_users", 'BigInt'>
   readonly mail: Prisma.FieldRef<"normal_users", 'String'>
   readonly password: Prisma.FieldRef<"normal_users", 'String'>
+  readonly name: Prisma.FieldRef<"normal_users", 'String'>
 }
     
 

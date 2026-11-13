@@ -9,7 +9,7 @@ import type { AuthRequest } from '../common/types/auth-request.type.js';
 import { SecretsService } from '../Secrets/secrets.service.js';
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class AuthenticationGuard implements CanActivate {
   constructor(
     private readonly jwtservice: JwtService,
     private readonly secretservice: SecretsService,

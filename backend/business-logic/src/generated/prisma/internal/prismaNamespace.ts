@@ -401,7 +401,8 @@ export const ModelName = {
   normal_users: 'normal_users',
   peers: 'peers',
   users: 'users',
-  refresh_sessions: 'refresh_sessions'
+  refresh_sessions: 'refresh_sessions',
+  peer_requests: 'peer_requests'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -417,7 +418,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "ft_users" | "normal_users" | "peers" | "users" | "refresh_sessions"
+    modelProps: "ft_users" | "normal_users" | "peers" | "users" | "refresh_sessions" | "peer_requests"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -791,6 +792,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    peer_requests: {
+      payload: Prisma.$peer_requestsPayload<ExtArgs>
+      fields: Prisma.peer_requestsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.peer_requestsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$peer_requestsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.peer_requestsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$peer_requestsPayload>
+        }
+        findFirst: {
+          args: Prisma.peer_requestsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$peer_requestsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.peer_requestsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$peer_requestsPayload>
+        }
+        findMany: {
+          args: Prisma.peer_requestsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$peer_requestsPayload>[]
+        }
+        create: {
+          args: Prisma.peer_requestsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$peer_requestsPayload>
+        }
+        createMany: {
+          args: Prisma.peer_requestsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.peer_requestsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$peer_requestsPayload>[]
+        }
+        delete: {
+          args: Prisma.peer_requestsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$peer_requestsPayload>
+        }
+        update: {
+          args: Prisma.peer_requestsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$peer_requestsPayload>
+        }
+        deleteMany: {
+          args: Prisma.peer_requestsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.peer_requestsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.peer_requestsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$peer_requestsPayload>[]
+        }
+        upsert: {
+          args: Prisma.peer_requestsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$peer_requestsPayload>
+        }
+        aggregate: {
+          args: Prisma.Peer_requestsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePeer_requests>
+        }
+        groupBy: {
+          args: Prisma.peer_requestsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Peer_requestsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.peer_requestsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Peer_requestsCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -832,7 +907,8 @@ export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof
 
 export const Ft_usersScalarFieldEnum = {
   fk_user_id: 'fk_user_id',
-  intra_id: 'intra_id'
+  intra_id: 'intra_id',
+  name: 'name'
 } as const
 
 export type Ft_usersScalarFieldEnum = (typeof Ft_usersScalarFieldEnum)[keyof typeof Ft_usersScalarFieldEnum]
@@ -841,7 +917,8 @@ export type Ft_usersScalarFieldEnum = (typeof Ft_usersScalarFieldEnum)[keyof typ
 export const Normal_usersScalarFieldEnum = {
   fk_user_id: 'fk_user_id',
   mail: 'mail',
-  password: 'password'
+  password: 'password',
+  name: 'name'
 } as const
 
 export type Normal_usersScalarFieldEnum = (typeof Normal_usersScalarFieldEnum)[keyof typeof Normal_usersScalarFieldEnum]
@@ -849,7 +926,8 @@ export type Normal_usersScalarFieldEnum = (typeof Normal_usersScalarFieldEnum)[k
 
 export const PeersScalarFieldEnum = {
   fk_peer_id1: 'fk_peer_id1',
-  fk_peer_id2: 'fk_peer_id2'
+  fk_peer_id2: 'fk_peer_id2',
+  time: 'time'
 } as const
 
 export type PeersScalarFieldEnum = (typeof PeersScalarFieldEnum)[keyof typeof PeersScalarFieldEnum]
@@ -857,7 +935,6 @@ export type PeersScalarFieldEnum = (typeof PeersScalarFieldEnum)[keyof typeof Pe
 
 export const UsersScalarFieldEnum = {
   id: 'id',
-  name: 'name',
   profile_image: 'profile_image',
   user_join_date: 'user_join_date',
   bio: 'bio',
@@ -878,6 +955,15 @@ export const Refresh_sessionsScalarFieldEnum = {
 } as const
 
 export type Refresh_sessionsScalarFieldEnum = (typeof Refresh_sessionsScalarFieldEnum)[keyof typeof Refresh_sessionsScalarFieldEnum]
+
+
+export const Peer_requestsScalarFieldEnum = {
+  fk_sender_id: 'fk_sender_id',
+  fk_recipient_id: 'fk_recipient_id',
+  time: 'time'
+} as const
+
+export type Peer_requestsScalarFieldEnum = (typeof Peer_requestsScalarFieldEnum)[keyof typeof Peer_requestsScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1134,6 +1220,7 @@ export type GlobalOmitConfig = {
   peers?: Prisma.peersOmit
   users?: Prisma.usersOmit
   refresh_sessions?: Prisma.refresh_sessionsOmit
+  peer_requests?: Prisma.peer_requestsOmit
 }
 
 /* Types for Logging */

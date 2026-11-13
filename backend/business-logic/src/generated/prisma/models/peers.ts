@@ -39,16 +39,19 @@ export type PeersSumAggregateOutputType = {
 export type PeersMinAggregateOutputType = {
   fk_peer_id1: bigint | null
   fk_peer_id2: bigint | null
+  time: Date | null
 }
 
 export type PeersMaxAggregateOutputType = {
   fk_peer_id1: bigint | null
   fk_peer_id2: bigint | null
+  time: Date | null
 }
 
 export type PeersCountAggregateOutputType = {
   fk_peer_id1: number
   fk_peer_id2: number
+  time: number
   _all: number
 }
 
@@ -66,16 +69,19 @@ export type PeersSumAggregateInputType = {
 export type PeersMinAggregateInputType = {
   fk_peer_id1?: true
   fk_peer_id2?: true
+  time?: true
 }
 
 export type PeersMaxAggregateInputType = {
   fk_peer_id1?: true
   fk_peer_id2?: true
+  time?: true
 }
 
 export type PeersCountAggregateInputType = {
   fk_peer_id1?: true
   fk_peer_id2?: true
+  time?: true
   _all?: true
 }
 
@@ -168,6 +174,7 @@ export type peersGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
 export type PeersGroupByOutputType = {
   fk_peer_id1: bigint
   fk_peer_id2: bigint
+  time: Date
   _count: PeersCountAggregateOutputType | null
   _avg: PeersAvgAggregateOutputType | null
   _sum: PeersSumAggregateOutputType | null
@@ -196,6 +203,7 @@ export type peersWhereInput = {
   NOT?: Prisma.peersWhereInput | Prisma.peersWhereInput[]
   fk_peer_id1?: Prisma.BigIntFilter<"peers"> | bigint | number
   fk_peer_id2?: Prisma.BigIntFilter<"peers"> | bigint | number
+  time?: Prisma.DateTimeFilter<"peers"> | Date | string
   users_peers_fk_peer_id1Tousers?: Prisma.XOR<Prisma.UsersScalarRelationFilter, Prisma.usersWhereInput>
   users_peers_fk_peer_id2Tousers?: Prisma.XOR<Prisma.UsersScalarRelationFilter, Prisma.usersWhereInput>
 }
@@ -203,6 +211,7 @@ export type peersWhereInput = {
 export type peersOrderByWithRelationInput = {
   fk_peer_id1?: Prisma.SortOrder
   fk_peer_id2?: Prisma.SortOrder
+  time?: Prisma.SortOrder
   users_peers_fk_peer_id1Tousers?: Prisma.usersOrderByWithRelationInput
   users_peers_fk_peer_id2Tousers?: Prisma.usersOrderByWithRelationInput
 }
@@ -214,6 +223,7 @@ export type peersWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.peersWhereInput | Prisma.peersWhereInput[]
   fk_peer_id1?: Prisma.BigIntFilter<"peers"> | bigint | number
   fk_peer_id2?: Prisma.BigIntFilter<"peers"> | bigint | number
+  time?: Prisma.DateTimeFilter<"peers"> | Date | string
   users_peers_fk_peer_id1Tousers?: Prisma.XOR<Prisma.UsersScalarRelationFilter, Prisma.usersWhereInput>
   users_peers_fk_peer_id2Tousers?: Prisma.XOR<Prisma.UsersScalarRelationFilter, Prisma.usersWhereInput>
 }, "fk_peer_id1_fk_peer_id2">
@@ -221,6 +231,7 @@ export type peersWhereUniqueInput = Prisma.AtLeast<{
 export type peersOrderByWithAggregationInput = {
   fk_peer_id1?: Prisma.SortOrder
   fk_peer_id2?: Prisma.SortOrder
+  time?: Prisma.SortOrder
   _count?: Prisma.peersCountOrderByAggregateInput
   _avg?: Prisma.peersAvgOrderByAggregateInput
   _max?: Prisma.peersMaxOrderByAggregateInput
@@ -234,9 +245,11 @@ export type peersScalarWhereWithAggregatesInput = {
   NOT?: Prisma.peersScalarWhereWithAggregatesInput | Prisma.peersScalarWhereWithAggregatesInput[]
   fk_peer_id1?: Prisma.BigIntWithAggregatesFilter<"peers"> | bigint | number
   fk_peer_id2?: Prisma.BigIntWithAggregatesFilter<"peers"> | bigint | number
+  time?: Prisma.DateTimeWithAggregatesFilter<"peers"> | Date | string
 }
 
 export type peersCreateInput = {
+  time?: Date | string
   users_peers_fk_peer_id1Tousers?: Prisma.usersCreateNestedOneWithoutPeers_peers_fk_peer_id1TousersInput
   users_peers_fk_peer_id2Tousers?: Prisma.usersCreateNestedOneWithoutPeers_peers_fk_peer_id2TousersInput
 }
@@ -244,9 +257,11 @@ export type peersCreateInput = {
 export type peersUncheckedCreateInput = {
   fk_peer_id1?: bigint | number
   fk_peer_id2?: bigint | number
+  time?: Date | string
 }
 
 export type peersUpdateInput = {
+  time?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users_peers_fk_peer_id1Tousers?: Prisma.usersUpdateOneRequiredWithoutPeers_peers_fk_peer_id1TousersNestedInput
   users_peers_fk_peer_id2Tousers?: Prisma.usersUpdateOneRequiredWithoutPeers_peers_fk_peer_id2TousersNestedInput
 }
@@ -254,20 +269,23 @@ export type peersUpdateInput = {
 export type peersUncheckedUpdateInput = {
   fk_peer_id1?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   fk_peer_id2?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  time?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type peersCreateManyInput = {
   fk_peer_id1?: bigint | number
   fk_peer_id2?: bigint | number
+  time?: Date | string
 }
 
 export type peersUpdateManyMutationInput = {
-
+  time?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type peersUncheckedUpdateManyInput = {
   fk_peer_id1?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   fk_peer_id2?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  time?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type peersFk_peer_id1Fk_peer_id2CompoundUniqueInput = {
@@ -278,6 +296,7 @@ export type peersFk_peer_id1Fk_peer_id2CompoundUniqueInput = {
 export type peersCountOrderByAggregateInput = {
   fk_peer_id1?: Prisma.SortOrder
   fk_peer_id2?: Prisma.SortOrder
+  time?: Prisma.SortOrder
 }
 
 export type peersAvgOrderByAggregateInput = {
@@ -288,11 +307,13 @@ export type peersAvgOrderByAggregateInput = {
 export type peersMaxOrderByAggregateInput = {
   fk_peer_id1?: Prisma.SortOrder
   fk_peer_id2?: Prisma.SortOrder
+  time?: Prisma.SortOrder
 }
 
 export type peersMinOrderByAggregateInput = {
   fk_peer_id1?: Prisma.SortOrder
   fk_peer_id2?: Prisma.SortOrder
+  time?: Prisma.SortOrder
 }
 
 export type peersSumOrderByAggregateInput = {
@@ -308,6 +329,10 @@ export type PeersListRelationFilter = {
 
 export type peersOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type DateTimeFieldUpdateOperationsInput = {
+  set?: Date | string
 }
 
 export type peersCreateNestedManyWithoutUsers_peers_fk_peer_id1TousersInput = {
@@ -395,11 +420,13 @@ export type peersUncheckedUpdateManyWithoutUsers_peers_fk_peer_id2TousersNestedI
 }
 
 export type peersCreateWithoutUsers_peers_fk_peer_id1TousersInput = {
+  time?: Date | string
   users_peers_fk_peer_id2Tousers?: Prisma.usersCreateNestedOneWithoutPeers_peers_fk_peer_id2TousersInput
 }
 
 export type peersUncheckedCreateWithoutUsers_peers_fk_peer_id1TousersInput = {
   fk_peer_id2?: bigint | number
+  time?: Date | string
 }
 
 export type peersCreateOrConnectWithoutUsers_peers_fk_peer_id1TousersInput = {
@@ -413,11 +440,13 @@ export type peersCreateManyUsers_peers_fk_peer_id1TousersInputEnvelope = {
 }
 
 export type peersCreateWithoutUsers_peers_fk_peer_id2TousersInput = {
+  time?: Date | string
   users_peers_fk_peer_id1Tousers?: Prisma.usersCreateNestedOneWithoutPeers_peers_fk_peer_id1TousersInput
 }
 
 export type peersUncheckedCreateWithoutUsers_peers_fk_peer_id2TousersInput = {
   fk_peer_id1?: bigint | number
+  time?: Date | string
 }
 
 export type peersCreateOrConnectWithoutUsers_peers_fk_peer_id2TousersInput = {
@@ -452,6 +481,7 @@ export type peersScalarWhereInput = {
   NOT?: Prisma.peersScalarWhereInput | Prisma.peersScalarWhereInput[]
   fk_peer_id1?: Prisma.BigIntFilter<"peers"> | bigint | number
   fk_peer_id2?: Prisma.BigIntFilter<"peers"> | bigint | number
+  time?: Prisma.DateTimeFilter<"peers"> | Date | string
 }
 
 export type peersUpsertWithWhereUniqueWithoutUsers_peers_fk_peer_id2TousersInput = {
@@ -472,34 +502,42 @@ export type peersUpdateManyWithWhereWithoutUsers_peers_fk_peer_id2TousersInput =
 
 export type peersCreateManyUsers_peers_fk_peer_id1TousersInput = {
   fk_peer_id2?: bigint | number
+  time?: Date | string
 }
 
 export type peersCreateManyUsers_peers_fk_peer_id2TousersInput = {
   fk_peer_id1?: bigint | number
+  time?: Date | string
 }
 
 export type peersUpdateWithoutUsers_peers_fk_peer_id1TousersInput = {
+  time?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users_peers_fk_peer_id2Tousers?: Prisma.usersUpdateOneRequiredWithoutPeers_peers_fk_peer_id2TousersNestedInput
 }
 
 export type peersUncheckedUpdateWithoutUsers_peers_fk_peer_id1TousersInput = {
   fk_peer_id2?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  time?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type peersUncheckedUpdateManyWithoutUsers_peers_fk_peer_id1TousersInput = {
   fk_peer_id2?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  time?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type peersUpdateWithoutUsers_peers_fk_peer_id2TousersInput = {
+  time?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users_peers_fk_peer_id1Tousers?: Prisma.usersUpdateOneRequiredWithoutPeers_peers_fk_peer_id1TousersNestedInput
 }
 
 export type peersUncheckedUpdateWithoutUsers_peers_fk_peer_id2TousersInput = {
   fk_peer_id1?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  time?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type peersUncheckedUpdateManyWithoutUsers_peers_fk_peer_id2TousersInput = {
   fk_peer_id1?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  time?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -507,6 +545,7 @@ export type peersUncheckedUpdateManyWithoutUsers_peers_fk_peer_id2TousersInput =
 export type peersSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   fk_peer_id1?: boolean
   fk_peer_id2?: boolean
+  time?: boolean
   users_peers_fk_peer_id1Tousers?: boolean | Prisma.usersDefaultArgs<ExtArgs>
   users_peers_fk_peer_id2Tousers?: boolean | Prisma.usersDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["peers"]>
@@ -514,6 +553,7 @@ export type peersSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
 export type peersSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   fk_peer_id1?: boolean
   fk_peer_id2?: boolean
+  time?: boolean
   users_peers_fk_peer_id1Tousers?: boolean | Prisma.usersDefaultArgs<ExtArgs>
   users_peers_fk_peer_id2Tousers?: boolean | Prisma.usersDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["peers"]>
@@ -521,6 +561,7 @@ export type peersSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
 export type peersSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   fk_peer_id1?: boolean
   fk_peer_id2?: boolean
+  time?: boolean
   users_peers_fk_peer_id1Tousers?: boolean | Prisma.usersDefaultArgs<ExtArgs>
   users_peers_fk_peer_id2Tousers?: boolean | Prisma.usersDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["peers"]>
@@ -528,9 +569,10 @@ export type peersSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
 export type peersSelectScalar = {
   fk_peer_id1?: boolean
   fk_peer_id2?: boolean
+  time?: boolean
 }
 
-export type peersOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"fk_peer_id1" | "fk_peer_id2", ExtArgs["result"]["peers"]>
+export type peersOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"fk_peer_id1" | "fk_peer_id2" | "time", ExtArgs["result"]["peers"]>
 export type peersInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   users_peers_fk_peer_id1Tousers?: boolean | Prisma.usersDefaultArgs<ExtArgs>
   users_peers_fk_peer_id2Tousers?: boolean | Prisma.usersDefaultArgs<ExtArgs>
@@ -553,6 +595,7 @@ export type $peersPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     fk_peer_id1: bigint
     fk_peer_id2: bigint
+    time: Date
   }, ExtArgs["result"]["peers"]>
   composites: {}
 }
@@ -980,6 +1023,7 @@ export interface Prisma__peersClient<T, Null = never, ExtArgs extends runtime.Ty
 export interface peersFieldRefs {
   readonly fk_peer_id1: Prisma.FieldRef<"peers", 'BigInt'>
   readonly fk_peer_id2: Prisma.FieldRef<"peers", 'BigInt'>
+  readonly time: Prisma.FieldRef<"peers", 'DateTime'>
 }
     
 

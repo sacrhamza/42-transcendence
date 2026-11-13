@@ -25,7 +25,7 @@ export class UsersService {
   // find
   async findByUsername(username: string) {
     try {
-      return await this.prisma.users.findUnique({
+      return await this.prisma.normal_users.findUnique({
         where: { name: username },
       });
     } catch (err) {
@@ -80,8 +80,8 @@ export class UsersService {
             select: {
               id: true,
               name: true,
-            }
-          }
+            },
+          },
         },
       });
     } catch (err) {
@@ -103,12 +103,12 @@ export class UsersService {
     try {
       const res = await this.prisma.users.create({
         data: {
-          name: data.username,
           bio: '',
           normal_users: {
             create: {
               mail: data.email,
               password: data.passwordHash,
+              name: data.username,
             },
           },
         },

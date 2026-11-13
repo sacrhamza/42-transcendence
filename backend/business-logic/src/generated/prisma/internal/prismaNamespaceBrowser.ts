@@ -55,7 +55,8 @@ export const ModelName = {
   normal_users: 'normal_users',
   peers: 'peers',
   users: 'users',
-  refresh_sessions: 'refresh_sessions'
+  refresh_sessions: 'refresh_sessions',
+  peer_requests: 'peer_requests'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -76,7 +77,8 @@ export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof
 
 export const Ft_usersScalarFieldEnum = {
   fk_user_id: 'fk_user_id',
-  intra_id: 'intra_id'
+  intra_id: 'intra_id',
+  name: 'name'
 } as const
 
 export type Ft_usersScalarFieldEnum = (typeof Ft_usersScalarFieldEnum)[keyof typeof Ft_usersScalarFieldEnum]
@@ -85,7 +87,8 @@ export type Ft_usersScalarFieldEnum = (typeof Ft_usersScalarFieldEnum)[keyof typ
 export const Normal_usersScalarFieldEnum = {
   fk_user_id: 'fk_user_id',
   mail: 'mail',
-  password: 'password'
+  password: 'password',
+  name: 'name'
 } as const
 
 export type Normal_usersScalarFieldEnum = (typeof Normal_usersScalarFieldEnum)[keyof typeof Normal_usersScalarFieldEnum]
@@ -93,7 +96,8 @@ export type Normal_usersScalarFieldEnum = (typeof Normal_usersScalarFieldEnum)[k
 
 export const PeersScalarFieldEnum = {
   fk_peer_id1: 'fk_peer_id1',
-  fk_peer_id2: 'fk_peer_id2'
+  fk_peer_id2: 'fk_peer_id2',
+  time: 'time'
 } as const
 
 export type PeersScalarFieldEnum = (typeof PeersScalarFieldEnum)[keyof typeof PeersScalarFieldEnum]
@@ -101,7 +105,6 @@ export type PeersScalarFieldEnum = (typeof PeersScalarFieldEnum)[keyof typeof Pe
 
 export const UsersScalarFieldEnum = {
   id: 'id',
-  name: 'name',
   profile_image: 'profile_image',
   user_join_date: 'user_join_date',
   bio: 'bio',
@@ -122,6 +125,15 @@ export const Refresh_sessionsScalarFieldEnum = {
 } as const
 
 export type Refresh_sessionsScalarFieldEnum = (typeof Refresh_sessionsScalarFieldEnum)[keyof typeof Refresh_sessionsScalarFieldEnum]
+
+
+export const Peer_requestsScalarFieldEnum = {
+  fk_sender_id: 'fk_sender_id',
+  fk_recipient_id: 'fk_recipient_id',
+  time: 'time'
+} as const
+
+export type Peer_requestsScalarFieldEnum = (typeof Peer_requestsScalarFieldEnum)[keyof typeof Peer_requestsScalarFieldEnum]
 
 
 export const SortOrder = {
