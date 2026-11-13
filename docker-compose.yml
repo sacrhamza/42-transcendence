@@ -80,6 +80,7 @@ services:
       - suf_password
     volumes:
       - ./database/postgresql/docker-entrypoint.d:/docker-entrypoint-initdb.d/:ro
+      # - db_data:$PGDATA
     healthcheck:
       test: ["CMD", "/usr/local/bin/psql_healthcheck.sh"]
       interval: 30s
@@ -117,3 +118,9 @@ secrets:
     file: ./secrets/postgresql/suf/suf_password
   redis_password:
     file: ./secrets/redis/redis_password
+
+volumes:
+  db_data:
+    driver: local
+    driver_opts:
+      device: /tmp/dir
