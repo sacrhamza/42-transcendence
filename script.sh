@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -eu
 
 # declare -A actions
 #
@@ -8,13 +8,30 @@ compose() {
   docker compose -f ./docker-compose.yml "$@"
 }
 
+run_for_each() {
+  local -n cmd="$1"
+  local -n srvs="$2"
+  for service in "${srvs[@]}"
+  do
+    "${cmd[@]}" "$service"
+  done
+}
+
 up() {
-  echo "[$*]"
-  compose up --build "$@" 
+  # shellcheck disable=SC2034
+  command=(compose up --build -d) services=("$@")
+  run_for_each command services
 }
 
 down() {
-  compose down "${@}" 
+  # shellcheck disable=SC2034
+  command=(compose down) services=("$@")
+  run_for_each command services
+}
+
+re() {
+  down "${@}"
+  up "${@}"
 }
 
 logs() {
@@ -62,18 +79,28 @@ wipe_out() {
 help() {
   printf "
   usage: ./script.sh [option]
-  up [service_name]: create and start container
+  up [services]: create and start container
     Note: if you run ./script.sh up it is like running:
       docker compose up --build
 
-  down [service_name]: stops and remove containers, networks
+  down [services]: stops and remove containers, networks
 
-  logs [service_name]: get logs about a service name
+  logs [service_name]: get logs about services
+
+  re [service_name]: up and then down a services, [re]start
+
+  logs [service_name]: get services logs
+
+  clean: down all services and remove volumes
+
+  fclean: like clean but it removes also images
+
+  wipe_out: remove anything related to docker(images,networks,volumes,build cache..)
   "
 }
 
 function main() {
-  if [[ $# -eq 0 ]] || [[ "$1" != @('up'|'down'|'clean'|'logs'|'fclean'|'wipe_out') ]]
+  if [[ $# -eq 0 ]] || [[ "$1" != @('up'|'down'|'clean'|'logs'|'fclean'|'wipe_out'|'re') ]]
 	then
     help
     exit 1
