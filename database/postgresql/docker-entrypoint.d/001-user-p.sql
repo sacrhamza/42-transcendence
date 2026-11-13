@@ -17,10 +17,6 @@ CREATE TABLE users (
     BIGSERIAL
     PRIMARY KEY,
 
-    name
-    VARCHAR(75)
-    NOT NULL UNIQUE,
-
     profile_image
     TEXT DEFAULT 'default_image'
     NOT NULL,
@@ -50,6 +46,10 @@ CREATE TABLE ft_users (
     BIGSERIAL
     PRIMARY KEY,
 
+    name
+    VARCHAR(75)
+    NOT NULL UNIQUE,
+
     FOREIGN KEY (fk_user_id)
     REFERENCES users (id)
 );
@@ -65,6 +65,10 @@ CREATE TABLE normal_users (
     password
     VARCHAR(100)
     NOT NULL,
+
+    name
+    VARCHAR(75)
+    NOT NULL UNIQUE,
 
     FOREIGN KEY (fk_user_id)
     REFERENCES users (id)
