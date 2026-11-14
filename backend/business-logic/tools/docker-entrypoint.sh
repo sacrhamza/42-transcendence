@@ -17,4 +17,6 @@ set -eu
 export POSTGRES_URL="postgresql://${SUF_USER}:${SUF_PASSWORD}@postgresql:${POSTGRES_PORT}/${POSTGRES_DB}"
 export REDIS_URL="redis://default:${REDIS_PASSWORD}@redis:${REDIS_PORT}"
 
+npx prisma db pull
+
 exec "$@"

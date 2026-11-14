@@ -3,16 +3,27 @@ import { readStorage, writeStorage } from './utils/storage.js';
 import HomePage from './pages/HomePage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import PasswordRecoveryPage from './pages/PasswordRecoveryPage.jsx';
+import EmailVerificationPage from './pages/EmailVerificationPage.jsx';
 import { navigate } from './utils/navigation.js';
 
 function getPageFromLocation() {
     const route = window.location.pathname.slice(1) + window.location.search;
+    const sharedPost = /^home_post_([A-Za-z0-9_-]+)$/.exec(window.location.pathname.slice(1));
+    // Keep feed selection consistent for both new links and older bookmarks.
+    if (sharedPost) return `home?post=${sharedPost[1]}`;
     const base = route.split(/[/?]/)[0];
-    return ['login', 'signup', 'home', 'projects', 'profile', 'peers', 'messages', 'forgot-password', 'reset-password'].includes(base) ? route : 'login';
+    return ['login', 'signup', 'verify-email', 'home', 'projects', 'profile', 'peers', 'messages', 'forgot-password', 'reset-password'].includes(base) ? route : 'login';
 }
 
 export default function App() {
     const [page, setPage] = useState(getPageFromLocation);
+    // Tokens live in HttpOnly cookies. This flag only controls frontend navigation.
+    const [authenticated, setAuthenticated] = useState(false);
+    const requiresSession = !['login', 'signup', 'verify-email', 'forgot-password', 'reset-password'].includes(page.split(/[/?]/)[0]);
+
+    useEffect(() => {
+        if (requiresSession && !authenticated) navigate('/login', { replace: true });
+    }, [requiresSession, authenticated, page]);
     const [theme, setTheme] = useState(() => {
         return readStorage('suf-theme', 'dark');
     });
@@ -52,6 +63,8 @@ export default function App() {
     }
 
     const recoveryPage = page.split('?')[0];
+    if (requiresSession && !authenticated) return null;
+    if (recoveryPage === 'verify-email') return <EmailVerificationPage />;
     if (['forgot-password', 'reset-password'].includes(recoveryPage)) {
         return (
             <PasswordRecoveryPage
@@ -71,7 +84,10 @@ export default function App() {
                 profileUsername={page.startsWith('profile/') ? page.slice(8).split('?')[0] : null}
                 postId={page.startsWith('home?') ? new URLSearchParams(page.split('?')[1]).get('post') : null}
                 projectId={page.startsWith('projects?') ? new URLSearchParams(page.split('?')[1]).get('project') : null}
-                onLogOut={() => navigate('/login')}
+                onLogOut={() => {
+                    setAuthenticated(false);
+                    navigate('/login');
+                }}
                 theme={theme}
                 onToggleTheme={toggleTheme}
             />
@@ -80,9 +96,17 @@ export default function App() {
 
     return (
         <LoginPage
-            key={page.split('?')[0]}
+            key={page}
             mode={page.split('?')[0]}
-            onEnter={() => navigate('/home')}
+            initialNotice={new URLSearchParams(page.split('?')[1]).get('verification') === 'success'
+                ? 'You have registered successfully. You can now log in to SUF.'
+                : new URLSearchParams(page.split('?')[1]).get('verification') === 'expired'
+                    ? 'Your verification link is invalid, expired, or already used. Please sign up again to get a new link. If you already verified your email, try logging in.'
+                    : ''}
+            onEnter={() => {
+                setAuthenticated(true);
+                navigate('/home');
+            }}
             theme={theme}
             onToggleTheme={toggleTheme}
         />

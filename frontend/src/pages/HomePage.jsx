@@ -1,5 +1,6 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { readStorage, writeStorage } from '../utils/storage.js';
+import { createId } from '../utils/createId.js';
 import { navigate } from '../utils/navigation.js';
 import { loadProfile } from '../utils/profile.js';
 import PostComposer from '../components/PostComposer.jsx';
@@ -8,6 +9,7 @@ import Avatar from '../components/Avatar.jsx';
 import PostCard from '../components/PostCard.jsx';
 import RightPanel from '../components/RightPanel.jsx';
 import MessagesPage from './MessagesPage.jsx';
+import useBrowserState from '../hooks/useBrowserState.js';
 import { initialConversations, normalizeConversations, sendDirectMessage, toggleMessageLike } from '../data/messagesData.js';
 import PeersPage from './PeersPage.jsx';
 import PublicProfilePage from './PublicProfilePage.jsx';
@@ -20,19 +22,13 @@ import { initialPosts } from '../data/homeData.js';
 const POSTS_PER_PAGE = 20;
 
 export default function HomePage({ onLogOut, theme, onToggleTheme, section = 'home', profileUsername = null, projectId = null, postId = null, messageUsername = null }) {
-    const [conversations, setConversations] = useState(() => {
+    const [conversations, setConversations, messageStorageNotice, messagesReady] = useBrowserState('messages', () => {
         try {
             return normalizeConversations(JSON.parse(readStorage('suf-direct-messages', 'null')), peerDirectory.map((peer) => peer.username));
         } catch {
             return initialConversations();
         }
     });
-    const [messageStorageNotice, setMessageStorageNotice] = useState('');
-    useEffect(() => {
-        const saved = writeStorage('suf-direct-messages', JSON.stringify(conversations));
-        setMessageStorageNotice(saved ? '' : 'Browser storage is unavailable or full. Messages will remain only for this session.');
-    }, [conversations]);
-
     function readConversation(username) {
         setConversations((current) => !current[username]?.unread ? current : {
             ...current,
@@ -84,13 +80,11 @@ export default function HomePage({ onLogOut, theme, onToggleTheme, section = 'ho
     }, [section, profileUsername]);
 
     const [activeItem, setActiveItem] = useState('Home');
-    const postUrls = useRef([]);
-    useEffect(() => () => postUrls.current.forEach((url) => URL.revokeObjectURL(url)), []);
 
     function updatePost(id, change) {
         setPosts((current) => current.map((post) => post.id === id ? change(post) : post));
     }
-    const [posts, setPosts] = useState(initialPosts);
+    const [posts, setPosts, postStorageNotice, postsReady] = useBrowserState('posts', initialPosts);
     const [query, setQuery] = useState('');
     const [pageNotice, setPageNotice] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
@@ -141,7 +135,8 @@ export default function HomePage({ onLogOut, theme, onToggleTheme, section = 'ho
         1,
         Math.ceil(visiblePosts.length / POSTS_PER_PAGE),
     );
-    const firstPostIndex = (currentPage - 1) * POSTS_PER_PAGE;
+    const displayedPage = Math.min(currentPage, totalPages);
+    const firstPostIndex = (displayedPage - 1) * POSTS_PER_PAGE;
     const postsOnCurrentPage = visiblePosts.slice(
         firstPostIndex,
         firstPostIndex + POSTS_PER_PAGE,
@@ -174,15 +169,13 @@ export default function HomePage({ onLogOut, theme, onToggleTheme, section = 'ho
         );
     }
 
-    function publishPost(text, files) {
-        const id = Date.now();
+    async function publishPost(text, files) {
+        const id = createId();
         const attachments = files.map((file, index) => {
             const info = validatePostFile(file);
-            const url = URL.createObjectURL(new Blob([file], { type: info.mime }));
-            postUrls.current.push(url);
-            return { id: id + '-' + index, name: file.name, size: file.size, url, kind: info.kind, mime: info.mime };
+            return { id: id + '-' + index, name: file.name, size: file.size, file: file.slice(0, file.size, info.mime), kind: info.kind, mime: info.mime };
         });
-        setPosts((current) => [{
+        await setPosts((current) => [{
             id, author: 'you', initials: 'YO', verified: false, time: 'now',
             tags: ['community'], title: 'New community update', body: text,
             attachments, likes: 0, comments: 0, thread: [],
@@ -192,6 +185,8 @@ export default function HomePage({ onLogOut, theme, onToggleTheme, section = 'ho
         setQuery('');
         navigate('/home');
     }
+
+    if (!messagesReady || !postsReady) return <p role="status">Loading your local preview…</p>;
 
     return (
         <main className="home-page">
@@ -257,6 +252,9 @@ export default function HomePage({ onLogOut, theme, onToggleTheme, section = 'ho
                     </button>
                 </div>
             </header>
+
+            {postStorageNotice && <p className="page-notice" role="status">{postStorageNotice}</p>}
+            {messageStorageNotice && section !== 'messages' && <p className="page-notice" role="status">{messageStorageNotice}</p>}
 
             <div className={section !== 'home' ? 'home-grid projects-grid' : 'home-grid'}>
                 <Sidebar
@@ -354,18 +352,18 @@ export default function HomePage({ onLogOut, theme, onToggleTheme, section = 'ho
                         >
                             <button
                                 type="button"
-                                disabled={currentPage === 1}
-                                onClick={() => changePage(currentPage - 1)}
+                                disabled={displayedPage === 1}
+                                onClick={() => changePage(displayedPage - 1)}
                             >
                                 ← Previous
                             </button>
                             <span>
-                                Page {currentPage} of {totalPages}
+                                Page {displayedPage} of {totalPages}
                             </span>
                             <button
                                 type="button"
-                                disabled={currentPage === totalPages}
-                                onClick={() => changePage(currentPage + 1)}
+                                disabled={displayedPage === totalPages}
+                                onClick={() => changePage(displayedPage + 1)}
                             >
                                 Next →
                             </button>

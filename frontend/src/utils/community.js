@@ -31,7 +31,7 @@ export function validatePostFile(file) {
         pdf: ['document', 'application/pdf'], txt: ['document', 'text/plain'],
         md: ['document', 'text/plain'], doc: ['document', 'application/octet-stream'],
         docx: ['document', 'application/octet-stream'], c: ['document', 'text/plain'],
-        cpp: ['document', 'text/plain'], js: ['document', 'text/plain'],
+        cpp: ['document', 'text/plain'], h: ['document', 'text/plain'], hpp: ['document', 'text/plain'], js: ['document', 'text/plain'],
     };
     const type = types[extension];
     if (!type) return { error: 'Use an image, MP4/WebM video, PDF, text, Word document, or code file.' };

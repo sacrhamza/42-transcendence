@@ -87,6 +87,8 @@ services:
       - postgres_user
       - suf_user
       - suf_password
+    # ports:
+    #   - "127.0.0.1:5432:5432"
     volumes:
       - ./database/postgresql/docker-entrypoint.d:/docker-entrypoint-initdb.d/:ro
       # - db_data:$PGDATA
@@ -115,6 +117,8 @@ services:
       timeout: 10s
     secrets:
       - redis_password
+    ports:
+      - "0.0.0.0:6379:6379"
 
   mail_server:
     container_name: mail_server
