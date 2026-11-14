@@ -21,10 +21,13 @@ services:
       SMTP_FROM: "${SMTP_FROM}" 
       JWT_ACCESS_SECRET: "${JWT_ACCESS_SECRET}"
       JWT_REFRESH_SECRET: "${JWT_REFRESH_SECRET}"
+      NESTJS_PORT: "${NESTJS_PORT}"
     secrets:
       - suf_user
       - suf_password
       - redis_password
+    ports:
+      - "${NESTJS_PORT}:${NESTJS_PORT}"
 
   fastapi-backend:
     container_name: fastapiBackend
@@ -116,6 +119,9 @@ services:
   mail_server:
     container_name: mail_server
     image: axllent/mailpit
+    ports:
+      - 127.0.0.1:8025:8025
+      - 127.0.0.1:1025:1025
 
 
   nginx_prometheus_exporter:

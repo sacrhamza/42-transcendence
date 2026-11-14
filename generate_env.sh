@@ -34,6 +34,8 @@ SMTP_FROM='Transcendence <synadesigner@gmail.com>'
 JWT_ACCESS_SECRET=4ed6d28a164f0bf77dca28577e5e51278a7899e23c403883d1adfee9f96bd36e
 JWT_REFRESH_SECRET=e7d3f67da4e4f6eab8644be961f7da66b2023d95f2b0fe0d1703030c32f36da4
 
+#================================ NESTJS BACKEND========================#
+NESTJS_PORT=6000
 " > .env
 
 
