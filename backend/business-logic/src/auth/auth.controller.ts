@@ -19,7 +19,7 @@ import type { Request } from 'express';
 import { AuthenticationGuard } from '../guards/authentication.guard.js';
 import type { AuthRequest } from '../common/types/auth-request.type.js';
 
-@Controller('auth')
+@Controller('api/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
