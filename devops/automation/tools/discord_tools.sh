@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -eu
 
 valid_text() {
 	if [[ "$1" =~ ^[[:space:]]*$ ]]
