@@ -20,13 +20,25 @@ run_for_each() {
 up() {
   # shellcheck disable=SC2034
   command=(compose up --build -d) services=("$@")
-  run_for_each command services
+  len=${#services[@]}
+  if [ "$len" -eq 0 ]
+  then
+    "${command[@]}"
+  else
+    run_for_each command services
+  fi
 }
 
 down() {
   # shellcheck disable=SC2034
   command=(compose down) services=("$@")
-  run_for_each command services
+  len=${#services[@]}
+  if [ "$len" -eq 0 ]
+  then
+    "${command[@]}"
+  else
+    run_for_each command services
+  fi
 }
 
 re() {
