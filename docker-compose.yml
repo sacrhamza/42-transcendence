@@ -15,6 +15,12 @@ services:
       FASTAPI_URL: 'test'
       INTERNAL_API_KEY: 'test'
       REDIS_PORT: "${REDIS_PORT:?REDIS_PORT is required}"
+      SMTP_HOST: "server_mail" 
+      SMTP_PORT: "${SMTP_PORT}"
+      SMTP_SECURE: "${SMTP_SECURE}"
+      SMTP_FROM: "${SMTP_FROM}" 
+      JWT_ACCESS_SECRET: "${JWT_ACCESS_SECRET}"
+      JWT_REFRESH_SECRET: "${JWT_REFRESH_SECRET}"
     secrets:
       - suf_user
       - suf_password
@@ -106,6 +112,10 @@ services:
       timeout: 10s
     secrets:
       - redis_password
+
+  mail_server:
+    container_name: mail_server
+    image: axllent/mailpit
 
 
   nginx_prometheus_exporter:

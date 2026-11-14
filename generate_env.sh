@@ -22,6 +22,18 @@ REDIS_PORT=6379
 
 # ======================== NGINX EXPORTER ======================= #
 NGINX_EXPORTER_PORT=9000
+
+
+#============================== Nodemailer config =================#
+SMTP_PORT=1025
+SMTP_SECURE=false
+SMTP_USER=
+SMTP_PASSWORD=
+SMTP_FROM='Transcendence <synadesigner@gmail.com>'
+
+JWT_ACCESS_SECRET=4ed6d28a164f0bf77dca28577e5e51278a7899e23c403883d1adfee9f96bd36e
+JWT_REFRESH_SECRET=e7d3f67da4e4f6eab8644be961f7da66b2023d95f2b0fe0d1703030c32f36da4
+
 " > .env
 
 
