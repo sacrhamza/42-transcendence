@@ -9,6 +9,8 @@ services:
         restart: true
       redis:
         condition: service_healthy
+      mail_server:
+        condition: service_healthy
     environment:
       POSTGRES_DB: "${POSTGRES_DB:?POSTGRES_DB is required}"
       POSTGRES_PORT: "${POSTGRES_PORT:?POSTGRES_PORT is required}"
@@ -124,6 +126,12 @@ services:
   mail_server:
     container_name: mail_server
     image: axllent/mailpit
+    healthcheck:
+      test: ["CMD", "wget", "-O", "/dev/null", "http://localhost:8025/readyz"]
+      interval: 30s
+      retries: 5
+      start_period: 10s
+      timeout: 10s
     ports:
       - 127.0.0.1:8025:8025
       - 127.0.0.1:1025:1025
