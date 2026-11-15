@@ -135,6 +135,34 @@ services:
       nginx:
         condition: service_healthy
 
+  redis_exporter:
+    container_name: redis_exporter
+    image: oliver006/redis_exporter
+    command:
+      - -redis.password-file=/run/secrets/redis_exporter.json
+      - -redis.addr=redis:$REDIS_PORT
+      - -check-keys=db0=names,users
+      - -basic-auth-username=hamza
+      - -basic-auth-password=9999
+    secrets:
+      - source: redis_exporter_password
+        target: /run/secrets/redis_exporter.json
+    ports:
+      - 9121:9121
+
+  prometheus:
+    image: prom/prometheus:v3.13.4 
+    environment:
+      PROMETHEUS_PORT: "${PROMETHEUS_PORT:?PROMETHEUS_PORT is required}"
+    volumes:
+      - ./devops/prometheus/scrapes.d:/etc/prometheus/scrapes.d/:ro
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --web.listen-address=:${PROMETHEUS_PORT}
+    ports:
+      - 127.0.0.1:${PROMETHEUS_PORT}:${PROMETHEUS_PORT}
+
+
 
 secrets:
   postgres_password:
@@ -147,6 +175,8 @@ secrets:
     file: ./secrets/postgresql/suf/suf_password
   redis_password:
     file: ./secrets/redis/redis_password
+  redis_exporter_password:
+    file: ./secrets/redis_exporter/redis_exporter.json
 
 volumes:
   db_data:
