@@ -7,7 +7,7 @@ NGINX_ADDR=nginx
 NGINX_STUB_STATUS_PORT=8888
 NGINX_STUB_STATUS=/stub_status
 
-NGINX_PORT=3000
+NGINX_PORT=6666
 
 # ========================== POSTGRESQL ========================== #
 POSTGRES_DB=postgres
@@ -16,6 +16,9 @@ POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
 POSTGRES_USER_FILE=/run/secrets/postgres_user
 PGDATA=/var/lib/postgresql
 POSTGRES_PORT=5432
+
+# =======================  NEST JS ============================= #
+NESTJS_PORT=3000
 
 # ========================== REDIS ========================== #
 REDIS_PORT=6379
@@ -37,6 +40,9 @@ JWT_REFRESH_SECRET=e7d3f67da4e4f6eab8644be961f7da66b2023d95f2b0fe0d1703030c32f36
 #=============================PROMETHEUS============================#
 PROMETHEUS_PORT=9000
 
+#================================ NESTJS BACKEND========================#
+NESTJS_PORT=6000
+NEST_URL='http://localhost:6000/'
 " > .env
 
 
@@ -55,6 +61,9 @@ printf "%s" "REDIS_PASSWORD='$REDIS_PASSWORD'"  > ./secrets/redis/redis_password
 mkdir -p secrets/redis_exporter/
 
 source .env
+
 echo "{
     \"redis://redis:${REDIS_PORT}\": \"${REDIS_PASSWORD}\"
 }" > secrets/redis_exporter/redis_exporter.json
+
+printf "%s" "REDIS_PASSWORD=$(openssl rand -hex 32)"  > ./secrets/redis/redis_password

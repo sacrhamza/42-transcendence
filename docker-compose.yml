@@ -9,22 +9,30 @@ services:
         restart: true
       redis:
         condition: service_healthy
+      mail_server:
+        condition: service_healthy
     environment:
       POSTGRES_DB: "${POSTGRES_DB:?POSTGRES_DB is required}"
       POSTGRES_PORT: "${POSTGRES_PORT:?POSTGRES_PORT is required}"
       FASTAPI_URL: 'test'
       INTERNAL_API_KEY: 'test'
       REDIS_PORT: "${REDIS_PORT:?REDIS_PORT is required}"
-      SMTP_HOST: "server_mail" 
-      SMTP_PORT: "${SMTP_PORT}"
+      SMTP_HOST: "mail_server" 
+      SMTP_PORT: "${SMTP_PORT}" 
+      SMTP_USER: "${SMTP_USER}"
+      SMTP_PASSWORD: "${SMTP_PASSWORD}"
       SMTP_SECURE: "${SMTP_SECURE}"
       SMTP_FROM: "${SMTP_FROM}" 
       JWT_ACCESS_SECRET: "${JWT_ACCESS_SECRET}"
       JWT_REFRESH_SECRET: "${JWT_REFRESH_SECRET}"
+      NESTJS_PORT: "${NESTJS_PORT}"
+      NEST_URL: "${NEST_URL}"
     secrets:
       - suf_user
       - suf_password
       - redis_password
+    ports:
+      - "${NESTJS_PORT}:${NESTJS_PORT}"
 
   fastapi-backend:
     container_name: fastapiBackend
@@ -84,6 +92,8 @@ services:
       - postgres_user
       - suf_user
       - suf_password
+    # ports:
+    #   - "127.0.0.1:5432:5432"
     volumes:
       - ./database/postgresql/docker-entrypoint.d:/docker-entrypoint-initdb.d/:ro
       # - db_data:$PGDATA
@@ -116,6 +126,15 @@ services:
   mail_server:
     container_name: mail_server
     image: axllent/mailpit
+    healthcheck:
+      test: ["CMD", "wget", "-O", "/dev/null", "http://localhost:8025/readyz"]
+      interval: 30s
+      retries: 5
+      start_period: 10s
+      timeout: 10s
+    ports:
+      - 127.0.0.1:8025:8025
+      - 127.0.0.1:1025:1025
 
 
   nginx_prometheus_exporter:

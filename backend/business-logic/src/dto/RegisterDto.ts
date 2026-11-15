@@ -6,9 +6,20 @@ import {
   MaxLength,
   MinLength,
   Matches,
+  NotEquals,
 } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class RegisterDto {
+  @Transform(function (params) {
+    const value = params.value;
+
+    if (typeof value === 'string') {
+      return value.toLowerCase();
+    }
+
+    return value;
+  })
   @IsNotEmpty()
   @IsString()
   @MaxLength(50)
@@ -18,6 +29,15 @@ export class RegisterDto {
   })
   username: string;
 
+  @Transform(function (params) {
+    const value = params.value;
+
+    if (typeof value === 'string') {
+      return value.toLowerCase();
+    }
+
+    return value;
+  })
   @IsNotEmpty()
   @IsString()
   @MaxLength(50)

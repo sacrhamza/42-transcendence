@@ -1,0 +1,152 @@
+Delivered-To: hey@fldubai.com
+Return-Path: <synadesigner@gmail.com>
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [2a00:1450:4864:20::330])
+	by in.mail.tm (Haraka/3.1.2) with ESMTPS id 5E4A6B98-8786-4CA5-A0BB-3ADA32DE70F3.1
+	envelope-from <synadesigner@gmail.com>
+	tls TLS_AES_256_GCM_SHA384;
+	Sun, 08 Nov 2026 11:25:49 +0000
+Received: by mail-wm1-x330.google.com with SMTP id 5b1f17b1804b1-4a35db1f202so1950415e9.3
+        for <hey@fldubai.com>; Sun, 08 Nov 2026 03:25:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1794137149; x=1794741949; darn=fldubai.com;
+        h=content-type:mime-version:date:message-id:subject:to:from:from:to
+         :cc:subject:date:message-id:reply-to:content-type;
+        bh=KIFXN4RWjvD4Fm1hnjEQufp74DXXSOFIFEOb3Ljf7hg=;
+        b=U2BCnVU6c+R78oX6VezD+qZCHzAvk9w4b5KI8A6W0cix19iK6hz8X2r+WTqFET+cjD
+         JUXMeSh8HCWsTVvEYqFOFxjHJ4tf9VSu6REtuj60p0/XCN9n+fPwBYfP5xy84Px7EMvB
+         IyBcctt/DWbRCGmOSrqPtoM++92WmiHoB9a1OCjVc72/TSgWwROm0OmymGBhKxueSpZ0
+         St/7a+pu6Ng24G+tA2qURMV3DhJkUyTMzuaMv2y7lR0yquI17fms8MRwbbn7tuyMqT5n
+         DuPHiSgIBygPqfUXyE10Ie49AKsN04S0LPJjk3EQIRiZKRHT2wbe1RPOBJ5oed6n36bo
+         iF6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794137149; x=1794741949;
+        h=content-type:mime-version:date:message-id:subject:to:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=KIFXN4RWjvD4Fm1hnjEQufp74DXXSOFIFEOb3Ljf7hg=;
+        b=sgbOjqZkDmj3o7At0ZnNRapmwqsMYI/tm1AjccW57l98q/pXbNb+RUCCZhB02dm5lz
+         TS6zVHr36Gk1xrC4pWRfhKEbaS51MxD8Gc31hMSQCmyswYMstugiiYws26N/aD5gFRNv
+         WWJxXJsX+JhfhPlayCHgfx0E6ziZhoS+zqSiNO4lUA85k0Er4EBGUOxNnAmbOzKvwoCx
+         zU+I1dTr5Adm0EMfT0L095AdSvWNCEzwTOEYtuk+h7tHi20RqccHbNcDxJaxMS0T1V9n
+         Gtrp/yxU7+0Ij+sfL2aI238belrneUI/K/m3HCZ8cx4ywi93MJ9xz+dxzsgMNu0Q3mUD
+         /zsw==
+X-Gm-Message-State: APuU4Z+slIVrte6dXUkg+mdedG+SmbWONmavBdE60QObZAh5jF3cwLV+
+	phPndn7dwklY9DOhhbdfA5u4Xeu/71vnAmr+wtwgmgkzycaV69vPwrx6t63tOQ==
+X-Gm-Gg: AYBFou23zVMGx0/D2I8Gdt2UUi+aYLblhSlQvqgSeJueMa+4Ty0zlTVEwV5MHIes9po
+	0yRlH1XOq0v6LGNCR2okOh17Bfy5Wo3Rnd+veNiMlyHtOYmSETQOhswlYbmMCZKZ4H/Bz+rQEY/
+	eNY96hVqtw9UQjSvlvh4DEv8WJsFp8GE3WSsl6o/F44UZ+lRiS1KHfxsyyYbeT1vGHSo7oI3Ei0
+	ddEtVy4xqZ75I5bkEnnI8EH1gDFnIm1Qude2H0oVRPsxfRsKwrxzO9vmJwchFGMHUC3Idk+IYNm
+	7S4eae0XhclK+gWZaexDhXLrm7enPGVNHCdxUgTIb09/o135vhIzYCGf/aTFd9wp/MCxFh8Y0Oq
+	xisW9ITI7f4fIZDeNLT2hSmPVi9+XLrfn1l27otxb2otpLfycA3EP3qOTpuaDa67PH7oXCfTeZR
+	C88EZPLVqyKMT4DrcuDMVMUaLPoxt7bq7+Ypm/UVI0E5S/z469otwv3odyKBwQRhn1TzivE98Ux
+	QiyysVcy4ysTdjlskgn3Ie62PZ6rVXylwFxy3Mhx9rJgSJw0jmtehvTv+X6sq1gmVJVULrBQsfR
+	RASqLkKTIu0UUQP+HqNYo/mrfegHTGKNF4haiAdXA3J5RL3B0Lyo4w==
+X-Received: by 2002:a05:600c:34c7:b0:4a1:992f:d0e7 with SMTP id 5b1f17b1804b1-4b963c66299mr20335115e9.16.1794137148628;
+        Sun, 08 Nov 2026 03:25:48 -0800 (PST)
+Return-Path: <synadesigner@gmail.com>
+Received: from [127.0.0.1] ([197.230.240.146])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4b90f10c701sm50776245e9.11.2026.11.08.03.25.48
+        for <hey@fldubai.com>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 08 Nov 2026 03:25:48 -0800 (PST)
+From: Transcendence <synadesigner@gmail.com>
+To: hey@fldubai.com
+Subject: Complete Your SUF Registration
+Message-ID: <a4b167ff-f62c-c0c2-4441-e02abc8cfa61@gmail.com>
+Date: Sun, 08 Nov 2026 11:25:47 +0000
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+ boundary="--_NmP-816698e8ed08b9a2-Part_1"
+
+
+----_NmP-816698e8ed08b9a2-Part_1Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+
+Hello agimi,
+
+Welcome to SUF - StackUnderFlow!
+
+Thank you for joining our =
+community of developers and technology enthusiasts.
+
+To continue your registration, please verify your email address by clicking=
+ the link below:
+
+http://localhost:3000/api/auth/verify-email?=
+token=3Da13698daaf8335e0d070dcabbbd40487c8bdcfd0c097a78bbbc077ede5b21ed7
+
+This verification link will expire in 15 minutes.
+
+If you did not request =
+this registration, please ignore this email.
+
+Best regards,
+The SUF Team
+
+----_NmP-816698e8ed08b9a2-Part_1
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+
+  <div style=3D"font-family: Arial, sans-serif; max-width: 600px; margin: =
+auto; padding: 30px; color: #333;">
+
+    <h1 style=3D"color: #2563eb; =
+text-align: center;">
+      SUF - StackUnderFlow
+    </h1>
+
+    <h2>Verify Your Email Address</h2>
+
+    <p>Hi agimi, Welcome to SUF!=
+</p>
+
+    <p>
+      Thank you for joining our community of developers
+      and technology enthusiasts.
+    </p>
+
+    <p>
+      To continue your registration, please verify
+      your email address=
+ by clicking the button below.
+    </p>
+
+    <div style=3D"text-align: =
+center; margin: 30px 0;">
+      <a href=3D"http://localhost:3000/api/auth/verify-email?token=3Da13698daaf8335e0d070dcabbbd40487c8bdcfd0c097a78bbbc077e=de5b21ed7"
+         style=3D"background-color: #2563eb;
+                color: #ffffff;
+                padding: 14px 28px;
+                text-decoration: none;
+                border-radius: 6px;
+                display: inline-block;
+                font-weight: bold;">
+        Verify My Email
+      </a>
+    </div>
+
+    <p>
+      This verification link will expire in
+      <strong>15 =
+minutes</strong>.
+    </p>
+
+    <p style=3D"color: #777; font-size: 13px;">
+      If you did not request this registration,
+      please ignore this =
+email.
+    </p>
+
+    <hr style=3D"border: none; border-top: 1px solid #ddd;=
+ margin: 25px 0;">
+
+    <p>
+      Best regards,<br>
+      <strong>The SUF Team</strong>
+    </p>
+
+  </div>
+
+----_NmP-816698e8ed08b9a2-Part_1--
