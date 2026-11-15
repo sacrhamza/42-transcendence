@@ -1,11 +1,11 @@
-ARG VERSION=3.16-rc-trixie
+ARG VERSION=3.14-slim-trixie
 FROM python:${VERSION}
 
 WORKDIR /app
 
 COPY ./requirements.txt ./requirements.txt
 
-RUN pip install --no-cache --upgrade -r ./requirements.txt
+RUN pip install --no-cache-dir --upgrade -r ./requirements.txt
 
 COPY --chmod=755 ./tools/docker-entrypoint.sh /usr/local/bin/
 

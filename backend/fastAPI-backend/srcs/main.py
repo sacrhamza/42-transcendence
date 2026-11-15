@@ -1,15 +1,10 @@
 from fastapi import FastAPI
+from routers import friends_router
 
-app = FastAPI();
+app = FastAPI(title="ft_transcendence FastAPI Backend")
 
-@app.get("/")
-async def home():
-	return {"home": "sweet HOME"};
+app.include_router(friends_router.router)
 
-@app.get("/friends")
-async def peers():
-	return {"friends": "you got none :("};
-
-@app.get("/somewhere")
-async def somewhere():
-	return {"somewhere": "a place in the world"};
+@app.get("/health")
+def health_check():
+    return {"status": "ok"}
