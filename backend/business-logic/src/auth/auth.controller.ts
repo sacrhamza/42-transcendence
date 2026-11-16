@@ -17,7 +17,10 @@ import { RegisterDto } from '../dto/RegisterDto.js';
 import { LoginDto } from '../dto/LogingDto.js';
 import type { Request } from 'express';
 import { AuthenticationGuard } from '../guards/authentication.guard.js';
+import { AuthGuard } from '@nestjs/passport';
 import type { AuthRequest } from '../common/types/auth-request.type.js';
+import { FortyTowUserDto } from '../dto/forytowuserdto.js';
+import type { FortyTwoRequest } from '../common/types/auth-fortytow.type.js';
 
 @Controller('api/auth')
 export class AuthController {
@@ -97,7 +100,7 @@ export class AuthController {
       secure: true,
       sameSite: 'lax',
       maxAge: remaining_time,
-      path: '/api/auth',
+      path: '/api/auth',string
     });
     return {
       message: 'Tokens is refreshed successful',
@@ -123,20 +126,36 @@ export class AuthController {
   }
 
   // just test for authorisation ...
-  @Get('user')
-  @UseGuards(AuthenticationGuard)
-  someprotectedroute1() {
-    return {
-      msg: 'hello from protected route guards it work perfectly',
-    };
-  }
+  // @Get('user')
+  // @UseGuards(AuthenticationGuard)
+  // someprotectedroute1() {
+  //   return {
+  //     msg: 'hello from protected route guards it work perfectly',
+  //   };
+  // }
   // just for testing if req hold the userid !
-  @Get('users')
-  @UseGuards(AuthenticationGuard)
-  someprotectedroute2(@Req() req: AuthRequest) {
-    return {
-      userId: req.user,
-      msg: 'Protected route works',
-    };
+  // @Get('users')
+  // @UseGuards(AuthenticationGuard)
+  // someprotectedroute2(@Req() req: AuthRequest) {
+  //   return {
+  //     userId: req.user,
+  //     msg: 'Protected route works',
+  //   };
+  // }
+
+  // endpoint for 42
+
+  @Get('42/register')
+  @UseGuards(AuthGuard('42'))
+  start42Auth() {
+    // Passport handles redirect 
+    // dart t9riban 80% dya lkhdma b9a ghyr nta wach baghy tzid
+    // luser f data base awla la hhhhh "hadchy ziiin hhhhhhh"
+  }
+
+  @Get('42/callback')
+  @UseGuards(AuthGuard('42'))
+  async intraCallback(@Req() req: FortyTwoRequest) {
+    const manba3d = this.authService.continueWith42(req.user);
   }
 }

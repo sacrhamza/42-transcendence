@@ -9,6 +9,7 @@ import { SecretsModule } from '../Secrets/secrets.module.js';
 import { PrismaModule } from '../prisma/prisma.module.js';
 import { SessionService } from './SessionService/session.service.js';
 import { AuthenticationGuard } from '../guards/authentication.guard.js';
+import { fortytowstrategy } from './strategy/fortytow.strategy.js';
 @Module({
   imports: [
     UserModule,
@@ -19,6 +20,6 @@ import { AuthenticationGuard } from '../guards/authentication.guard.js';
     PrismaModule,
   ],
   controllers: [AuthController],
-  providers: [AuthenticationGuard, AuthService, SessionService],
+  providers: [AuthenticationGuard, AuthService, SessionService, fortytowstrategy],
 })
 export class AuthModule {}

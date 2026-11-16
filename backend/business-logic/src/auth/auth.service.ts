@@ -4,6 +4,7 @@ import {
   ConflictException,
   UnauthorizedException,
   ServiceUnavailableException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { RegisterDto } from '../dto/RegisterDto.js';
 import validations from './custom-func/lib.js';
@@ -19,6 +20,9 @@ import { SessionService } from './SessionService/session.service.js';
 import { setServers } from 'node:dns';
 import { name } from 'nodemailer/lib/package-info.js';
 import { PrismaClientRustPanicError } from '@prisma/client/runtime/client';
+import { AuthRequest } from '../common/types/auth-request.type.js';
+import { FortyTowUserDto } from '../dto/forytowuserdto.js';
+import { use } from 'passport';
 
 @Injectable()
 export class AuthService {
@@ -88,6 +92,7 @@ export class AuthService {
     const accessToken = await this.jwtservice.signAsync(
       {
         sub: user.users.id.toString(),
+        role: 'normal_user',
       },
       {
         secret: this.secretsserver.getSecret('JWT_ACCESS_SECRET'),
@@ -127,7 +132,6 @@ export class AuthService {
     return {
       accessToken,
       refreshToken,
-      tokenType: 'Bearer',
     };
   }
   // in progriss just  testing ! ...
@@ -145,17 +149,17 @@ export class AuthService {
       }>(refreshToken, {
         secret: this.secretsserver.getSecret('JWT_REFRESH_SECRET'),
       });
-      console.log('STEP 1: JWT VERIFIED SUCCESSFULLY');
+      // console.log('STEP 1: JWT VERIFIED SUCCESSFULLY');
     } catch (error) {
-      console.error(
-        'STEP 1: JWT VERIFICATION FAILED:',
-        error instanceof Error ? error.message : 'Unknown error',
-      );
+      // console.error(
+      //   'STEP 1: JWT VERIFICATION FAILED:',
+      //   error instanceof Error ? error.message : 'Unknown error',
+      // );
       throw new UnauthorizedException('Invalid refresh token');
     }
 
     const session = await this.sesstionservice.findSessionByJti(pylode.jti);
-    console.log('STEP 2: SESSION FOUND:', !!session);
+    // console.log('STEP 2: SESSION FOUND:', !!session);
     if (!session) throw new UnauthorizedException('Invalid refresh token');
 
     // Verify session ownership and expiration
@@ -209,6 +213,7 @@ export class AuthService {
       refreshExpiresAt: exp,
     };
   }
+
   async logout(refresh_token: string) {
     let pylode: {
       sub: string;
@@ -226,5 +231,63 @@ export class AuthService {
     }
 
     await this.sesstionservice.deleteSession(pylode.jti, BigInt(pylode.sub));
+  }
+
+  // that's for register 42 acounts ...
+  async continueWith42(data: FortyTowUserDto) {
+    // chof hwa lowl wach user kayn ola la hyt login o register aykono despo f endpint whda ...
+    const find_user = await this.userservice.findUserByFortyTowId(data.intraId);
+    let userId: bigint;
+    // user find so we should just check if account is not desactivated and create
+    // ila kan deja user nsaybo lih access token o refresh token bach idkhl l feed ...
+    if (find_user) {
+      // LOGIN: User deja ila aynahna ifjij lkhirad hhhhh
+      if (find_user.users.deleted)
+        throw new ForbiddenException('Account deactivated');
+      userId = find_user.users.id;
+    } else {
+      // REGISTER: Create new 42 user
+      const newuser = await this.userservice.createUserFortyTow({
+        intraId: data.intraId,
+        username: data.username,
+        profileImage: data.profileImage,
+        email: data.email,
+      });
+
+      userId = newuser.id;
+    }
+
+    // ayoub mhm matnsach dir function whda katjm3 hadchy hyt login normal user o loging/register dyal 42 andhom nafs steps
+    // mn nahit token o storisation !
+
+    const jti = randomUUID();
+
+    const accessToken = await this.jwtservice.signAsync(
+      {
+        sub: userId.toString(),
+        role: 'fortytow_user',
+      },
+      {
+        secret: this.secretsserver.getSecret('JWT_ACCESS_SECRET'),
+        expiresIn: '5m',
+      },
+    );
+
+    const refresh_Token = await this.jwtservice.signAsync(
+      {
+        sub: userId.toString(),
+        jti: jti,
+      },
+      {
+        secret: this.secretsserver.getSecret('JWT_REFRESH_SECRET'),
+        expiresIn: '7d',
+      },
+    );
+
+    // ghilad asidi ikhsa anhachi lkhirad bach atnstory gh data base !
+    // baa9i khas ntfahmo ala role dyal user wach hwa user 3adi ola 42 ! ...
+
+
+    // return {};
   }
 }

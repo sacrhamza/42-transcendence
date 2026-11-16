@@ -14,6 +14,7 @@ async function bootstrap() {
       transform: true,
     }),
   );
+  // fetch env and secret here and set it in the global object ! 
   await app.listen(process.env.NESTJS_PORT ?? 3000);
 }
 void bootstrap();

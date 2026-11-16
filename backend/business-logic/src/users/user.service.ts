@@ -3,6 +3,7 @@ import {
   ConflictException,
   Logger,
   ServiceUnavailableException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { RegisterDto } from '../dto/RegisterDto.js';
@@ -28,18 +29,17 @@ export class UsersService {
       return await this.prisma.normal_users.findUnique({
         where: { name: username },
       });
-    } catch (err) {
+    } catch (err: unknown) {
       this.logger.error('PostgreSQL username lookup failed', err);
-
-      // if (
-      //   err instanceof PrismaClientKnownRequestError &&
-      //   err.code === 'P1001'
-      // ) {
-      //   throw new ServiceUnavailableException(
-      //     'Database temporarily unavailable',
-      //   );
-      // }
-      throw err;
+      if (
+        err instanceof PrismaClientKnownRequestError &&
+        err.code === 'P1001'
+      ) {
+        throw new ServiceUnavailableException(
+          'Database temporarily unavailable',
+        );
+      }
+      throw new InternalServerErrorException('An unexpected error occurred');
     }
   }
 
@@ -53,7 +53,7 @@ export class UsersService {
           mail: true,
         },
       });
-    } catch (err) {
+    } catch (err: unknown) {
       this.logger.error('PostgreSQL username lookup failed', err);
 
       if (
@@ -64,7 +64,7 @@ export class UsersService {
           'Database temporarily unavailable',
         );
       }
-      throw err;
+      throw new InternalServerErrorException('An unexpected error occurred');
     }
   }
 
@@ -84,7 +84,7 @@ export class UsersService {
           },
         },
       });
-    } catch (err) {
+    } catch (err: unknown) {
       this.logger.error('PostgreSQL username lookup failed', err);
 
       if (
@@ -95,7 +95,7 @@ export class UsersService {
           'Database temporarily unavailable',
         );
       }
-      throw err;
+      throw new InternalServerErrorException('An unexpected error occurred');
     }
   }
 
@@ -153,7 +153,92 @@ export class UsersService {
           'Database temporarily unavailable',
         );
       }
-      throw error;
+      throw new InternalServerErrorException('An unexpected error occurred');
+    }
+  }
+
+  // for 42 accounts ...
+
+  async findUserByFortyTowId(intra_id: bigint) {
+    try {
+      return await this.prisma.ft_users.findUnique({
+        where: {
+          intra_id: intra_id,
+        },
+        select: {
+          intra_id: true,
+          name: true,
+          users: {
+            select: {
+              id: true,
+              deleted: true,
+            },
+          },
+        },
+      });
+    } catch (err: unknown) {
+      this.logger.error('PostgreSQL username lookup failed', err);
+      // ila tra chy mochkil ...
+      if (
+        err instanceof PrismaClientKnownRequestError &&
+        err.code === 'P1001'
+      ) {
+        throw new ServiceUnavailableException(
+          'Database temporarily unavailable',
+        );
+      }
+      throw new InternalServerErrorException('An unexpected error occurred');
+    }
+  }
+
+  async createUserFortyTow(data: {
+    intraId: bigint;
+    username: string;
+    profileImage: string | null;
+    email: string | null;
+  }) {
+    try {
+      return await this.prisma.users.create({
+        data: {
+          bio: '',
+          profile_image: data.profileImage ?? undefined,
+
+          ft_users: {
+            create: {
+              intra_id: data.intraId,
+              name: data.username,
+            },
+          },
+        },
+        select: {
+          id: true,
+          deleted: true,
+          ft_users: {
+            select: {
+              name: true,
+              intra_id: true,
+            },
+          },
+        },
+      });
+    } catch (err: unknown) {
+      this.logger.error('Failed to create 42 user', err);
+      if (data.email) {
+        await this.mailservice.sendFortyTwoRegistrationFailure(
+          data.email,
+          data.username,
+        );
+      }
+
+      if (
+        err instanceof PrismaClientKnownRequestError &&
+        err.code === 'P1001'
+      ) {
+        throw new ServiceUnavailableException(
+          'Database temporarily unavailable',
+        );
+      }
+      throw new InternalServerErrorException('An unexpected error occurred');
     }
   }
 }

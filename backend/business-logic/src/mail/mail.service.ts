@@ -63,10 +63,12 @@ The SUF Team
       // console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
     } catch (err) {
       console.error('Error while sending mail:', err);
-      throw err;
+      // doz hady bach mat3wa9ch server kan despo marhab nsifto lih msg mkanch despo lmohim les server lakhrin ikhdmo
+      // makhasnach nbrikiw respons ghyr alawd msg matsaftch msg ghyr pliiiiziiiir mn 3ndi.
     }
   }
 
+  // zid try catch matnsach 
   async sendEmailVerefecation(email: string, username: string, token: string) {
     // creat valide URL ...
     const baseUrl = this.config.getOrThrow<string>('NEST_URL');
@@ -153,11 +155,12 @@ The SUF Team
   }
 
   async send_try_registreation(email: string, username: string): Promise<void> {
-    await this.transporter.sendMail({
-      from: this.config.getOrThrow<string>('SMTP_FROM'),
-      to: email,
-      subject: 'Registration Failed - Please Try Again',
-      html: `
+    try {
+      await this.transporter.sendMail({
+        from: this.config.getOrThrow<string>('SMTP_FROM'),
+        to: email,
+        subject: 'Registration Failed - Please Try Again',
+        html: `
       <div style="font-family: Arial, sans-serif; line-height: 1.6;">
         <h2>Registration Failed</h2>
 
@@ -180,6 +183,59 @@ The SUF Team
         <p>Best regards,<br>SUF Team</p>
       </div>
     `,
-    });
+      });
+    } catch (err) {
+      console.error('Error while sending mail:', err);
+      // no throw here that's allow us to kepping server throw the right err !
+    }
+  }
+
+  async sendFortyTwoRegistrationFailure(
+    email: string,
+    username: string,
+  ): Promise<void> {
+    try {
+      await this.transporter.sendMail({
+        from: this.config.getOrThrow<string>('SMTP_FROM'),
+        to: email,
+        subject: '42 Registration Issue - Please Try Again',
+
+        html: `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+          <h2>42 Registration Issue</h2>
+
+          <p>Hello ${username},</p>
+
+          <p>
+            We encountered a temporary technical issue while
+            processing your registration through 42 Intra.
+          </p>
+
+          <p>
+            We couldn't confirm that your account registration
+            was completed successfully.
+          </p>
+
+          <p>
+            Please try again later using the
+            <strong>Continue with 42</strong> button.
+          </p>
+
+          <p>
+            You do not need to create a new 42 Intra account.
+          </p>
+
+          <p>
+            We apologize for the inconvenience.
+          </p>
+
+          <p>Best regards,<br>SUF Team</p>
+        </div>
+      `,
+      });
+    } catch (err: unknown) {
+      console.error('Failed to send 42 registration failure email', err);
+      // No throw: preserv the origenal registration error...
+    }
   }
 }
