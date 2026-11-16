@@ -81,5 +81,8 @@ CREATE TABLE peers (
     FOREIGN KEY (fk_peer_id2)
     REFERENCES users (id),
 
+    CONSTRAINT chk_user_order
+    CHECK (fk_peer_id1 < fk_peer_id2),
+
     PRIMARY KEY (fk_peer_id1, fk_peer_id2)
 );

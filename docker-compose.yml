@@ -7,14 +7,32 @@ services:
       postgresql:
         condition: service_healthy
         restart: true
+      redis:
+        condition: service_healthy
+      mail_server:
+        condition: service_healthy
     environment:
-      - POSTGRES_DB
-      - POSTGRES_PORT
-      - FASTAPI_URL='test'
-      - INTERNAL_API_KEY='test'
+      POSTGRES_DB: "${POSTGRES_DB:?POSTGRES_DB is required}"
+      POSTGRES_PORT: "${POSTGRES_PORT:?POSTGRES_PORT is required}"
+      FASTAPI_URL: 'test'
+      INTERNAL_API_KEY: 'test'
+      REDIS_PORT: "${REDIS_PORT:?REDIS_PORT is required}"
+      SMTP_HOST: "mail_server" 
+      SMTP_PORT: "${SMTP_PORT}" 
+      SMTP_USER: "${SMTP_USER}"
+      SMTP_PASSWORD: "${SMTP_PASSWORD}"
+      SMTP_SECURE: "${SMTP_SECURE}"
+      SMTP_FROM: "${SMTP_FROM}" 
+      JWT_ACCESS_SECRET: "${JWT_ACCESS_SECRET}"
+      JWT_REFRESH_SECRET: "${JWT_REFRESH_SECRET}"
+      NESTJS_PORT: "${NESTJS_PORT}"
+      NEST_URL: "${NEST_URL}"
     secrets:
       - suf_user
       - suf_password
+      - redis_password
+    ports:
+      - "${NESTJS_PORT}:${NESTJS_PORT}"
 
   fastapi-backend:
     container_name: fastapiBackend
@@ -23,14 +41,17 @@ services:
       postgresql:
         condition: service_healthy
         restart: true
+      redis:
+        condition: service_healthy
     environment:
-      - POSTGRES_DB
-      - POSTGRES_PORT
+      POSTGRES_DB: "${POSTGRES_DB:?POSTGRES_DB is required}"
+      POSTGRES_PORT: "${POSTGRES_PORT:?POSTGRES_PORT is required}"
+      REDIS_PORT: "${REDIS_PORT:?REDIS_PORT is required}"
     secrets:
       - suf_user
       - suf_password
-      - postgres_password
-      - postgres_user
+      - redis_password
+
 
   nginx:
     container_name: nginx
@@ -71,14 +92,96 @@ services:
       - postgres_user
       - suf_user
       - suf_password
+    # ports:
+    #   - "127.0.0.1:5432:5432"
     volumes:
       - ./database/postgresql/docker-entrypoint.d:/docker-entrypoint-initdb.d/:ro
+      # - db_data:$PGDATA
     healthcheck:
       test: ["CMD", "/usr/local/bin/psql_healthcheck.sh"]
       interval: 30s
       retries: 5
       start_period: 10s
       timeout: 10s
+
+  # in memory database
+  # because it does not support env or secrets
+  # i have used shell to get secret password and REDIS_PORT env
+  redis:
+    container_name: redis
+    build: ./devops/redis/
+    # ports:
+    #   - ${REDIS_PORT}:${REDIS_PORT}
+    environment:
+      - REDIS_PORT
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      retries: 5
+      start_period: 10s
+      timeout: 10s
+    secrets:
+      - redis_password
+
+  mail_server:
+    container_name: mail_server
+    image: axllent/mailpit
+    healthcheck:
+      test: ["CMD", "wget", "-O", "/dev/null", "http://localhost:8025/readyz"]
+      interval: 30s
+      retries: 5
+      start_period: 10s
+      timeout: 10s
+    ports:
+      - 127.0.0.1:8025:8025
+      - 127.0.0.1:1025:1025
+
+
+  nginx_prometheus_exporter:
+    container_name: nginx_prometheus_exporter
+    image: nginx/nginx-prometheus-exporter:1.5.3
+    command:
+      - "--nginx.scrape-uri=${NGINX_STUB_STATUS_SCHEME}://nginx:${NGINX_STUB_STATUS_PORT}/${NGINX_STUB_STATUS}"
+      - "--web.listen-address=:${NGINX_EXPORTER_PORT}"
+    environment:
+      NGINX_STUB_STATUS_SCHEME: "${NGINX_STUB_STATUS_SCHEME:?NGINX_STUB_STATUS_SCHEME is required}"
+      NGINX_STUB_STATUS_PORT: "${NGINX_STUB_STATUS_PORT:?NGINX_STUB_STATUS_PORT is required}"
+      NGINX_STUB_STATUS: "${NGINX_STUB_STATUS:?NGINX_STUB_STATUS is required}"
+      NGINX_EXPORTER_PORT: "${NGINX_EXPORTER_PORT:?NGINX_EXPORTER_PORT is required}"
+    ports:
+      - 127.0.0.1:${NGINX_EXPORTER_PORT}:${NGINX_EXPORTER_PORT}
+    depends_on:
+      nginx:
+        condition: service_healthy
+
+  redis_exporter:
+    container_name: redis_exporter
+    image: oliver006/redis_exporter
+    command:
+      - -redis.password-file=/run/secrets/redis_exporter.json
+      - -redis.addr=redis:$REDIS_PORT
+      - -check-keys=db0=names,users
+      - -basic-auth-username=hamza
+      - -basic-auth-password=9999
+    secrets:
+      - source: redis_exporter_password
+        target: /run/secrets/redis_exporter.json
+    ports:
+      - 9121:9121
+
+  prometheus:
+    image: prom/prometheus:v3.13.4 
+    environment:
+      PROMETHEUS_PORT: "${PROMETHEUS_PORT:?PROMETHEUS_PORT is required}"
+    volumes:
+      - ./devops/prometheus/scrapes.d:/etc/prometheus/scrapes.d/:ro
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --web.listen-address=:${PROMETHEUS_PORT}
+    ports:
+      - 127.0.0.1:${PROMETHEUS_PORT}:${PROMETHEUS_PORT}
+
+
 
 secrets:
   postgres_password:
@@ -89,3 +192,13 @@ secrets:
     file: ./secrets/postgresql/suf/suf_user
   suf_password:
     file: ./secrets/postgresql/suf/suf_password
+  redis_password:
+    file: ./secrets/redis/redis_password
+  redis_exporter_password:
+    file: ./secrets/redis_exporter/redis_exporter.json
+
+volumes:
+  db_data:
+    driver: local
+    driver_opts:
+      device: /tmp/dir

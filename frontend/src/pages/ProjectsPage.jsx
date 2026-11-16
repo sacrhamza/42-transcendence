@@ -1,10 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
+import useBrowserState from '../hooks/useBrowserState.js';
+import { validateAttachment } from '../utils/attachmentValidation.js';
+import { createId } from '../utils/createId.js';
 import DiscussionRooms from '../components/DiscussionRooms.jsx';
 import { seedRooms } from '../data/roomsData.js';
 import { communityProjects } from '../data/projectsData.js';
 
 export default function ProjectsPage({ query = '', account = null, initialProjectId = null }) {
-    const [roomsByProject, setRoomsByProject] = useState(() => Object.fromEntries(
+    const [roomsByProject, setRoomsByProject, roomStorageNotice, roomsReady] = useBrowserState('rooms', () => Object.fromEntries(
         communityProjects.map((project) => [project.id, seedRooms(project)]),
     ));
 
@@ -26,42 +29,41 @@ export default function ProjectsPage({ query = '', account = null, initialProjec
     }
 
     function attachRoomFile(file) {
-        const url = URL.createObjectURL(new Blob([file], { type: 'application/octet-stream' }));
-        attachmentUrls.current.push(url);
-        return { name: file.name, size: file.size, url };
+        return { name: file.name, size: file.size, file: file.slice(0, file.size, 'application/octet-stream') };
     }
 
     const [briefFile, setBriefFile] = useState(null);
-    const attachmentUrls = useRef([]);
+    const briefVersion = useRef(0);
+    const [checkingBrief, setCheckingBrief] = useState(false);
+    const [saving, setSaving] = useState(false);
     const fileInput = useRef(null);
 
-    useEffect(() => () => {
-        attachmentUrls.current.forEach((url) => URL.revokeObjectURL(url));
-    }, []);
-
-    function chooseBrief(event) {
-        const file = event.target.files[0];
+    async function chooseBrief(event) {
+        const input = event.target;
+        const file = input.files[0];
+        const version = ++briefVersion.current;
+        setBriefFile(null);
         setNotice('');
-
-        if (!file) {
-            setBriefFile(null);
-            return;
+        setCheckingBrief(Boolean(file));
+        if (!file) return;
+        try {
+            await validateAttachment(file, { extensions: ['pdf', 'md', 'txt'], maxBytes: 10 * 1024 * 1024 });
+            if (version === briefVersion.current) setBriefFile(file);
+        } catch (error) {
+            if (version === briefVersion.current) {
+                setNotice(error.message);
+                input.value = '';
+            }
+        } finally {
+            if (version === briefVersion.current) setCheckingBrief(false);
         }
-
-        if (!/\.(pdf|md|txt)$/i.test(file.name) || file.size === 0 || file.size > 10 * 1024 * 1024) {
-            setNotice('Choose a non-empty PDF, Markdown (.md), or text (.txt) file up to 10 MB.');
-            setBriefFile(null);
-            event.target.value = '';
-            return;
-        }
-
-        setBriefFile(file);
     }
 
-    const [projects, setProjects] = useState(communityProjects);
+    const [projects, setProjects, projectStorageNotice, projectsReady] = useBrowserState('projects', communityProjects);
     const [tab, setTab] = useState('community');
     const [formOpen, setFormOpen] = useState(false);
-    const [selected, setSelected] = useState(null);
+    const [selection, setSelected] = useState(null);
+    const selected = projects.find((project) => project.id === selection?.id) || selection;
     const [notice, setNotice] = useState('');
     const [sort, setSort] = useState('activity');
     const [tag, setTag] = useState('All');
@@ -78,9 +80,9 @@ export default function ProjectsPage({ query = '', account = null, initialProjec
 
     useEffect(() => {
         if (initialProjectId) {
-            setSelected(communityProjects.find((project) => project.id === initialProjectId) || null);
+            setSelected(projects.find((project) => project.id === initialProjectId) || null);
         }
-    }, [initialProjectId]);
+    }, [initialProjectId, projectsReady]);
 
     const normalizedQuery = query.trim().toLowerCase().replace(/^#/, '');
     const source = activeTab === 'community'
@@ -110,8 +112,9 @@ export default function ProjectsPage({ query = '', account = null, initialProjec
         setNotice('');
     }
 
-    function addProject(event) {
+    async function addProject(event) {
         event.preventDefault();
+        if (checkingBrief || saving) return;
         const data = new FormData(event.currentTarget);
         const name = data.get('name').trim();
         const summary = data.get('summary').trim();
@@ -127,17 +130,16 @@ export default function ProjectsPage({ query = '', account = null, initialProjec
             const type = briefFile.name.toLowerCase().endsWith('.pdf')
                 ? 'application/pdf'
                 : 'text/plain;charset=utf-8';
-            const url = URL.createObjectURL(new Blob([briefFile], { type }));
-            attachmentUrls.current.push(url);
+
             attachment = {
                 name: briefFile.name,
                 size: briefFile.size,
-                url,
+                file: briefFile.slice(0, briefFile.size, type),
             };
         }
 
         const newProject = {
-            id: `local-${Date.now()}`,
+            id: `local-${createId()}`,
             name,
             summary,
             readme,
@@ -152,13 +154,17 @@ export default function ProjectsPage({ query = '', account = null, initialProjec
             peers: 1,
         };
 
-        setProjects((current) => [newProject, ...current]);
+        setSaving(true);
+        await setProjects((current) => [newProject, ...current]);
+        setSaving(false);
         setBriefFile(null);
         setFormOpen(false);
         setTag('All');
         setSelected(newProject);
-        setNotice('Project created in this preview. It will stay until the page is refreshed.');
+        setNotice('Project created. Local content is saved in this browser when storage is available.');
     }
+
+    if (!projectsReady || !roomsReady) return <p role="status">Loading local projects…</p>;
 
     return (
         <section className="projects-page" aria-labelledby="projects-title">
@@ -174,6 +180,8 @@ export default function ProjectsPage({ query = '', account = null, initialProjec
                         type="button"
                         onClick={() => {
                             setFormOpen(!formOpen);
+                            briefVersion.current += 1;
+                            setCheckingBrief(false);
                             setBriefFile(null);
                             setSelected(null);
                         }}
@@ -203,6 +211,8 @@ export default function ProjectsPage({ query = '', account = null, initialProjec
                 )}
             </div>
 
+            {projectStorageNotice && <p className="page-notice" role="status">{projectStorageNotice}</p>}
+            {roomStorageNotice && <p className="page-notice" role="status">{roomStorageNotice}</p>}
             {notice && <p className="page-notice" role="status">{notice}</p>}
 
             {formOpen && (
@@ -243,6 +253,8 @@ export default function ProjectsPage({ query = '', account = null, initialProjec
                                     className="project-secondary"
                                     type="button"
                                     onClick={() => {
+                                        briefVersion.current += 1;
+                                        setCheckingBrief(false);
                                         setBriefFile(null);
                                         if (fileInput.current) {
                                             fileInput.current.value = '';
@@ -253,11 +265,11 @@ export default function ProjectsPage({ query = '', account = null, initialProjec
                                 </button>
                             </div>
                         )}
-                        <small>Files stay in this browser session until you refresh or leave Projects.</small>
+                        <small>Files are saved in this browser when storage is available. They are not uploaded to a server.</small>
                     </div>
                     <div className="project-banner-actions">
-                        <button className="project-primary" type="submit">Create project</button>
-                        <button className="project-secondary" type="button" onClick={() => setFormOpen(false)}>Cancel</button>
+                        <button className="project-primary" type="submit" disabled={checkingBrief || saving}>{saving ? 'Saving…' : checkingBrief ? 'Checking file…' : 'Create project'}</button>
+                        <button className="project-secondary" type="button" disabled={saving} onClick={() => { briefVersion.current += 1; setCheckingBrief(false); setFormOpen(false); }}>Cancel</button>
                     </div>
                 </form>
             )}
