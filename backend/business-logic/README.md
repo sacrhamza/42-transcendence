@@ -25,6 +25,12 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+## API documentation
+
+- [Complete API reference](docs/api.md): all seven implemented endpoints, request/response examples, authentication cookies, refresh rotation, logout, and errors.
+- [Registration integration guide](docs/api-auth-register.md): validation, email verification, and registration recovery cases.
+- [Manual API tests for DevOps](tests/README.md): 10 test cases per endpoint, 70 cases total, with expected results and execution setup.
+
 ## Project setup
 
 ```bash
