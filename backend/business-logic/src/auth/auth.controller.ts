@@ -100,7 +100,7 @@ export class AuthController {
       secure: true,
       sameSite: 'lax',
       maxAge: remaining_time,
-      path: '/api/auth',string
+      path: '/api/auth',
     });
     return {
       message: 'Tokens is refreshed successful',
@@ -145,17 +145,36 @@ export class AuthController {
 
   // endpoint for 42
 
-  @Get('42/register')
+  @Get('42')
   @UseGuards(AuthGuard('42'))
   start42Auth() {
-    // Passport handles redirect 
-    // dart t9riban 80% dya lkhdma b9a ghyr nta wach baghy tzid
-    // luser f data base awla la hhhhh "hadchy ziiin hhhhhhh"
+    // Passport handles redirect
   }
 
   @Get('42/callback')
   @UseGuards(AuthGuard('42'))
-  async intraCallback(@Req() req: FortyTwoRequest) {
-    const manba3d = this.authService.continueWith42(req.user);
+  async intraCallback(
+    @Req() req: FortyTwoRequest,
+    @Res() res: Response,
+  ) {
+    const { accessToken, refreshToken } = await this.authService.continueWith42(
+      req.user,
+    );
+
+    res.cookie('access_token', accessToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+      maxAge: 5 * 60 * 1000,
+      path: '/',
+    });
+    res.cookie('refresh_token', refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/api/auth',
+    });
+    return res.redirect(303, 'http://localhost:3001/feed');
   }
 }

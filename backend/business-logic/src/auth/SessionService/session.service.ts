@@ -12,7 +12,7 @@ export class SessionService {
   private readonly logger = new Logger(SessionService.name);
   constructor(private readonly prisma: PrismaService) {}
 
-  async createSession(sub: {
+  async createSession(data: {
     userId: bigint;
     jti: string;
     tokenHash: string;
@@ -21,10 +21,10 @@ export class SessionService {
     try {
       return await this.prisma.refresh_sessions.create({
         data: {
-          fk_user_id: sub.userId,
-          token_hash: sub.tokenHash,
-          expires_at: sub.expiresAt,
-          jti: sub.jti,
+          fk_user_id: data.userId,
+          token_hash: data.tokenHash,
+          expires_at: data.expiresAt,
+          jti: data.jti,
         },
       });
     } catch (err) {

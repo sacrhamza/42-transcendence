@@ -30,8 +30,7 @@ export class fortytowstrategy extends PassportStrategy(Strategy, '42') {
       refreshToken,
       profile,
     };
-    // nchofo had lkhir bach n3rfo chno anakhdo mno lamlih saaffy hhhhhhh ...
-    console.log(user.profile);
+    // console.log(user.profile);
     return {
       intraId: BigInt(profile.id),
       username: profile.username,

@@ -20,6 +20,7 @@ export class AuthenticationGuard implements CanActivate {
     if (!token) throw new UnauthorizedException('Missing access token');
     let pylode: {
       sub: string;
+      role: string;
     };
     try {
       pylode = await this.jwtservice.verifyAsync(token, {
@@ -28,7 +29,10 @@ export class AuthenticationGuard implements CanActivate {
     } catch {
       throw new UnauthorizedException('Invalid or expired access token');
     }
-    req.user = pylode.sub;
+    req.user = {
+      id: pylode.sub,
+      role: pylode.role,
+    };
     return true;
   }
 }

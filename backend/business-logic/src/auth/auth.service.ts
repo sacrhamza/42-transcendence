@@ -86,6 +86,9 @@ export class AuthService {
     const user = await this.userservice.findByEmailForAuth(data.email);
     if (!user) throw new UnauthorizedException('Invalid credentials');
 
+    // nsiti maztha mhm  we should check also if the user is deleted or not !
+    if (user.users.deleted) throw new ForbiddenException('Account deactivated');
+
     const is_valid_pass = await bcrypt.compare(data.password, user.password);
     if (!is_valid_pass) throw new UnauthorizedException('Invalid credentials');
 
@@ -104,6 +107,7 @@ export class AuthService {
       {
         sub: user.users.id.toString(),
         jti: randomUUID(),
+        role: 'normal_user',
       },
       {
         secret: this.secretsserver.getSecret('JWT_REFRESH_SECRET'),
@@ -134,32 +138,28 @@ export class AuthService {
       refreshToken,
     };
   }
-  // in progriss just  testing ! ...
+
   async refresh(refreshToken: string) {
     let pylode: {
       sub: string;
       jti: string;
       exp: number;
+      role: string;
     };
     try {
       pylode = await this.jwtservice.verifyAsync<{
         sub: string;
         jti: string;
         exp: number;
+        role: string;
       }>(refreshToken, {
         secret: this.secretsserver.getSecret('JWT_REFRESH_SECRET'),
       });
-      // console.log('STEP 1: JWT VERIFIED SUCCESSFULLY');
-    } catch (error) {
-      // console.error(
-      //   'STEP 1: JWT VERIFICATION FAILED:',
-      //   error instanceof Error ? error.message : 'Unknown error',
-      // );
+    } catch {
       throw new UnauthorizedException('Invalid refresh token');
     }
 
     const session = await this.sesstionservice.findSessionByJti(pylode.jti);
-    // console.log('STEP 2: SESSION FOUND:', !!session);
     if (!session) throw new UnauthorizedException('Invalid refresh token');
 
     // Verify session ownership and expiration
@@ -174,7 +174,7 @@ export class AuthService {
     if (!verify) throw new UnauthorizedException('Invalid refresh token');
 
     const newAccessToken = await this.jwtservice.signAsync(
-      { sub: pylode.sub },
+      { sub: pylode.sub, role: pylode.role },
       {
         secret: this.secretsserver.getSecret('JWT_ACCESS_SECRET'),
         expiresIn: '5m',
@@ -187,6 +187,7 @@ export class AuthService {
         sub: pylode.sub,
         jti: new_jti,
         exp: pylode.exp,
+        role: pylode.role,
       },
       {
         secret: this.secretsserver.getSecret('JWT_REFRESH_SECRET'),
@@ -235,16 +236,14 @@ export class AuthService {
 
   // that's for register 42 acounts ...
   async continueWith42(data: FortyTowUserDto) {
-    // chof hwa lowl wach user kayn ola la hyt login o register aykono despo f endpint whda ...
     const find_user = await this.userservice.findUserByFortyTowId(data.intraId);
-    let userId: bigint;
+    let user_id: bigint;
     // user find so we should just check if account is not desactivated and create
-    // ila kan deja user nsaybo lih access token o refresh token bach idkhl l feed ...
     if (find_user) {
-      // LOGIN: User deja ila aynahna ifjij lkhirad hhhhh
+      // LOGIN: User existe
       if (find_user.users.deleted)
         throw new ForbiddenException('Account deactivated');
-      userId = find_user.users.id;
+      user_id = find_user.users.id;
     } else {
       // REGISTER: Create new 42 user
       const newuser = await this.userservice.createUserFortyTow({
@@ -254,17 +253,14 @@ export class AuthService {
         email: data.email,
       });
 
-      userId = newuser.id;
+      user_id = newuser.id;
     }
-
-    // ayoub mhm matnsach dir function whda katjm3 hadchy hyt login normal user o loging/register dyal 42 andhom nafs steps
-    // mn nahit token o storisation !
 
     const jti = randomUUID();
 
-    const accessToken = await this.jwtservice.signAsync(
+    const access_Token = await this.jwtservice.signAsync(
       {
-        sub: userId.toString(),
+        sub: user_id.toString(),
         role: 'fortytow_user',
       },
       {
@@ -275,8 +271,9 @@ export class AuthService {
 
     const refresh_Token = await this.jwtservice.signAsync(
       {
-        sub: userId.toString(),
+        sub: user_id.toString(),
         jti: jti,
+        role: 'fortytow_user',
       },
       {
         secret: this.secretsserver.getSecret('JWT_REFRESH_SECRET'),
@@ -284,10 +281,28 @@ export class AuthService {
       },
     );
 
-    // ghilad asidi ikhsa anhachi lkhirad bach atnstory gh data base !
-    // baa9i khas ntfahmo ala role dyal user wach hwa user 3adi ola 42 ! ...
+    const pylode: {
+      jti: string;
+      exp: number;
+    } = this.jwtservice.decode<{
+      jti: string;
+      exp: number;
+    }>(refresh_Token);
+    const exp = new Date(pylode.exp * 1000);
 
+    const hashed_token = await bcrypt.hash(refresh_Token, 12);
+    await this.sesstionservice.createSession({
+      userId: user_id,
+      jti: pylode.jti,
+      tokenHash: hashed_token,
+      expiresAt: exp,
+    });
 
-    // return {};
+    return {
+      accessToken: access_Token,
+      refreshToken: refresh_Token,
+      refreshExpiresAt: exp,
+    };
   }
+  
 }

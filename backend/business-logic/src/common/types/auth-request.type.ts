@@ -1,5 +1,8 @@
 import { Request } from 'express';
 
 export type AuthRequest = Request & {
-  user?: string;
+  user?: {
+    id: string;
+    role: string;
+  };
 };
