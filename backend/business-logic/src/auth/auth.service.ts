@@ -304,5 +304,4 @@ export class AuthService {
       refreshExpiresAt: exp,
     };
   }
-  
 }
