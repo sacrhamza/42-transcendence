@@ -7,6 +7,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   // app.setGlobalPrefix('api');
   app.enableShutdownHooks();
+  // Parse incoming cookies
+  app.use(cookieParser());
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -14,7 +16,7 @@ async function bootstrap() {
       transform: true,
     }),
   );
-  // fetch env and secret here and set it in the global object ! 
+  // fetch env and secret here and set it in the global object !
   await app.listen(process.env.NESTJS_PORT ?? 3000);
 }
 void bootstrap();

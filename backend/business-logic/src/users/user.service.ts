@@ -76,10 +76,10 @@ export class UsersService {
         },
         select: {
           password: true,
+          name: true,
           users: {
             select: {
               id: true,
-              name: true,
               deleted: true,
             },
           },

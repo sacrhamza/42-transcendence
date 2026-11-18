@@ -2,7 +2,7 @@
 
 This document describes the current implementation in this working tree. Registration has two steps: submit account details, then verify the email address. **The account is created only during email verification.**
 
-For login, refresh, logout, cookies, and protected endpoints, see the [complete API reference](api.md).
+For all controller endpoints, cookies, and current integration constraints, see the [API index](README.md). Email verification also has its own [endpoint guide](api-auth-verify-email.md); related flows are documented in [login](api-auth-login.md), [refresh](api-auth-refresh.md), and [logout](api-auth-logout.md).
 
 This replaces the previous description of immediate account creation with a `201` response from `/register`. The behavior below is based on code inspection; it is not a report of executed integration tests.
 
@@ -13,7 +13,7 @@ This replaces the previous description of immediate account creation with a `201
 | Request registration and a verification email | `POST` | `/api/auth/register` | `202 Accepted` | `{ "msg": "check your email" }` |
 | Verify email and create the account | `GET` | `/api/auth/verify-email?token=<token>` | `201 Created` | `{ "msg": "User registered successfully", "userId": "1" }` |
 
-- The Nest application uses the `/api` global prefix.
+- The controller declares the `api/auth` prefix. The global-prefix call in `main.ts` is commented out; do not add a second `/api` segment.
 - Local default backend origin: `http://localhost:3000`. The listening port can be changed with `NESTJS_PORT`; use the backend origin configured for your environment.
 - Send registration as `Content-Type: application/json`.
 - Neither endpoint requires an access token.
@@ -100,9 +100,9 @@ This endpoint expects a query parameter, not a JSON body. Its current implementa
 2. Hashes the supplied token with SHA-256.
 3. Atomically reads **and deletes** its pending registration using Redis `GETDEL`.
 4. Rejects a missing record with `400`: the token is invalid, expired, or already consumed.
-5. Creates `users` and its related `normal_users` record in one Prisma nested write. The username goes into `users.name`, the email into `normal_users.mail`, and the bcrypt hash into `normal_users.password`. The new user has an empty bio and database defaults for the other profile fields.
+5. Creates `users` and its related `normal_users` record in one Prisma nested write. The username goes into `normal_users.name`, the email into `normal_users.mail`, and the bcrypt hash into `normal_users.password`. The new `users` row has an empty bio and database defaults for the other profile fields; it has no `name` column. Normal and 42 usernames have separate unique constraints in their respective account tables.
 6. Tries to add the username/email to the Redis duplicate cache. Cache-update errors are logged and do not undo account creation.
-7. Sends a welcome email. This call is awaited after account creation.
+7. Attempts a welcome email. This call is awaited after account creation, but the mail method catches/logs its own failures, so failed welcome-mail delivery does not prevent verification success.
 8. Returns:
 
    ```json
@@ -156,9 +156,10 @@ Support both `string` and `string[]` for `message`; do not assume `error` exists
 | `409` | `User already registered` | Username found in Redis duplicate cache |
 | `409` | `Username already taken` | Username found in PostgreSQL |
 | `409` | `Email already registered` | Email found in Redis cache or PostgreSQL |
-| `503` | `Database temporarily unavailable` | Email lookup failed with the explicitly handled Prisma `P1001` error; username lookup currently rethrows database errors without this mapping |
+| `503` | `Database temporarily unavailable` | Username or email lookup failed with the explicitly handled Prisma `P1001` error |
 | `503` | `Registration service temporarily unavailable` | Saving the pending registration in Redis failed |
-| `500` | Normally `Internal server error` | Unhandled failure, including verification-mail errors or database errors outside the explicit mapping |
+| `500` | `An unexpected error occurred` | Username or email lookup failed outside its explicit outage mapping |
+| `500` | Normally `Internal server error` | Unhandled failure, including verification-mail errors or hashing errors |
 
 If several checks fail, the first reached check determines the response. DTO validation runs before the custom password check; Redis checks run before database checks, with username checked before email within each layer. The same taken username can therefore produce different text depending on the cache state. Handle these as the same username-conflict UX.
 
@@ -169,10 +170,11 @@ If several checks fail, the first reached check determines the response. DTO val
 | `400` | `Verification token is required` | Query parameter is absent or empty |
 | `400` | `Verification token is invalid or expired` | Unknown, expired, modified, or already consumed token; these cases are not distinguished |
 | `409` | `Username or email already registered` | Database uniqueness conflict at creation time; an earlier request may have completed first |
-| `503` | `Database temporarily unavailable` | Creation failed with a recognized Prisma `P1001` or `P1002` error, and the follow-up failure email was sent successfully |
-| `500` | Normally `Internal server error` | Unhandled failure, including Redis `GETDEL`, malformed non-string token input, welcome-email failure, or failure-email delivery failure |
+| `503` | `Database temporarily unavailable` | Creation failed with a recognized Prisma `P1001` or `P1002` error; the follow-up failure email is attempted, with mail errors caught |
+| `500` | `An unexpected error occurred` | Database creation failed outside its recognized conflict/outage mappings |
+| `500` | Normally `Internal server error` | Unhandled failure, including Redis `GETDEL`, malformed non-string token input, or invalid pending JSON |
 
-On the handled database-creation outage path, the backend attempts to email the user that the previous verification link is invalid and they should register again. If sending that email fails, the mail error escapes instead of returning the intended `503`.
+On the handled database-creation outage path, the backend attempts to email the user that the previous verification link is invalid and they should register again. That mail method catches/logs delivery failures, preserving the intended `503`. Welcome-email failures are also caught inside the mail service and do not turn successful account creation into a verification error.
 
 There are no stable machine-readable business error codes. Use HTTP status plus the known message strings where necessary; keep a general fallback for other responses and transport failures.
 
@@ -195,7 +197,8 @@ There are no stable machine-readable business error codes. Use HTTP status plus 
 | Verification email fails after Redis storage | Registration can return `500` while pending data still exists until TTL expiry | Do not assume the request had no side effects; allow a deliberate retry |
 | Database creation fails after token consumption | Old token is already gone; a recognized unique conflict gives `409`, recognized connection failures attempt a failure email | Reopening the same link cannot redo creation; a new registration is needed if no account exists |
 | Redis cache update fails after creation | Failure is caught; account creation remains successful and welcome email is still attempted | Handle the final response normally |
-| Welcome email fails after account creation | Verification can return `500` even though the account exists; the token is already consumed | Offer login; do not state that the account definitely was not created |
+| Welcome email fails after account creation | Mail error is caught/logged; verification still succeeds if the other steps succeeded | Handle `201` normally and offer login |
+| Database-failure notification email fails | Mail error is caught/logged; the recognized database-outage response remains `503` | Start a fresh registration later if no account exists |
 | Browser times out or connection drops | Frontend cannot tell which backend steps completed | Show an uncertain-result message and provide deliberate recovery actions |
 | User wants another verification email | No separate resend endpoint or cooldown/rate limiter is implemented in this registration flow | Repeating registration is the available request path while details are still unused; any UI cooldown is only a UI measure |
 
@@ -259,13 +262,14 @@ These are proposed checks derived from the implementation, **not tests executed 
 - Concurrent verification of different tokens competing for username/email → at most one account with that unique identity, with conflicts mapped where the Prisma error handler recognizes them.
 - Redis outage during pending storage → `503`; outage during verification → general server-error handling.
 - Verification-email failure → registration failure with pending data potentially retained.
-- Welcome-email failure → verification failure with the account already created; login remains the recovery option.
+- Welcome-email failure → handled/logged mail error; verification remains successful and the account can proceed to login.
+- Database-outage notification-mail failure → original handled `503` is preserved.
 - Real browser origin/proxy setup and the reachability of `NEST_URL` from the email recipient's browser.
 
 ## 9. Implementation references
 
 - [Route methods and success statuses](../src/auth/auth.controller.ts)
-- [Global prefix and validation pipe](../src/main.ts)
+- [Bootstrap and validation pipe](../src/main.ts)
 - [Request DTO and normalization](../src/dto/RegisterDto.ts)
 - [Password/username rule](../src/auth/custom-func/lib.ts)
 - [Registration checks and pending-registration call](../src/auth/auth.service.ts)
