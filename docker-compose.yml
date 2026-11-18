@@ -170,11 +170,12 @@ services:
       - 9121:9121
 
   prometheus:
-    image: prom/prometheus:v3.13.4 
+    # image: prom/prometheus:v3.13.4 
+    build: ./devops/prometheus/
     environment:
       PROMETHEUS_PORT: "${PROMETHEUS_PORT:?PROMETHEUS_PORT is required}"
     volumes:
-      - ./devops/prometheus/scrapes.d:/etc/prometheus/scrapes.d/:ro
+      - ./devops/prometheus/scrapes.d:/etc/prometheus/scrapes.d/
     command:
       - --config.file=/etc/prometheus/prometheus.yml
       - --web.listen-address=:${PROMETHEUS_PORT}
