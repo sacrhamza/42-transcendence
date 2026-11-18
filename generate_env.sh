@@ -24,7 +24,7 @@ NESTJS_PORT=3000
 REDIS_PORT=6379
 
 # ======================== NGINX EXPORTER ======================= #
-NGINX_EXPORTER_PORT=9000
+NGINX_EXPORTER_PORT=9001
 
 
 #============================== Nodemailer config =================#
@@ -66,4 +66,3 @@ echo "{
     \"redis://redis:${REDIS_PORT}\": \"${REDIS_PASSWORD}\"
 }" > secrets/redis_exporter/redis_exporter.json
 
-printf "%s" "REDIS_PASSWORD=$(openssl rand -hex 32)"  > ./secrets/redis/redis_password

@@ -137,7 +137,7 @@ services:
       - 127.0.0.1:1025:1025
 
 
-  nginx_prometheus_exporter:
+  nginx_exporter:
     container_name: nginx_prometheus_exporter
     image: nginx/nginx-prometheus-exporter:1.5.3
     command:
@@ -168,19 +168,36 @@ services:
         target: /run/secrets/redis_exporter.json
     ports:
       - 9121:9121
+  redis_exporter1:
+    container_name: redis_exporter1
+    image: oliver006/redis_exporter
+    command:
+      - -redis.password-file=/run/secrets/redis_exporter.json
+      - -redis.addr=redis:$REDIS_PORT
+      - -check-keys=db0=names,users
+      - -basic-auth-username=hamza
+      - -basic-auth-password=9999
+    secrets:
+      - source: redis_exporter_password
+        target: /run/secrets/redis_exporter.json
 
   prometheus:
-    # image: prom/prometheus:v3.13.4 
+    container_name: prometheus
     build: ./devops/prometheus/
     environment:
       PROMETHEUS_PORT: "${PROMETHEUS_PORT:?PROMETHEUS_PORT is required}"
     volumes:
-      - ./devops/prometheus/scrapes.d:/etc/prometheus/scrapes.d/
+      - ./devops/prometheus/scrapes.d/:/etc/prometheus/scrapes.d/
     command:
       - --config.file=/etc/prometheus/prometheus.yml
       - --web.listen-address=:${PROMETHEUS_PORT}
     ports:
       - 127.0.0.1:${PROMETHEUS_PORT}:${PROMETHEUS_PORT}
+  # grafana:
+  #   container_name: grafana
+  #   image: grafana:13.1-slim
+  #   environment:
+  #     ;
 
 
 
