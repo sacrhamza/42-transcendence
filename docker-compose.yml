@@ -1,7 +1,7 @@
 services:
 
-  backend1:
-    container_name: nestjs_backend
+  nestjs_backend:
+    container_name: nestjsBackend
     build: ./backend/business-logic/
     depends_on:
       postgresql:
@@ -133,8 +133,8 @@ services:
       start_period: 10s
       timeout: 10s
     ports:
-      - 127.0.0.1:8025:8025
-      - 127.0.0.1:1025:1025
+      - 8025:8025
+      - 1025:1025
 
 
   nginx_exporter:
@@ -149,7 +149,7 @@ services:
       NGINX_STUB_STATUS: "${NGINX_STUB_STATUS:?NGINX_STUB_STATUS is required}"
       NGINX_EXPORTER_PORT: "${NGINX_EXPORTER_PORT:?NGINX_EXPORTER_PORT is required}"
     ports:
-      - 127.0.0.1:${NGINX_EXPORTER_PORT}:${NGINX_EXPORTER_PORT}
+      - ${NGINX_EXPORTER_PORT}:${NGINX_EXPORTER_PORT}
     depends_on:
       nginx:
         condition: service_healthy
@@ -168,6 +168,7 @@ services:
         target: /run/secrets/redis_exporter.json
     ports:
       - 9121:9121
+
   redis_exporter1:
     container_name: redis_exporter1
     image: oliver006/redis_exporter
@@ -190,9 +191,10 @@ services:
       - ./devops/prometheus/scrapes.d/:/etc/prometheus/scrapes.d/
     command:
       - --config.file=/etc/prometheus/prometheus.yml
+      - --web.config.file=/etc/prometheus/web.yml
       - --web.listen-address=:${PROMETHEUS_PORT}
     ports:
-      - 127.0.0.1:${PROMETHEUS_PORT}:${PROMETHEUS_PORT}
+      - ${PROMETHEUS_PORT}:${PROMETHEUS_PORT}
   # grafana:
   #   container_name: grafana
   #   image: grafana:13.1-slim
