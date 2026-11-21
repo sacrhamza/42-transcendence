@@ -1,7 +1,7 @@
 services:
 
-  backend1:
-    container_name: nestjs_backend
+  nestjs_backend:
+    container_name: nestjsBackend
     build: ./backend/business-logic/
     depends_on:
       postgresql:
@@ -133,11 +133,11 @@ services:
       start_period: 10s
       timeout: 10s
     ports:
-      - 127.0.0.1:8025:8025
-      - 127.0.0.1:1025:1025
+      - 8025:8025
+      - 1025:1025
 
 
-  nginx_prometheus_exporter:
+  nginx_exporter:
     container_name: nginx_prometheus_exporter
     image: nginx/nginx-prometheus-exporter:1.5.3
     command:
@@ -149,10 +149,58 @@ services:
       NGINX_STUB_STATUS: "${NGINX_STUB_STATUS:?NGINX_STUB_STATUS is required}"
       NGINX_EXPORTER_PORT: "${NGINX_EXPORTER_PORT:?NGINX_EXPORTER_PORT is required}"
     ports:
-      - 127.0.0.1:${NGINX_EXPORTER_PORT}:${NGINX_EXPORTER_PORT}
+      - ${NGINX_EXPORTER_PORT}:${NGINX_EXPORTER_PORT}
     depends_on:
       nginx:
         condition: service_healthy
+
+  redis_exporter:
+    container_name: redis_exporter
+    image: oliver006/redis_exporter
+    command:
+      - -redis.password-file=/run/secrets/redis_exporter.json
+      - -redis.addr=redis:$REDIS_PORT
+      - -check-keys=db0=names,users
+      - -basic-auth-username=hamza
+      - -basic-auth-password=9999
+    secrets:
+      - source: redis_exporter_password
+        target: /run/secrets/redis_exporter.json
+    ports:
+      - 9121:9121
+
+  redis_exporter1:
+    container_name: redis_exporter1
+    image: oliver006/redis_exporter
+    command:
+      - -redis.password-file=/run/secrets/redis_exporter.json
+      - -redis.addr=redis:$REDIS_PORT
+      - -check-keys=db0=names,users
+      - -basic-auth-username=hamza
+      - -basic-auth-password=9999
+    secrets:
+      - source: redis_exporter_password
+        target: /run/secrets/redis_exporter.json
+
+  prometheus:
+    container_name: prometheus
+    build: ./devops/prometheus/
+    environment:
+      PROMETHEUS_PORT: "${PROMETHEUS_PORT:?PROMETHEUS_PORT is required}"
+    volumes:
+      - ./devops/prometheus/scrapes.d/:/etc/prometheus/scrapes.d/
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --web.config.file=/etc/prometheus/web.yml
+      - --web.listen-address=:${PROMETHEUS_PORT}
+    ports:
+      - ${PROMETHEUS_PORT}:${PROMETHEUS_PORT}
+  # grafana:
+  #   container_name: grafana
+  #   image: grafana:13.1-slim
+  #   environment:
+  #     ;
+
 
 
 secrets:
@@ -166,6 +214,8 @@ secrets:
     file: ./secrets/postgresql/suf/suf_password
   redis_password:
     file: ./secrets/redis/redis_password
+  redis_exporter_password:
+    file: ./secrets/redis_exporter/redis_exporter.json
 
 volumes:
   db_data:

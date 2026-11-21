@@ -31,20 +31,24 @@ services:
   prometheus:
     container_name: prometheus
     build: ./prometheus/
-    command:   --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus --web.config.file=/etc/prometheus/web.yml --web.listen-address=:${PROMETHEUS_PORT:?PROMETHEUS_PORT is required}
+    command:  
+      - --config.file=/etc/prometheus/prometheus.yml
+      # - --storage.tsdb.path=/prometheus
+      # - --web.config.file=/etc/prometheus/web.yml
+      - --web.listen-address=:${PROMETHEUS_PORT:?PROMETHEUS_PORT is required}
     volumes:
       - ./prometheus/configs/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ./prometheus/scrapes.d/minio_prometheus.yml:/etc/prometheus/scrapes.d/minio_prometheus.yml:ro
       - ./prometheus/templates/:/etc/prometheus/templates/:ro
       - ./prometheus/ssl/:/etc/prometheus/ssl/
-    ports:
-      - 127.0.0.1:${PROMETHEUS_PORT}:${PROMETHEUS_PORT}
-    depends_on:
-      minio:
-        condition: service_healthy
-    configs:
-      - source: prometeus_web
-        target: /etc/prometheus/web.yml
+    # ports:
+    #   - 127.0.0.1:${PROMETHEUS_PORT}:${PROMETHEUS_PORT}
+    # depends_on:
+    #   minio:
+    #     condition: service_healthy
+    # configs:
+    #   - source: prometeus_web
+    #     target: /etc/prometheus/web.yml
     environment:
       NGINX_EXPORTER: "${NGINX_EXPORTER:?NGINX_EXPORTER is required}"
 

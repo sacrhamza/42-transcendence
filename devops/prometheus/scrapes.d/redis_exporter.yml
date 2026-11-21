@@ -1,0 +1,9 @@
+scrape_configs:
+  - job_name: redis_exporter
+    metrics_path: /metrics
+    scheme: http
+    basic_auth:
+      username: hamza
+      password: 9999
+    static_configs:
+      - targets: ['redis_exporter:9121']

@@ -29,11 +29,6 @@ up() {
   fi
 }
 
-re() {
-  down "$@"
-  up "$@"
-}
-
 down() {
   # shellcheck disable=SC2034
   command=(compose down) services=("$@")
