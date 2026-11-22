@@ -5,6 +5,7 @@ import {
   UnauthorizedException,
   ServiceUnavailableException,
   ForbiddenException,
+  NotFoundException,
 } from '@nestjs/common';
 import { RegisterDto } from '../dto/RegisterDto.js';
 import validations from './custom-func/lib.js';
@@ -19,10 +20,8 @@ import { hash, randomUUID } from 'node:crypto';
 import { SessionService } from './SessionService/session.service.js';
 import { setServers } from 'node:dns';
 import { name } from 'nodemailer/lib/package-info.js';
-import { PrismaClientRustPanicError } from '@prisma/client/runtime/client';
 import { AuthRequest } from '../common/types/auth-request.type.js';
 import { FortyTowUserDto } from '../dto/forytowuserdto.js';
-import { use } from 'passport';
 
 @Injectable()
 export class AuthService {
@@ -303,5 +302,37 @@ export class AuthService {
       refreshToken: refresh_Token,
       refreshExpiresAt: exp,
     };
+  }
+
+  // service for the generate and send resetPassword email ...
+  async forgotPassword(email: string) {
+    const check_user = await this.userservice.findByEmail(email);
+    if (!check_user)
+      throw new NotFoundException(
+        'No account found. Check your email address and try again.',
+      );
+
+    // create a service that generate a token in the redis
+    await this.emailverification.createPendingForgotPassword(
+      check_user.mail,
+      check_user.name,
+    );
+  }
+
+  async resetPassword(token: string, newPassword: string) {
+    if (!token) throw new BadRequestException('Reset token is required');
+    if (!newPassword)
+      throw new BadRequestException('New password is required');
+    const email = await this.emailverification.verifyForgotPasswordToken(token);
+    const user = await this.userservice.findByEmailForAuth(email);
+    if (!user) throw new NotFoundException('User not found');
+
+    const is_same_password = await bcrypt.compare(newPassword, user.password);
+    if (is_same_password)
+      throw new BadRequestException(
+        'New password cannot be the same as the old password',
+      );
+    const passwordHash = await bcrypt.hash(newPassword, 12);
+    await this.userservice.updateUserPassword(user.mail, passwordHash);
   }
 }

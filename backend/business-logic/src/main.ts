@@ -6,7 +6,6 @@ import cookieParser from 'cookie-parser';
 // implemnet function that fetch secret in vault ...
 
 async function bootstrap() {
-
   const app = await NestFactory.create(AppModule);
   // app.setGlobalPrefix('api');
   app.enableShutdownHooks();

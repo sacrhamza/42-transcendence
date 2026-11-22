@@ -238,4 +238,62 @@ The SUF Team
       // No throw: preserv the origenal registration error...
     }
   }
+
+  async sendForgotPasswordEmail(
+    email: string,
+    username: string,
+    token: string,
+  ): Promise<void> {
+    const baseUrl = this.config.getOrThrow<string>('NEST_URL');
+    const url = new URL('/api/auth/reset-password', baseUrl);
+    url.searchParams.set('token', token);
+    const resetLink = url.toString();
+
+    try {
+      await this.transporter.sendMail({
+        from: this.config.getOrThrow<string>('SMTP_FROM'),
+        to: email,
+        subject: 'Password Reset Request',
+        html: `
+          <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+            <h2>Password Reset Request</h2>
+
+            <p>Hello ${username},</p>
+
+            <p>
+              We received a request to reset your password.
+              If you did not make this request, please ignore this email.
+            </p>
+
+            <p>
+              To reset your password, click the button below:
+            </p>
+
+            <div style="text-align: center; margin: 20px 0;">
+              <a href="${resetLink}"
+                 style="background-color: #2563eb;
+                        color: #ffffff;
+                        padding: 12px 24px;
+                        text-decoration: none;
+                        border-radius: 6px;
+                        display: inline-block;
+                        font-weight: bold;">
+                Reset My Password
+              </a>
+            </div>
+
+            <p>
+              This password reset link will expire in
+              <strong>15 minutes</strong>.
+            </p>
+
+            <p>Best regards,<br>SUF Team</p>
+          </div>
+        `,
+      });
+    } catch (err) {
+      console.error('Error while sending forgot password email:', err);
+      // No throw here to allow the server to continue processing.
+    }
+  }
 }

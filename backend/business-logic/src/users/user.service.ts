@@ -51,6 +51,7 @@ export class UsersService {
         },
         select: {
           mail: true,
+          name: true,
         },
       });
     } catch (err: unknown) {
@@ -77,6 +78,7 @@ export class UsersService {
         select: {
           password: true,
           name: true,
+          mail: true,
           users: {
             select: {
               id: true,
@@ -231,6 +233,30 @@ export class UsersService {
         );
       }
 
+      if (
+        err instanceof PrismaClientKnownRequestError &&
+        err.code === 'P1001'
+      ) {
+        throw new ServiceUnavailableException(
+          'Database temporarily unavailable',
+        );
+      }
+      throw new InternalServerErrorException('An unexpected error occurred');
+    }
+  }
+
+  async updateUserPassword(email: string, newPasswordHash: string) {
+    try {
+      await this.prisma.normal_users.update({
+        where: {
+          mail: email,
+        },
+        data: {
+          password: newPasswordHash,
+        },
+      });
+    } catch (err: unknown) {
+      this.logger.error('Failed to update user password', err);
       if (
         err instanceof PrismaClientKnownRequestError &&
         err.code === 'P1001'

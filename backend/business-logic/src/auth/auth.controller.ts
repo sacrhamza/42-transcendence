@@ -21,6 +21,8 @@ import { AuthGuard } from '@nestjs/passport';
 import type { AuthRequest } from '../common/types/auth-request.type.js';
 import { FortyTowUserDto } from '../dto/forytowuserdto.js';
 import type { FortyTwoRequest } from '../common/types/auth-fortytow.type.js';
+import { forgotPasswordDto } from '../dto/ForgotPasswordDto.js';
+import { ResetPasswordDto } from '../dto/ResetPasswordDto.js';
 
 @Controller('api/auth')
 export class AuthController {
@@ -173,5 +175,24 @@ export class AuthController {
       path: '/api/auth',
     });
     return res.redirect(303, 'http://localhost:3001/feed');
+  }
+
+  // forget password for generate a rest password link
+
+  @Post('forgot-password')
+  async forgotpassword(@Body() dto: forgotPasswordDto) {
+    await this.authService.forgotPassword(dto.email);
+
+    return {
+      message: 'A reset link has been sent to your email if it exists in our system',
+    };
+  }
+  @Post('reset-password')
+  async resetPassword(@Body() dto: ResetPasswordDto) {
+    await this.authService.resetPassword(dto.token, dto.newPassword);
+
+    return {
+      message: 'Password has been reset successfully',
+    };
   }
 }

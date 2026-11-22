@@ -5,6 +5,7 @@ import { UserModule } from './users/user.module.js';
 // import { FastApiModule } from './fastapi-client/apiclient.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { RedisModule } from './redis/redis.module.js';
+import { ChatModule } from './chat/chat.module.js';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { RedisModule } from './redis/redis.module.js';
     // FastApiModule,
     PrismaModule,
     RedisModule,
+    ChatModule,
   ],
   controllers: [],
   providers: [],

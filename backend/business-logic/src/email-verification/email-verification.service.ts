@@ -61,7 +61,6 @@ export class EmailVerificationService {
   }
 
   async verifyEmail(token: string) {
-
     if (!token) {
       throw new BadRequestException('Verification token is required');
     }
@@ -74,7 +73,7 @@ export class EmailVerificationService {
 
     const user: CreateUserDataDto = JSON.parse(pendingData);
     const result = await this.userservice.createUser(user);
-    
+
     // welcome email ...
     await this.mailService.sendWelcomeEmail(result.email, result.username);
 
@@ -82,5 +81,39 @@ export class EmailVerificationService {
       msg: result.message,
       userId: result.userId,
     };
+  }
+
+  async createPendingForgotPassword(email: string, username: string): Promise<void> {
+    const token = randomBytes(32).toString('hex');
+    const tokenHash = createHash('sha256').update(token).digest('hex');
+
+    // save this token in redis for 15 min ...
+    try {
+      await this.redisService.set(
+        `forgot-password:${tokenHash}`,
+        email,
+        900,
+      );
+    } catch (err) {
+      this.logger.error('Failed to store forgot password token', err);
+      throw new ServiceUnavailableException(
+        'Password reset service temporarily unavailable',
+      );
+    }
+
+    // send email for reset password ...
+    await this.mailService.sendForgotPasswordEmail(email, username, token);
+  }
+
+  async verifyForgotPasswordToken(token: string): Promise<string> {
+    if (!token) {
+      throw new BadRequestException('Reset token is required');
+    }
+    const tokenHash = createHash('sha256').update(token).digest('hex');
+    const email = await this.redisService.getDel(`forgot-password:${tokenHash}`);
+    if (!email) {
+      throw new BadRequestException('Reset token is invalid or expired');
+    }
+    return email;
   }
 }
