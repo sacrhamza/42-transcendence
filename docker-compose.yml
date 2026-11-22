@@ -201,6 +201,15 @@ services:
   #   environment:
   #     ;
 
+  alertmanager:
+    image: prom/alertmanager:v0.35.0-distroless
+    container_name: alertmanager
+    command:
+      - --web.listen-address=:${ALERTMANGER_PORT}
+      - --config.file=/etc/alertmanager/alertmanager.yml
+      - --storage.path=/alertmanager
+    ports:
+      - ${ALERTMANGER_PORT}:${ALERTMANGER_PORT}
 
 
 secrets:
