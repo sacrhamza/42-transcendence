@@ -211,6 +211,28 @@ services:
     ports:
       - ${ALERTMANGER_PORT}:${ALERTMANGER_PORT}
 
+  grafana:
+    container_name: grafana
+    build: ./devops/grafana/ 
+    environment:
+      # rule: https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/#override-configuration-with-environment-variables
+      # PATH
+      GF_PATH_LOGS: "${GF_PATH_LOGS:?}"
+      GF_PATH_PROVISIONING: "${GF_PATH_PROVISIONING:?}"
+      # SECURITY
+      GF_SECURITY_ADMIN_USER: "${GF_SECURITY_ADMIN_USER:?}"
+      # SERVER
+      GF_SERVER_HTTP_PORT: "${GF_SERVER_HTTP_PORT:?}"
+      PROMETHEUS_PORT: "${PROMETHEUS_PORT}"
+    ports:
+      - "$GF_SERVER_HTTP_PORT:$GF_SERVER_HTTP_PORT"
+      
+    volumes: 
+      - ./devops/grafana/configs/grafana.ini:/etc/grafana/grafana.ini
+      - ./devops/grafana/configs/provisioning/:/etc/grafana/provisioning/
+    secrets:
+      - grafana_password
+      - prometheus_password
 
 secrets:
   postgres_password:
@@ -225,6 +247,10 @@ secrets:
     file: ./secrets/redis/redis_password
   redis_exporter_password:
     file: ./secrets/redis_exporter/redis_exporter.json
+  grafana_password:
+    file: ./secrets/grafana/grafana_password
+  prometheus_password:
+    file: ./secrets/prometheus/prometheus_password
 
 volumes:
   db_data:
