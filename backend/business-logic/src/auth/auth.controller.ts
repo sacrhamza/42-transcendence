@@ -10,6 +10,8 @@ import {
   Req,
   UnauthorizedException,
   UseGuards,
+  ValidationPipe,
+  UsePipes,
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { AuthService } from './auth.service.js';
@@ -25,6 +27,13 @@ import { forgotPasswordDto } from '../dto/ForgotPasswordDto.js';
 import { ResetPasswordDto } from '../dto/ResetPasswordDto.js';
 
 @Controller('api/auth')
+@UsePipes(
+  new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transform: true,
+  }),
+)
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
@@ -184,7 +193,8 @@ export class AuthController {
     await this.authService.forgotPassword(dto.email);
 
     return {
-      message: 'A reset link has been sent to your email if it exists in our system',
+      message:
+        'A reset link has been sent to your email if it exists in our system',
     };
   }
   @Post('reset-password')

@@ -24,8 +24,9 @@ export class RegisterDto {
   @IsString()
   @MaxLength(50)
   @MinLength(2)
-  @Matches(/^\S+$/, {
-    message: 'user must not contain whitespace',
+  @Matches(/^[a-zA-Z0-9_]+$/, {
+    message:
+      'Username must contain only letters, numbers, and underscores, without spaces',
   })
   username: string;
 

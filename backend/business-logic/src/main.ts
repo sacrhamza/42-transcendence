@@ -16,13 +16,13 @@ async function bootstrap() {
     origin: process.env.FRONTEND_URL ?? 'http://localhost:5173', // just this url enable to reed my respons
     credentials: true,
   });
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-    }),
-  );
+  // app.useGlobalPipes(
+  //   new ValidationPipe({
+  //     whitelist: true,
+  //     forbidNonWhitelisted: true,
+  //     transform: true,
+  //   }),
+  // );
   // fetch env and secret here and set it in the global object !
   await app.listen(process.env.NESTJS_PORT ?? 3000);
 }
