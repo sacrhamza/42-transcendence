@@ -63,3 +63,6 @@ echo "{
     \"redis://redis:${REDIS_PORT}\": \"${REDIS_PASSWORD}\"
 }" > secrets/redis_exporter/redis_exporter.json
 
+
+# create grafana secrets
+

@@ -169,18 +169,33 @@ services:
     ports:
       - 9121:9121
 
-  redis_exporter1:
-    container_name: redis_exporter1
-    image: oliver006/redis_exporter
+  postgres-exporter:
+    container_name: postgres-exporter
+    image: quay.io/prometheuscommunity/postgres-exporter:v0.21.1 
     command:
-      - -redis.password-file=/run/secrets/redis_exporter.json
-      - -redis.addr=redis:$REDIS_PORT
-      - -check-keys=db0=names,users
-      - -basic-auth-username=hamza
-      - -basic-auth-password=9999
+      - --datasource.pass-file=/run/secrets/postgres_password
+      - --datasource.user-file=/run/secrets/postgres_user
+      - --datasource.uri=postgresql:${POSTGRES_PORT}/postgres?sslmode=disable
+      - --web.listen-address=:${POSTGRES_EXPORTER_PORT}
+      - --web.config.file=/etc/postgres-exporter/config.yml
+      - --web.telemetry-path=/metrics
     secrets:
-      - source: redis_exporter_password
-        target: /run/secrets/redis_exporter.json
+      - postgres_password
+      - postgres_user
+    volumes:
+      - ./devops/postgres-exporter/configs/config.yml:/etc/postgres-exporter/config.yml
+    ports:
+      - $POSTGRES_EXPORTER_PORT:$POSTGRES_EXPORTER_PORT
+
+  # this is: Prometheus exporter for hardware and OS metrics exposed by *NIX kernels
+  # not nodejs exporter!!
+  node-exporter:
+    container_name: node-exporter
+    image: prom/node-exporter:v1.13.1-distroless
+    volumes:
+      - '/:/host:ro,rslave'
+    command:
+      - --path.rootfs=/host
 
   prometheus:
     container_name: prometheus
@@ -201,7 +216,38 @@ services:
   #   environment:
   #     ;
 
+  alertmanager:
+    image: prom/alertmanager:v0.35.0-distroless
+    container_name: alertmanager
+    command:
+      - --web.listen-address=:${ALERTMANGER_PORT}
+      - --config.file=/etc/alertmanager/alertmanager.yml
+      - --storage.path=/alertmanager
+    ports:
+      - ${ALERTMANGER_PORT}:${ALERTMANGER_PORT}
 
+  grafana:
+    container_name: grafana
+    build: ./devops/grafana/ 
+    environment:
+      # rule: https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/#override-configuration-with-environment-variables
+      # PATH
+      GF_PATH_LOGS: "${GF_PATH_LOGS:?}"
+      GF_PATH_PROVISIONING: "${GF_PATH_PROVISIONING:?}"
+      # SECURITY
+      GF_SECURITY_ADMIN_USER: "${GF_SECURITY_ADMIN_USER:?}"
+      # SERVER
+      GF_SERVER_HTTP_PORT: "${GF_SERVER_HTTP_PORT:?}"
+      PROMETHEUS_PORT: "${PROMETHEUS_PORT}"
+    ports:
+      - "$GF_SERVER_HTTP_PORT:$GF_SERVER_HTTP_PORT"
+      
+    volumes: 
+      - ./devops/grafana/configs/grafana.ini:/etc/grafana/grafana.ini
+      - ./devops/grafana/configs/provisioning/:/etc/grafana/provisioning/
+    secrets:
+      - grafana_password
+      - prometheus_password
 
 secrets:
   postgres_password:
@@ -216,6 +262,10 @@ secrets:
     file: ./secrets/redis/redis_password
   redis_exporter_password:
     file: ./secrets/redis_exporter/redis_exporter.json
+  grafana_password:
+    file: ./secrets/grafana/grafana_password
+  prometheus_password:
+    file: ./secrets/prometheus/prometheus_password
 
 volumes:
   db_data:
