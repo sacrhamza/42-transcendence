@@ -34,12 +34,29 @@ SMTP_FROM='Transcendence <synadesigner@gmail.com>'
 JWT_ACCESS_SECRET=4ed6d28a164f0bf77dca28577e5e51278a7899e23c403883d1adfee9f96bd36e
 JWT_REFRESH_SECRET=e7d3f67da4e4f6eab8644be961f7da66b2023d95f2b0fe0d1703030c32f36da4
 
-#=============================PROMETHEUS============================#
+#=============================PROMETHEUS================================#
 PROMETHEUS_PORT=9000
 
 #================================ NESTJS BACKEND========================#
 NESTJS_PORT=6000
 NEST_URL='http://localhost:6000/'
+
+#=============================ELK STACK=================================#
+ELASTIC_PORT=3000
+ELASTIC_DATA_DIR='/var/lib/elasticsearch/'
+ELASTIC_LOGS_DIR='/var/log/elasticsearch/'
+
+#============================EXPORTERS==================================#
+POSTGRES_EXPORTER_PORT=9121
+ALERTMANGER_PORT=9121
+GF_SERVER_HTTP_PORT=9121
+
+
+#=============================GRAFANA====================================#
+GF_SERVER_HTTP_PORT=7800
+GF_PATH_LOGS=/var/logs/grafana
+GF_PATH_PROVISIONING=/etc/grafana/provisioning/
+
 " > .env
 
 
@@ -64,5 +81,21 @@ echo "{
 }" > secrets/redis_exporter/redis_exporter.json
 
 
-# create grafana secrets
+create_pass() {
+  file="$1"
+  if [ -f "$1" ]
+  then
+  chmod 777 "$1"
+  fi
+  openssl rand -hex 32 > "$file"
+  # chown 1000:1000 "$file"
+  chmod 400 "$file"
+}
 
+# create grafana secrets
+create_pass ./secrets/grafana/grafana_password
+echo -n 'hamza' > ./secrets/grafana/grafana_user
+
+
+mkdir -p ./secrets/elasticsearch
+create_pass ./secrets/elasticsearch/elastic_password

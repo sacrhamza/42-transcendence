@@ -1,0 +1,19 @@
+cluster.name: "transcendence"
+
+bootstrap.memory_lock: true
+
+discovery.type: single-node
+
+xpack.security.enabled: true
+
+
+
+network.host: "0.0.0.0"
+
+# xpack.security.http.ssl.certificate_authorities:
+
+# xpack.security.http.ssl:
+#   enabled: true
+#   key: certs/elastic.key
+#   certificate: certs/elastic.crt
+  # keystore.path: certs/http.p12
