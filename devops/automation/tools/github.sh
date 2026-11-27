@@ -10,6 +10,8 @@ send_to_all_channels() {
   DISCORD_HOOK="$DATABASE_HOOK" commit
 }
 
+export DISCROD_HOOK
+
 case "${BRANCH}" in
   'main') send_to_all_channels
           exit ;;
