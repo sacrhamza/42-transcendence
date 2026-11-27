@@ -1,2 +1,18 @@
+global:
+  scrape_interval: 1s # note that default is 1m
+
+alerting:
+  alertmanagers:
+    # The api version of Alertmanager. default v2
+    - api_version: v2
+
+    # Prefix for the HTTP path alerts are pushed to. default /, no need to add /
+      path_prefix: /
+
+    # # Configures the protocol scheme used for requests., default http
+      scheme: http
+      static_configs:
+        - targets: ['alertmanager:5000']
+
 scrape_config_files:
   - /etc/prometheus/scrapes.d/*.yml
