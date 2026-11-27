@@ -11,7 +11,8 @@ send_to_all_channels() {
 }
 
 case "${BRANCH}" in
-  'main') send_to_all_channels;;
+  'main') send_to_all_channels
+          exit ;;
   'devops') DISCORD_HOOK="$DEVOPS_HOOK";;
   'backend' | 'feature/authentication' | 'feature/friends') DISCORD_HOOK="$BACKEND_HOOK";;
   'frontend') DISCORD_HOOK="$FRONTEND_HOOK";;
