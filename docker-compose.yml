@@ -234,8 +234,6 @@ services:
       # PATH
       GF_PATH_LOGS: "${GF_PATH_LOGS:?}"
       GF_PATH_PROVISIONING: "${GF_PATH_PROVISIONING:?}"
-      # SECURITY
-      GF_SECURITY_ADMIN_USER: "${GF_SECURITY_ADMIN_USER:?}"
       # SERVER
       GF_SERVER_HTTP_PORT: "${GF_SERVER_HTTP_PORT:?}"
       PROMETHEUS_PORT: "${PROMETHEUS_PORT}"
@@ -247,7 +245,55 @@ services:
       - ./devops/grafana/configs/provisioning/:/etc/grafana/provisioning/
     secrets:
       - grafana_password
+      - grafana_user
       - prometheus_password
+
+
+  # ELK STACK
+  tokens-generator:
+    build: ./devops/elk-stack/tokens-generator/
+    volumes:
+      - ./secrets/kibana:/run/secrets/kibana/
+      - ./secrets/logstash:/run/secrets/logstash/
+      - ./devops/elk-stack/tokens-generator/tools/docker-entrypoint.sh:/bin/script.sh
+    secrets:
+      - elastic_password
+
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch-wolfi:9.5.6-amd64
+    # build: ./devops/elk-stack/elasticsearch/
+    container_name: elastic
+    environment:
+      ES_SETTING_HTTP_PORT: "${ELASTIC_PORT:?}"
+      ELASTIC_PASSWORD_FILE: "/run/secrets/elastic_password"
+      # ELASTIC_USER: 'hamza'
+      ES_SETTING_PATH_DATA: "${ELASTIC_DATA_DIR:?}"
+      ES_SETTING_PATH_LOGS: "${ELASTIC_LOGS_DIR:?}"
+    volumes:
+      - ./devops/elk-stack/elasticsearch/configs/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - "/tmp/elasticsearch/data:${ELASTIC_DATA_DIR}"
+      - "/tmp/elasticsearch/logs:${ELASTIC_LOGS_DIR}"
+      - ./certs/elasticsearch:/usr/share/elasticsearch/config/certs/
+      - ./devops/elk-stack/elasticsearch/tools/healthcheck.sh:/bin/healthcheck.sh
+    secrets:
+      - elastic_password
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+    ports: ["${ELASTIC_PORT}:${ELASTIC_PORT}"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s \"http://elastic:${ELASTIC_PORT}\" | grep -q 'missing authentication credentials'"]
+      interval: 30s
+      retries: 30
+      start_period: 5s
+      timeout: 20s
+
 
 secrets:
   postgres_password:
@@ -264,8 +310,12 @@ secrets:
     file: ./secrets/redis_exporter/redis_exporter.json
   grafana_password:
     file: ./secrets/grafana/grafana_password
+  grafana_user:
+    file: ./secrets/grafana/grafana_user
   prometheus_password:
     file: ./secrets/prometheus/prometheus_password
+  elastic_password:
+    file: ./secrets/elasticsearch/elastic_password
 
 volumes:
   db_data:

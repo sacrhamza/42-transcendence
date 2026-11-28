@@ -1,6 +1,7 @@
 # CUSTOM
 secrets/
 tests/
+certs/
 
 # Keep the business-logic manual API test plans in version control.
 !/backend/business-logic/tests/
